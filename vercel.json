@@ -7,7 +7,7 @@
     { "src": "**/*.csv",  "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/",                     "dest": "/index.html" },
+    { "src": "/",                     "dest": "/home.html" },
     { "src": "/home",                 "dest": "/home.html" },
     { "src": "/crm",                  "dest": "/crm.html" },
     { "src": "/dashboard",            "dest": "/dashboard.html" },
