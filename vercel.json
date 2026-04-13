@@ -8,6 +8,7 @@
   ],
   "routes": [
     { "src": "/",                     "dest": "/home.html" },
+    { "src": "/login",               "dest": "/login.html" },
     { "src": "/home",                 "dest": "/home.html" },
     { "src": "/crm",                  "dest": "/crm.html" },
     { "src": "/dashboard",            "dest": "/dashboard.html" },
