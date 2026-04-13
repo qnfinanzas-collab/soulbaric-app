@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SoulBaric — Catálogo de Cámaras</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #C89968;
+      --primary-d: #8B6F47;
+      --accent: #D4A574;
+      --black: #1a1a1a;
+      --black-light: #2d2d2d;
+      --bg: #faf8f6;
+      --bg-dark: #f0ebe5;
+      --card: #ffffff;
+      --border: #e8e4df;
+      --text: #3d3530;
+      --text-m: #8b7d76;
+      --green: #4caf50;
+      --red: #f44336;
+      --orange: #FF6B35;
+      --radius: 8px;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* ═══════════════ HEADER ═══════════════ */
+    header {
+      background: linear-gradient(135deg, var(--black) 0%, var(--black-light) 100%);
+      border-bottom: 4px solid var(--primary);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      flex-wrap: wrap;
+    }
+
+    .header-logo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    header nav {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 5px;
+      color: #bbb;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover {
+      background: rgba(200,153,104,0.2);
+      color: var(--primary);
+      border-color: rgba(200,153,104,0.4);
+    }
+
+    .nav-link.active {
+      background: rgba(200,153,104,0.2);
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* ═══════════════ PAGE LAYOUT ═══════════════ */
+    .page-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    /* ═══════════════ TABS ═══════════════ */
+    .tabs-bar {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-m);
+      transition: all 0.2s;
+      margin-bottom: -2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ═══════════════ FILTERS ═══════════════ */
+    .filters-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 6px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-m);
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .search-input {
+      margin-left: auto;
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 11px;
+      background: var(--card);
+      color: var(--text);
+      width: 200px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+    }
+
+    /* ═══════════════ MODEL GRID ═══════════════ */
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .model-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+      cursor: default;
+    }
+
+    .model-card:hover {
+      box-shadow: 0 4px 16px rgba(200,153,104,0.15);
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .model-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(200,153,104,0.3), 0 4px 16px rgba(200,153,104,0.2);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--black-light) 0%, var(--black) 100%);
+      padding: 12px 14px 10px;
+      border-bottom: 2px solid var(--primary);
+      position: relative;
+    }
+
+    .card-type-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .badge-vertical   { background: rgba(76,175,80,0.2);  color: #6fcf6f; border: 1px solid rgba(76,175,80,0.3); }
+    .badge-multiplaza { background: rgba(33,150,243,0.2); color: #64b0f4; border: 1px solid rgba(33,150,243,0.3); }
+    .badge-grupal     { background: rgba(156,39,176,0.2); color: #ce93d8; border: 1px solid rgba(156,39,176,0.3); }
+    .badge-tumbada    { background: rgba(255,152,0,0.2);  color: #ffb74d; border: 1px solid rgba(255,152,0,0.3); }
+    .badge-sentada    { background: rgba(200,153,104,0.2); color: #c89968; border: 1px solid rgba(200,153,104,0.35); }
+
+    /* ── Ficha Técnica Modal ── */
+    .ficha-tab-btn {
+      padding: 10px 14px; background: none; border: none;
+      border-bottom: 3px solid transparent; cursor: pointer;
+      font-size: 12px; font-weight: 700; color: var(--text-m);
+      white-space: nowrap; transition: all 0.2s; flex: 1; min-width: fit-content;
+    }
+    .ficha-tab-btn:hover { color: var(--primary); }
+    .ficha-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .ficha-section-title {
+      font-size: 10.5px; font-weight: 800; color: var(--primary);
+      text-transform: uppercase; letter-spacing: 0.6px;
+      margin: 0 0 10px; padding-bottom: 5px;
+      border-bottom: 1px solid rgba(200,153,104,0.3);
+    }
+    .ficha-field { margin-bottom: 9px; }
+    .ficha-field label { display:block; font-size:10px; font-weight:700; color:var(--text-m); text-transform:uppercase; letter-spacing:0.4px; margin-bottom:3px; }
+    .ficha-field input, .ficha-field textarea, .ficha-field select {
+      width: 100%; padding: 6px 10px; border: 1.5px solid var(--border);
+      border-radius: 6px; font-size: 12px; color: var(--text);
+      background: var(--bg); box-sizing: border-box; transition: border-color 0.2s; font-family:inherit;
+    }
+    .ficha-field input:focus, .ficha-field textarea:focus { outline:none; border-color:var(--primary); }
+    .ficha-field textarea { resize:vertical; min-height:72px; line-height:1.5; }
+    .ficha-list-item {
+      display:flex; align-items:center; gap:8px;
+      padding:5px 0; border-bottom:1px solid var(--border);
+    }
+    .ficha-list-item span { flex:1; font-size:12px; color:var(--text); }
+    .ficha-list-item .ficha-del-btn {
+      background:none; border:none; cursor:pointer; color:#e53935;
+      font-size:13px; padding:2px 6px; border-radius:4px; line-height:1;
+    }
+    .ficha-list-item .ficha-del-btn:hover { background:rgba(229,57,53,0.1); }
+    .ficha-add-row { display:flex; gap:8px; margin-top:8px; align-items:center; }
+    .ficha-add-row input {
+      flex:1; padding:6px 10px; border:1.5px solid var(--border);
+      border-radius:6px; font-size:12px; background:var(--bg);
+      color:var(--text); font-family:inherit;
+    }
+    .ficha-add-row input:focus { outline:none; border-color:var(--primary); }
+    .btn-ficha-add {
+      padding:6px 14px; background:var(--primary); color:#fff;
+      border:none; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; flex-shrink:0;
+    }
+    .btn-ficha-add:hover { background:var(--accent); }
+    .comp-check-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .comp-check-item {
+      display:flex; align-items:flex-start; gap:8px; padding:9px 10px;
+      border:1.5px solid var(--border); border-radius:8px; cursor:pointer; transition:all 0.2s;
+    }
+    .comp-check-item:hover { border-color:var(--primary); }
+    .comp-check-item.checked { border-color:var(--primary); background:rgba(200,153,104,0.07); }
+    .comp-check-item input[type=checkbox] { accent-color:var(--primary); width:14px; height:14px; margin-top:2px; flex-shrink:0; }
+    .comp-info { flex:1; }
+    .comp-name { font-size:11.5px; font-weight:600; color:var(--text); }
+    .comp-price { font-size:11px; color:var(--primary); font-weight:700; }
+    .comp-desc  { font-size:10px; color:var(--text-m); }
+    .ficha-img-dropzone {
+      border:2px dashed var(--border); border-radius:12px; padding:44px 24px;
+      text-align:center; cursor:pointer; transition:all 0.2s; color:var(--text-m); display:block;
+    }
+    .ficha-img-dropzone:hover { border-color:var(--primary); background:rgba(200,153,104,0.04); }
+    .ficha-img-preview { max-width:100%; max-height:300px; border-radius:8px; object-fit:contain; border:1px solid var(--border); }
+    /* PDF preview box */
+    .ficha-pdf-preview { background:#fff; border-radius:8px; padding:24px; border:1px solid var(--border); font-family:Georgia,serif; color:#222; font-size:12px; line-height:1.65; }
+    /* Logistics preset buttons */
+    .log-preset-btn {
+      display:flex; flex-direction:column; align-items:center; gap:2px;
+      padding:10px 8px; background:var(--bg); border:1.5px solid var(--border);
+      border-radius:8px; cursor:pointer; transition:all 0.2s; font-size:11px;
+      color:var(--text-m); font-family:inherit; text-align:center; line-height:1.4;
+    }
+    .log-preset-btn:hover { border-color:var(--primary); color:var(--text); }
+    .log-preset-btn.active { border-color:var(--primary); background:rgba(200,153,104,0.1); color:var(--primary); font-weight:700; }
+    .badge-consultar  { background: rgba(255,107,53,0.2); color: #ff8a65; border: 1px solid rgba(255,107,53,0.3); }
+
+    .card-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .card-body {
+      padding: 12px 14px;
+    }
+
+    .card-desc {
+      font-size: 10px;
+      color: var(--text-m);
+      margin-bottom: 10px;
+      line-height: 1.5;
+      min-height: 30px;
+    }
+
+    .card-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .spec-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 5px 8px;
+      text-align: center;
+    }
+
+    .spec-label {
+      font-size: 9px;
+      color: var(--text-m);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      display: block;
+    }
+
+    .spec-value {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+    }
+
+    .spec-value.primary { color: var(--primary); }
+
+    .card-prices {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3px;
+    }
+
+    .price-label {
+      font-size: 10px;
+      color: var(--text-m);
+    }
+
+    .price-value {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .price-value.big {
+      font-size: 14px;
+      color: var(--primary);
+    }
+
+    .price-value.consultar {
+      color: var(--orange);
+      font-size: 11px;
+    }
+
+    .card-energy {
+      background: rgba(200,153,104,0.06);
+      border: 1px solid rgba(200,153,104,0.15);
+      border-radius: 5px;
+      padding: 6px 10px;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .energy-item {
+      flex: 1;
+      text-align: center;
+    }
+
+    .energy-label {
+      font-size: 9px;
+      color: var(--text-m);
+      text-transform: uppercase;
+      font-weight: 700;
+      display: block;
+    }
+
+    .energy-value {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+    }
+
+    .btn-configurar {
+      width: 100%;
+      padding: 9px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-d) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-configurar:hover {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      box-shadow: 0 4px 12px rgba(200,153,104,0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-ficha-tecnica {
+      display: block;
+      width: 100%;
+      padding: 7px 9px;
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+      transition: all 0.2s;
+    }
+    .btn-ficha-tecnica:hover {
+      background: rgba(200,153,104,0.1);
+      box-shadow: 0 2px 8px rgba(200,153,104,0.25);
+      transform: translateY(-1px);
+    }
+
+    /* ═══════════════ CONFIGURATOR PANEL ═══════════════ */
+    #configuratorPanel {
+      background: var(--card);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      margin-top: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      display: none;
+      scroll-margin-top: 80px;
+    }
+
+    #configuratorPanel.open {
+      display: block;
+    }
+
+    .conf-header {
+      background: linear-gradient(135deg, var(--black) 0%, var(--black-light) 100%);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .conf-header h3 {
+      font-size: 14px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .conf-close {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .conf-close:hover { background: rgba(200,153,104,0.3); }
+
+    .conf-body {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .conf-section {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .conf-section.full {
+      grid-column: 1 / -1;
+    }
+
+    .conf-section-header {
+      background: linear-gradient(90deg, rgba(200,153,104,0.1), transparent);
+      border-bottom: 2px solid var(--primary);
+      padding: 8px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .conf-section-body {
+      padding: 14px;
+    }
+
+    /* Model summary in configurator */
+    .model-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .ms-item {
+      text-align: center;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 8px;
+    }
+
+    .ms-label {
+      font-size: 9px;
+      color: var(--text-m);
+      text-transform: uppercase;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .ms-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Complementos */
+    .complement-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .complement-item:hover {
+      border-color: var(--primary);
+      background: rgba(200,153,104,0.04);
+    }
+
+    .complement-item.checked {
+      border-color: var(--primary);
+      background: rgba(200,153,104,0.08);
+    }
+
+    .complement-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--primary);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .complement-name {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .complement-desc {
+      font-size: 9px;
+      color: var(--text-m);
+      display: block;
+      margin-top: 1px;
+    }
+
+    .complement-price {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-m);
+      white-space: nowrap;
+    }
+
+    .complement-price.active { color: var(--primary); }
+
+    .complements-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .complements-total {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .btn-pack {
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--card);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-m);
+      transition: all 0.15s;
+    }
+
+    .btn-pack:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Inputs generales */
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 10px;
+      color: var(--text-m);
+      margin-bottom: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 11px;
+      background: var(--card);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    /* Resumen de inversión */
+    .resumen-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .resumen-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .resumen-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .resumen-table .label-cell {
+      color: var(--text-m);
+      font-weight: 600;
+    }
+
+    .resumen-table .value-cell {
+      text-align: right;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .resumen-table .total-row td {
+      background: linear-gradient(90deg, rgba(200,153,104,0.08), rgba(200,153,104,0.04));
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      border-top: 2px solid var(--primary);
+    }
+
+    .resumen-table .subtotal-row td {
+      background: var(--bg-dark);
+      font-weight: 700;
+    }
+
+    .mini-preview {
+      background: linear-gradient(135deg, var(--black) 0%, var(--black-light) 100%);
+      border-radius: 5px;
+      padding: 12px;
+      margin-top: 12px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .mini-preview-item {
+      flex: 1;
+      text-align: center;
+    }
+
+    .mini-preview-label {
+      font-size: 9px;
+      color: #888;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .mini-preview-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Guardar configuración */
+    .btn-save {
+      width: 100%;
+      padding: 11px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-d) 100%);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      margin-top: 10px;
+    }
+
+    .btn-save:hover {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      box-shadow: 0 4px 14px rgba(200,153,104,0.4);
+    }
+
+    /* ═══════════════ SAVED CONFIG GRID ═══════════════ */
+    .saved-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .saved-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s;
+    }
+
+    .saved-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    .saved-card-header {
+      background: linear-gradient(135deg, var(--black-light) 0%, var(--black) 100%);
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .saved-card-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .saved-card-meta {
+      font-size: 10px;
+      color: #888;
+    }
+
+    .saved-card-body {
+      padding: 14px;
+    }
+
+    .saved-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .saved-spec {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 6px 8px;
+    }
+
+    .saved-spec-label {
+      font-size: 9px;
+      color: var(--text-m);
+      text-transform: uppercase;
+      font-weight: 700;
+      display: block;
+    }
+
+    .saved-spec-value {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .saved-spec-value.big {
+      font-size: 14px;
+      color: var(--primary);
+    }
+
+    .saved-card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .btn-action {
+      padding: 7px 8px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--card);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-m);
+      transition: all 0.15s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-action:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(200,153,104,0.06);
+    }
+
+    .btn-action.primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-d) 100%);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .btn-action.primary:hover {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      box-shadow: 0 2px 8px rgba(200,153,104,0.3);
+    }
+
+    .btn-action.danger:hover {
+      border-color: var(--red);
+      color: var(--red);
+      background: rgba(244,67,54,0.05);
+    }
+
+    .btn-action.full { grid-column: 1 / -1; }
+
+    /* ═══════════════ EMPTY STATE ═══════════════ */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-m);
+    }
+
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .empty-state p {
+      font-size: 12px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* ═══════════════ TOAST ═══════════════ */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--black);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border-left: 4px solid var(--primary);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transform: translateX(120%);
+      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+      z-index: 9999;
+      max-width: 320px;
+    }
+
+    #toast.show { transform: translateX(0); }
+
+    /* ═══════════════ LOGISTICA INPUTS ═══════════════ */
+    .logistica-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    /* ═══════════════ MISC ═══════════════ */
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .mt-8 { margin-top: 8px; }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .count-badge {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* ═══════════════ NOTAS ═══════════════ */
+    .saved-notes {
+      font-size: 10px;
+      color: var(--text-m);
+      font-style: italic;
+      margin-top: 8px;
+      padding: 6px 8px;
+      background: var(--bg);
+      border-radius: 4px;
+      border-left: 3px solid var(--border);
+      min-height: 24px;
+    }
+
+    /* ═══════════════ RESPONSIVE ═══════════════ */
+    @media (max-width: 900px) {
+      .conf-body { grid-template-columns: 1fr; }
+      .conf-section.full { grid-column: auto; }
+      .model-summary { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrap { padding: 12px; }
+      .models-grid { grid-template-columns: 1fr; }
+      header { padding: 10px 14px; }
+      header nav { gap: 3px; }
+      .nav-link { padding: 5px 8px; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HEADER ════════════════════════════ -->
+<header>
+  <div class="header-logo" style="display:flex;align-items:center;gap:12px;">
+    <svg width="38" height="38" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+      <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+      <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+      <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+      <circle cx="50" cy="18" r="4.5" fill="#C89968"/>
+      <circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="50" cy="82" r="4.5" fill="#C89968"/>
+      <circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="18" cy="50" r="4.5" fill="#C89968"/>
+      <circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="82" cy="50" r="4.5" fill="#C89968"/>
+      <circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+    </svg>
+    <div style="display:flex;flex-direction:column;line-height:1.2;">
+      <h1 style="margin:0;">SoulBaric</h1>
+      <span style="color:#888;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;">CellPods · Catálogo</span>
+    </div>
+  </div>
+  <nav>
+    <a href="home.html" class="nav-link">🏠 Inicio</a>
+    <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
+    <a href="index.html" class="nav-link">🧮 Calculadora</a>
+    <a href="propuestas.html" class="nav-link">📋 Propuestas</a>
+    <a href="catalogo.html" class="nav-link active">📦 Catálogo</a>
+  </nav>
+</header>
+
+<!-- ════════════════════════════ PAGE BODY ════════════════════════════ -->
+<div class="page-wrap">
+
+  <!-- TABS BAR -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('catalogo')" id="tabBtn-catalogo">📦 Catálogo de Modelos</button>
+    <button class="tab-btn" onclick="switchTab('guardadas')" id="tabBtn-guardadas">⚙️ Configuraciones Guardadas <span class="count-badge" id="savedCount">0</span></button>
+  </div>
+
+  <!-- ══════════════ TAB 1: CATÁLOGO ══════════════ -->
+  <div class="tab-panel active" id="tab-catalogo">
+
+    <!-- Filtros -->
+    <div class="filters-row">
+      <button class="filter-btn active" onclick="setFilter('all', this)">Todas</button>
+      <button class="filter-btn" onclick="setFilter('1', this)">1 Plaza</button>
+      <button class="filter-btn" onclick="setFilter('2', this)">2 Plazas</button>
+      <button class="filter-btn" onclick="setFilter('3', this)">3 Plazas</button>
+      <button class="filter-btn" onclick="setFilter('4', this)">4 Plazas</button>
+      <button class="filter-btn" onclick="setFilter('sentada', this)" style="margin-left:8px;">Sentada</button>
+      <button class="filter-btn" onclick="setFilter('tumbada', this)">Tumbada</button>
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍  Buscar modelo..." oninput="renderModels()" />
+    </div>
+
+    <!-- Grid de modelos -->
+    <div class="models-grid" id="modelsGrid"></div>
+
+    <!-- Panel configurador -->
+    <div id="configuratorPanel">
+      <div class="conf-header">
+        <h3 id="confTitle">⚙️ Configurador — HE5000 Diamond</h3>
+        <button class="conf-close" onclick="closeConfigurator()">✕</button>
+      </div>
+      <div class="conf-body">
+
+        <!-- SECCIÓN 1: Modelo seleccionado -->
+        <div class="conf-section full">
+          <div class="conf-section-header">1. Modelo seleccionado</div>
+          <div class="conf-section-body">
+            <div class="model-summary" id="confModelSummary"></div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: Complementos -->
+        <div class="conf-section">
+          <div class="conf-section-header">2. Complementos opcionales</div>
+          <div class="conf-section-body">
+            <div id="complementsList"></div>
+            <div class="complements-footer">
+              <span class="complements-total">Total: <span id="totalComplementos">0,00 €</span></span>
+              <div style="display:flex;gap:6px;">
+                <button class="btn-pack" onclick="selectAllComplements()">Pack completo</button>
+                <button class="btn-pack" onclick="selectNoComplements()">Ninguno</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo auxiliar oculto para precio base (se rellena desde la tarjeta) -->
+        <input type="hidden" id="confPrecioBase" />
+
+        <!-- SECCIÓN 3: Logística -->
+        <div class="conf-section">
+          <div class="conf-section-header">3. Logística e instalación</div>
+          <div class="conf-section-body">
+            <div class="form-group">
+              <label>Tipo de envío</label>
+              <select id="logisticaTipo" onchange="onLogisticaChange()">
+                <option value="maritimo">Marítimo — estándar (~3 meses)</option>
+                <option value="aereo">Aéreo — urgente (~1 mes)</option>
+                <option value="personalizado">Personalizado</option>
+              </select>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>Coste transporte (€)</label>
+                <input type="number" id="costeTransporte" value="8000" min="0" step="100" oninput="calcularTotales()" />
+              </div>
+              <div class="form-group">
+                <label>Coste instalación (€)</label>
+                <input type="number" id="costeInstalacion" value="3500" min="0" step="100" oninput="calcularTotales()" />
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--bg);border:1px solid var(--border);border-radius:5px;margin-top:4px;">
+              <span style="font-size:11px;color:var(--text-m);font-weight:700;">Total logística:</span>
+              <span style="font-size:14px;font-weight:700;color:var(--primary);" id="totalLogistica">11.500,00 €</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 4: Guardar -->
+        <div class="conf-section">
+          <div class="conf-section-header">4. Guardar configuración</div>
+          <div class="conf-section-body">
+            <div class="form-group">
+              <label>Nombre de la configuración</label>
+              <input type="text" id="confNombre" placeholder="ej. Diamond 2P — Hotel Sol Marbella" />
+            </div>
+            <div class="form-group">
+              <label>Notas adicionales</label>
+              <textarea id="confNotas" rows="3" style="resize:vertical;" placeholder="Observaciones, condiciones especiales, cliente..."></textarea>
+            </div>
+            <button class="btn-save" onclick="guardarConfiguracion()">💾 Guardar configuración</button>
+          </div>
+        </div>
+
+      </div><!-- end conf-body -->
+    </div><!-- end configuratorPanel -->
+
+  </div><!-- end tab-catalogo -->
+
+  <!-- ══════════════ TAB 2: CONFIGURACIONES GUARDADAS ══════════════ -->
+  <div class="tab-panel" id="tab-guardadas">
+    <div class="section-title">
+      ⚙️ Configuraciones Guardadas
+      <span class="count-badge" id="savedCount2">0</span>
+    </div>
+    <div id="savedGrid" class="saved-grid"></div>
+  </div>
+
+</div><!-- end page-wrap -->
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DATOS
+═══════════════════════════════════════════════════ */
+const MODELOS_CAMARA = [
+  {
+    id:'HP750', nombre:'HP750', plazas:1, ata:1.9, presurMin:10,
+    potenciaW:2250, kwhSesion:1.575, costeLuzSesion:0.441,
+    precioBase:42314.05, totalSinIVA:63777.69, totalConIVA:77171.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Monoplaza sentada con sistema AIO BOYT2202-10L integrado. Climatización HX-020, LEDs RGB, interfono digital y pantallas LCD interior/exterior. Entrada lateral abatible. Compacta y eficiente para clínicas y centros de bienestar.',
+    ficha:{
+      dim:'120 × 120 × 200 cm', o2:93, ruido:65,
+      aio:'BOYT2202-10L', potenciaAio:2250, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno BOYT2202-10L','Climatizador HX-020','Pantalla LCD exterior 7"','Pantalla LCD interior 7"','Interfono digital bidireccional','Iluminación LED interior','Asiento ergonómico anatómico','Válvula de seguridad','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_MONO', nombre:'HE5000 Mono', plazas:1, ata:1.9, presurMin:18,
+    potenciaW:2500, kwhSesion:1.750, costeLuzSesion:0.490,
+    precioBase:45619.83, totalSinIVA:67083.47, totalConIVA:81171.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Monoplaza sentada con sistema AIO BOYT24-10L de alto rendimiento. Mayor potencia que HP750 para presurización más constante. Climatización HX-020, LEDs RGB, interfono, pantallas LCD. Solución premium para consultas individuales de alta demanda.',
+    ficha:{
+      dim:'148 × 155 × 174 cm', o2:93, ruido:63,
+      aio:'BOYT24-10L', potenciaAio:2500, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno BOYT24-10L','Climatizador HX-020','Pantalla LCD exterior 7"','Pantalla LCD interior 7"','Interfono digital bidireccional','Iluminación LED interior','Asiento ergonómico anatómico','Válvula de seguridad','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_MINI', nombre:'HE5000 Mini', plazas:2, ata:1.9, presurMin:18,
+    potenciaW:4000, kwhSesion:2.800, costeLuzSesion:0.784,
+    precioBase:60826.45, totalSinIVA:82290.09, totalConIVA:99571.01,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Biplaza sentada compacta con sistema New HE5000 AIO de 4 kW. Acabados superiores con ventanas panorámicas, LEDs RGB, interfono, pantallas LCD dobles, climatización HX-020. La versión premium en formato reducido.',
+    ficha:{
+      dim:'165 × 165 × 174 cm', o2:93, ruido:63,
+      aio:'New HE5000 AIO', potenciaAio:4000, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno New HE5000 AIO','Climatizador HX-020','Pantalla LCD exterior 10"','Pantalla LCD interior 10"','Interfono digital bidireccional','Iluminación LED RGB interior','2× Asientos ergonómicos','Ventanas panorámicas','Válvula de seguridad','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_FORT', nombre:'HE5000 Fort', plazas:2, ata:1.9, presurMin:13,
+    potenciaW:4000, kwhSesion:2.800, costeLuzSesion:0.784,
+    precioBase:62561.98, totalSinIVA:84025.62, totalConIVA:101671.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Biplaza sentada con disposición enfrentada y sistema New HE5000 AIO. Presurización en 13 min. Diseño robusto para sesiones supervisadas o en pareja. LEDs RGB, interfono, climatización HX-020. Ideal para uso terapéutico intensivo.',
+    ficha:{
+      dim:'165 × 175 × 174 cm', o2:93, ruido:63,
+      aio:'New HE5000 AIO', potenciaAio:4000, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno New HE5000 AIO','Climatizador HX-020','Pantalla LCD exterior 10"','Pantalla LCD interior 10"','Interfono digital bidireccional','Iluminación LED RGB interior','2× Asientos enfrentados ergonómicos','Ventanas panorámicas','Válvula de seguridad','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_REG15', nombre:'HE5000 Reg 1.5', plazas:2, ata:1.5, presurMin:8,
+    potenciaW:4000, kwhSesion:2.800, costeLuzSesion:0.784,
+    precioBase:49008.26, totalSinIVA:70471.90, totalConIVA:85271.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Biplaza sentada regulada a 1.5 ATA con sistema New HE5000 AIO. La entrada más accesible de la gama sentada para 2 usuarios. Presurización ultra-rápida en 8 min. Ideal para wellness, spa y centros deportivos.',
+    ficha:{
+      dim:'165 × 165 × 174 cm', o2:93, ruido:63,
+      aio:'New HE5000 AIO', potenciaAio:4000, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno New HE5000 AIO','Climatizador HX-020','Pantalla LCD exterior 10"','Pantalla LCD interior 10"','Interfono digital bidireccional','Iluminación LED RGB interior','2× Asientos ergonómicos','Válvula regulada 1.5 ATA','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_REG19', nombre:'HE5000 Reg 1.9', plazas:2, ata:1.9, presurMin:16,
+    potenciaW:4000, kwhSesion:2.800, costeLuzSesion:0.784,
+    precioBase:62561.98, totalSinIVA:84025.62, totalConIVA:101671.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Biplaza sentada a máxima presión 1.9 ATA con sistema New HE5000 AIO. Versatilidad total para protocolos clínicos y wellness de alto rendimiento. Presurización en 16 min. La más completa de la gama Reg.',
+    ficha:{
+      dim:'165 × 165 × 174 cm', o2:93, ruido:63,
+      aio:'New HE5000 AIO', potenciaAio:4000, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno New HE5000 AIO','Climatizador HX-020','Pantalla LCD exterior 10"','Pantalla LCD interior 10"','Interfono digital bidireccional','Iluminación LED RGB interior','2× Asientos ergonómicos','Válvula a 1.9 ATA','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_PLUS15', nombre:'HE5000 Plus 1.5', plazas:4, ata:1.5, presurMin:8,
+    potenciaW:4000, kwhSesion:2.800, costeLuzSesion:0.784,
+    precioBase:53223.14, totalSinIVA:74686.78, totalConIVA:90371.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Cuatriplaza sentada a 1.5 ATA con sistema New HE5000 AIO. 4 asientos para máxima productividad por sesión con presurización en 8 min. La solución más rentable por plaza para centros de alto volumen.',
+    ficha:{
+      dim:'220 × 175 × 185 cm', o2:93, ruido:65,
+      aio:'New HE5000 AIO', potenciaAio:4000, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno New HE5000 AIO','Climatizador HX-020','Pantalla LCD exterior 10"','Pantalla LCD interior 10"','Interfono digital bidireccional','Iluminación LED RGB interior','4× Asientos ergonómicos','Válvula regulada 1.5 ATA','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_PLUS19', nombre:'HE5000 Plus 1.9', plazas:4, ata:1.9, presurMin:16,
+    potenciaW:4000, kwhSesion:2.800, costeLuzSesion:0.784,
+    precioBase:66776.86, totalSinIVA:88240.50, totalConIVA:106771.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Cuatriplaza sentada a 1.9 ATA con sistema New HE5000 AIO. 4 plazas en un solo equipo a máxima presión terapéutica. LEDs RGB, interfono, climatización HX-020. La mejor relación coste/plaza de toda la gama.',
+    ficha:{
+      dim:'220 × 175 × 185 cm', o2:93, ruido:65,
+      aio:'New HE5000 AIO', potenciaAio:4000, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno New HE5000 AIO','Climatizador HX-020','Pantalla LCD exterior 10"','Pantalla LCD interior 10"','Interfono digital bidireccional','Iluminación LED RGB interior','4× Asientos ergonómicos','Válvula a 1.9 ATA','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_CLUB25', nombre:'HE5000 Club 2.5m', plazas:2, ata:1.9, presurMin:20,
+    potenciaW:2400, kwhSesion:1.680, costeLuzSesion:0.470,
+    precioBase:72727.27, totalSinIVA:94190.91, totalConIVA:113971.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Cámara sentada panorámica de 2.5m con sistema HE5000YTJ-2. 2 plazas en configuración confort. Ventanas panorámicas de gran formato, LEDs RGB, pantallas LCD dobles, climatización HX-020. Nivel VIP para hoteles y resorts.',
+    ficha:{
+      dim:'250 × 165 × 185 cm', o2:93, ruido:62,
+      aio:'HE5000YTJ-2', potenciaAio:2400, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno HE5000YTJ-2','Climatizador HX-020','Pantalla LCD exterior 12"','Pantalla LCD interior 12"','Interfono digital bidireccional','Iluminación LED RGB ambiente','2× Asientos premium confort','Ventanas panorámicas gran formato','Válvula de seguridad','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_CLUB30', nombre:'HE5000 Club 3.0m', plazas:2, ata:1.9, presurMin:20,
+    potenciaW:2400, kwhSesion:1.680, costeLuzSesion:0.470,
+    precioBase:81157.02, totalSinIVA:102620.66, totalConIVA:124171.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'El flagship de la gama sentada. 3.0m de longitud, 2 plazas en máximo confort con sistema HE5000YTJ-2. Ventanas panorámicas extra-grandes, LEDs RGB, climatización HX-020. Para instalaciones exclusivas donde la experiencia del paciente es prioritaria.',
+    ficha:{
+      dim:'300 × 165 × 185 cm', o2:93, ruido:62,
+      aio:'HE5000YTJ-2', potenciaAio:2400, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno HE5000YTJ-2','Climatizador HX-020','Pantalla LCD exterior 12"','Pantalla LCD interior 12"','Interfono digital bidireccional','Iluminación LED RGB ambiente','2× Asientos premium confort XL','Ventanas panorámicas extra-grandes','Válvula de seguridad','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HE5000_DIAMOND', nombre:'HE5000 Diamond', plazas:1, ata:1.9, presurMin:15,
+    potenciaW:2400, kwhSesion:1.680, costeLuzSesion:0.470,
+    precioBase:55785.12, totalSinIVA:77248.76, totalConIVA:93471.00,
+    consultar:false, tipo:'Rígida sentada',
+    desc:'Monoplaza sentada premium con sistema HE5000YTJ-2. Acabados Diamond en símil cuero, ventanas panorámicas, LEDs RGB ambiente, pantallas LCD interior/exterior, interfono, climatización HX-020 integrada. La elección definitiva para wellness y hoteles 5★.',
+    ficha:{
+      dim:'148 × 170 × 174 cm', o2:93, ruido:62,
+      aio:'HE5000YTJ-2', potenciaAio:2400, ac:'HX-020 (0.9 kW)',
+      incluye:['Sistema todo-en-uno HE5000YTJ-2','Climatizador HX-020','Pantalla LCD exterior 10"','Pantalla LCD interior 10"','Interfono digital bidireccional','Iluminación LED RGB ambiente','Asiento Diamond símil cuero','Ventanas panorámicas','Tapicería premium','Válvula de seguridad','Manómetro digital'],
+      opciones:['Pintura RAL personalizada','Inserción de logotipo corporativo','Techo estrellado Starlight','Asiento eléctrico tipo avión','Software 6 programas de sesión']
+    }
+  },
+  {
+    id:'HP1501', nombre:'HP1501', plazas:1, ata:1.9, presurMin:12,
+    potenciaW:2250, kwhSesion:1.575, costeLuzSesion:0.441,
+    precioBase:null, totalSinIVA:null, totalConIVA:null,
+    consultar:true, tipo:'Rígida tumbada',
+    desc:'Monoplaza tumbada configurable a 1.5 o 1.9 ATA con sistema BOYT2202-10L. Diseño horizontal para pacientes que requieren posición de decúbito. Precio según configuración y opciones. Consultar disponibilidad.',
+    ficha:null
+  },
+];
+
+const COMPLEMENTOS = [
+  { id:'pinturaRAL',       nombre:'Pintura RAL personalizada',    precio:2975.21, desc:'Color corporativo a medida' },
+  { id:'logotipo',         nombre:'Inserción de logotipo',        precio:600.00,  desc:'Grabado del logo del cliente' },
+  { id:'starlight',        nombre:'Techo estrellado Starlight',   precio:991.74,  desc:'Iluminación LED relajante' },
+  { id:'asientoElectrico', nombre:'Asiento eléctrico tipo avión', precio:2400.00, desc:'Reclinación motorizada premium' },
+  { id:'pantallaTv',       nombre:'Pantalla TV interior',         precio:600.00,  desc:'Entretenimiento durante la sesión' },
+  { id:'software',         nombre:'Software 6 programas sesión',  precio:2396.69, desc:'Protocolos terapéuticos integrados' },
+];
+
+const LOGISTICA_PRESETS = {
+  maritimo:      { transporte:8000, instalacion:0 },
+  aereo:         { transporte:0,    instalacion:0 },
+  personalizado: { transporte:0,    instalacion:0 },
+};
+
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+let currentFilter = 'all';
+let modeloSeleccionado = null;
+let complementosSeleccionados = new Set(['pinturaRAL','logotipo','starlight','asientoElectrico','pantallaTv','software']);
+
+/* ═══════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════ */
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return new Intl.NumberFormat('es-ES', { minimumFractionDigits:2, maximumFractionDigits:2 }).format(n) + ' €';
+}
+
+function fmtNum(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return new Intl.NumberFormat('es-ES', { minimumFractionDigits:2, maximumFractionDigits:2 }).format(n);
+}
+
+function fmtDate(d) {
+  return new Date(d).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function toast(msg, isError=false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderLeftColor = isError ? '#f44336' : 'var(--primary)';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function typeBadgeClass(tipo) {
+  if (!tipo) return 'badge-sentada';
+  const t = tipo.toLowerCase();
+  if (t.includes('sentada'))   return 'badge-sentada';
+  if (t.includes('multiplaza')) return 'badge-multiplaza';
+  if (t.includes('grupal'))    return 'badge-grupal';
+  if (t.includes('tumbada'))   return 'badge-tumbada';
+  if (t.includes('vertical'))  return 'badge-vertical';
+  return 'badge-sentada';
+}
+
+function personIcons(n) {
+  return '👤'.repeat(Math.min(n, 4));
+}
+
+/* ═══════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════ */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('tabBtn-' + tab).classList.add('active');
+  if (tab === 'guardadas') loadConfiguraciones();
+}
+
+/* ═══════════════════════════════════════════════════
+   FILTER & RENDER MODELS
+═══════════════════════════════════════════════════ */
+function setFilter(val, btn) {
+  currentFilter = val;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderModels();
+}
+
+function renderModels() {
+  const search = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  let list = MODELOS_CAMARA.filter(m => {
+    if (currentFilter === 'all') return true;
+    if (['1','2','3','4'].includes(currentFilter)) return m.plazas === parseInt(currentFilter);
+    // tipo filters
+    const t = m.tipo.toLowerCase();
+    if (currentFilter === 'sentada')    return t.includes('sentada');
+    if (currentFilter === 'tumbada')    return t.includes('tumbada');
+    if (currentFilter === 'vertical')   return t.includes('vertical');
+    if (currentFilter === 'multiplaza') return t.includes('multiplaza');
+    if (currentFilter === 'grupal')     return t.includes('grupal');
+    return true;
+  });
+  if (search) {
+    list = list.filter(m =>
+      m.nombre.toLowerCase().includes(search) ||
+      m.tipo.toLowerCase().includes(search) ||
+      m.desc.toLowerCase().includes(search)
+    );
+  }
+
+  const grid = document.getElementById('modelsGrid');
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <span class="icon">🔍</span>
+      <h3>Sin resultados</h3>
+      <p>No hay modelos que coincidan con los filtros seleccionados.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(m => {
+    const badgeClass = typeBadgeClass(m.tipo);
+    const isSelected = modeloSeleccionado && modeloSeleccionado.id === m.id;
+    const tipoShort = m.tipo.replace('Rígida ', '');
+    return `
+    <div class="model-card${isSelected ? ' selected' : ''}" id="card-${m.id}">
+      <div class="card-header">
+        <div>
+          <span class="card-type-badge ${badgeClass}">${tipoShort}</span>
+          ${m.consultar ? '<span class="card-type-badge badge-consultar" style="margin-left:4px;">A consultar</span>' : ''}
+        </div>
+        <div class="card-name">${m.nombre}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">${m.desc}</div>
+        <div class="card-specs">
+          <div class="spec-item">
+            <span class="spec-label">Plazas</span>
+            <span class="spec-value primary">${personIcons(m.plazas)} ${m.plazas}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Presión máx.</span>
+            <span class="spec-value">${m.ata} ATA</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Presurización</span>
+            <span class="spec-value">${m.presurMin} min</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Potencia</span>
+            <span class="spec-value">${(m.potenciaW/1000).toFixed(1)} kW</span>
+          </div>
+        </div>
+        <div class="card-energy">
+          <div class="energy-item">
+            <span class="energy-label">Consumo/sesión</span>
+            <span class="energy-value">${m.kwhSesion.toFixed(3)} kWh</span>
+          </div>
+          <div class="energy-item">
+            <span class="energy-label">Luz/sesión</span>
+            <span class="energy-value">${fmt(m.costeLuzSesion)}</span>
+          </div>
+        </div>
+        <div class="card-prices">
+          <div class="price-row" style="align-items:center;gap:8px;">
+            <span class="price-label">Precio base (sin IVA)</span>
+            <input type="number" id="precio-${m.id}"
+              value="${m.precioBase ?? ''}"
+              placeholder="Introducir precio"
+              min="0" step="0.01"
+              onclick="event.stopPropagation()"
+              onchange="updatePrecioBase('${m.id}', this.value)"
+              style="width:130px;padding:4px 8px;border:1.5px solid var(--gold);border-radius:6px;font-size:13px;font-weight:700;color:var(--text);background:#fff;text-align:right;margin-left:auto;" />
+          </div>
+          <div class="price-row">
+            <span class="price-label">Precio total (con IVA 21%)</span>
+            <span class="price-value big" id="totaliva-${m.id}">${m.precioBase ? fmt(m.precioBase * 1.21) : '—'}</span>
+          </div>
+        </div>
+        ${m.ficha ? `<button class="btn-ficha-tecnica" onclick="verFicha('${m.id}')">📋 Ficha Técnica</button>` : ''}
+        <button class="btn-configurar" onclick="selectModelo('${m.id}')">
+          ${isSelected ? '✓ Configurando...' : '⚙️ Configurar'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   EDICIÓN DE PRECIO EN TARJETA
+═══════════════════════════════════════════════════ */
+function updatePrecioBase(id, rawVal) {
+  const m = MODELOS_CAMARA.find(x => x.id === id);
+  if (!m) return;
+  const val = parseFloat(rawVal);
+  m.precioBase = isNaN(val) || val <= 0 ? null : val;
+  m.consultar  = !m.precioBase;
+
+  // Recalcula precio con IVA (solo sobre precio base, sin paquetes)
+  m.totalConIVA = m.precioBase ? m.precioBase * 1.21 : null;
+
+  // Actualiza el total con IVA en la tarjeta
+  const totalSpan = document.getElementById(`totaliva-${id}`);
+  if (totalSpan) totalSpan.textContent = m.precioBase ? fmt(m.precioBase * 1.21) : '—';
+
+  // Si este modelo está abierto en el configurador, recalcula
+  if (modeloSeleccionado && modeloSeleccionado.id === id) {
+    document.getElementById('confPrecioBase').value = m.precioBase ?? '';
+    calcularTotales();
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   CONFIGURADOR
+═══════════════════════════════════════════════════ */
+function selectModelo(id) {
+  const m = MODELOS_CAMARA.find(x => x.id === id);
+  if (!m) return;
+  modeloSeleccionado = m;
+
+  // Abre el panel
+  const panel = document.getElementById('configuratorPanel');
+  panel.classList.add('open');
+
+  // Nombre en el header
+  document.getElementById('confTitle').textContent = `⚙️ Configurador — ${m.nombre}`;
+
+  // Rellena resumen de modelo
+  document.getElementById('confModelSummary').innerHTML = `
+    <div class="ms-item">
+      <span class="ms-label">Modelo</span>
+      <span class="ms-value">${m.nombre}</span>
+    </div>
+    <div class="ms-item">
+      <span class="ms-label">Tipo</span>
+      <span class="ms-value" style="font-size:11px;">${m.tipo}</span>
+    </div>
+    <div class="ms-item" style="align-items:flex-start;">
+      <span class="ms-label">Plazas<br><span style="font-size:10px;color:#aaa;font-weight:400;">(máx. ${m.plazas})</span></span>
+      ${m.plazas === 1
+        ? `<span class="ms-value">1 <span style="font-size:10px;color:#aaa;">monoplaza</span></span>`
+        : `<div style="display:flex;flex-direction:column;gap:4px;">
+             <input type="number" id="confPlazas" min="1" max="${m.plazas}" value="${m.plazas}"
+               oninput="calcularTotales()"
+               style="width:64px;padding:4px 8px;border:1.5px solid var(--gold);border-radius:6px;font-size:14px;font-weight:600;color:var(--text);background:#fff;text-align:center;" />
+             <div style="display:flex;gap:4px;flex-wrap:wrap;">
+               ${Array.from({length: m.plazas}, (_,i) => i+1).map(n =>
+                 `<button type="button" onclick="document.getElementById('confPlazas').value=${n};calcularTotales();"
+                   style="padding:2px 7px;font-size:11px;border:1px solid var(--gold);border-radius:4px;background:#fdf6ee;color:var(--gold-d);cursor:pointer;">${n}P</button>`
+               ).join('')}
+             </div>
+           </div>`
+      }
+    </div>
+    <div class="ms-item">
+      <span class="ms-label">Presión</span>
+      <span class="ms-value">${m.ata} ATA</span>
+    </div>
+    <div class="ms-item">
+      <span class="ms-label">Presurización</span>
+      <span class="ms-value">${m.presurMin} min</span>
+    </div>
+    <div class="ms-item">
+      <span class="ms-label">Potencia</span>
+      <span class="ms-value">${(m.potenciaW/1000).toFixed(1)} kW</span>
+    </div>
+    <div class="ms-item">
+      <span class="ms-label">kWh / sesión</span>
+      <span class="ms-value">${m.kwhSesion}</span>
+    </div>
+    <div class="ms-item">
+      <span class="ms-label">Precio base</span>
+      <span class="ms-value" style="font-size:11px;">${m.precioBase ? fmt(m.precioBase) : '<span style="color:#e65100;font-size:10px;">Editar en ficha</span>'}</span>
+    </div>
+  `;
+
+  // Sync precio base desde la tarjeta al campo auxiliar
+  document.getElementById('confPrecioBase').value = m.precioBase ?? '';
+
+  // Prefill nombre configuración
+  document.getElementById('confNombre').value = `${m.nombre} — `;
+
+  renderComplementsList();
+  calcularTotales();
+  renderModels(); // refresh selected card
+
+  // Scroll suave al panel
+  setTimeout(() => {
+    panel.scrollIntoView({ behavior:'smooth', block:'start' });
+  }, 60);
+}
+
+function closeConfigurator() {
+  document.getElementById('configuratorPanel').classList.remove('open');
+  modeloSeleccionado = null;
+  renderModels();
+}
+
+function renderComplementsList() {
+  const cont = document.getElementById('complementsList');
+  cont.innerHTML = COMPLEMENTOS.map(c => {
+    const checked = complementosSeleccionados.has(c.id);
+    return `
+    <div class="complement-item${checked ? ' checked' : ''}" onclick="toggleComplemento('${c.id}')">
+      <input type="checkbox" id="chk-${c.id}" ${checked ? 'checked' : ''} onclick="event.stopPropagation();toggleComplemento('${c.id}')" />
+      <div style="flex:1;">
+        <div class="complement-name">${c.nombre}</div>
+        <span class="complement-desc">${c.desc}</span>
+      </div>
+      <span class="complement-price${checked ? ' active' : ''}" id="cprice-${c.id}">${fmt(c.precio)}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleComplemento(id) {
+  if (complementosSeleccionados.has(id)) {
+    complementosSeleccionados.delete(id);
+  } else {
+    complementosSeleccionados.add(id);
+  }
+  // Update UI for that item
+  const item = document.querySelector(`.complement-item[onclick*="${id}"]`);
+  const chk  = document.getElementById('chk-' + id);
+  const price = document.getElementById('cprice-' + id);
+  if (item && chk && price) {
+    const on = complementosSeleccionados.has(id);
+    chk.checked = on;
+    item.classList.toggle('checked', on);
+    price.classList.toggle('active', on);
+  }
+  calcularTotales();
+}
+
+function selectAllComplements() {
+  COMPLEMENTOS.forEach(c => complementosSeleccionados.add(c.id));
+  renderComplementsList();
+  calcularTotales();
+}
+
+function selectNoComplements() {
+  complementosSeleccionados.clear();
+  renderComplementsList();
+  calcularTotales();
+}
+
+function onLogisticaChange() {
+  const tipo = document.getElementById('logisticaTipo').value;
+  const preset = LOGISTICA_PRESETS[tipo];
+  if (!preset) return;
+  document.getElementById('costeTransporte').value = preset.transporte;
+  document.getElementById('costeInstalacion').value = preset.instalacion;
+  calcularTotales();
+}
+
+function calcularTotales() {
+  const m = modeloSeleccionado;
+  if (!m) return;
+
+  // Complementos
+  const totalComp = COMPLEMENTOS.reduce((sum, c) => {
+    return sum + (complementosSeleccionados.has(c.id) ? c.precio : 0);
+  }, 0);
+
+  // Logística
+  const transporte  = parseFloat(document.getElementById('costeTransporte').value) || 0;
+  const instalacion = parseFloat(document.getElementById('costeInstalacion').value) || 0;
+  const totalLog    = transporte + instalacion;
+
+  // Inversión
+  const equipoInput = parseFloat(document.getElementById('confPrecioBase')?.value);
+  const equipo      = isNaN(equipoInput) ? (m.precioBase || 0) : equipoInput;
+  const sinPrecio   = isNaN(equipoInput) && m.consultar;
+  const totalSinIVA = equipo + totalComp + totalLog;
+  const iva         = totalSinIVA * 0.21;
+  const totalConIVA = totalSinIVA * 1.21;
+
+  // Actualizar UI - complementos
+  document.getElementById('totalComplementos').textContent = fmt(totalComp);
+
+  // Logística total
+  document.getElementById('totalLogistica').textContent = fmt(totalLog);
+
+  // Resumen
+  document.getElementById('resEquipo').textContent       = sinPrecio ? 'Introducir precio' : fmt(equipo);
+  document.getElementById('resComplementos').textContent = fmt(totalComp);
+  document.getElementById('resLogistica').textContent    = fmt(totalLog);
+  document.getElementById('resTotalSinIVA').textContent  = sinPrecio ? '—' : fmt(totalSinIVA);
+  document.getElementById('resIVA').textContent          = sinPrecio ? '—' : fmt(iva);
+  document.getElementById('resTotalConIVA').textContent  = sinPrecio ? '—' : fmt(totalConIVA);
+}
+
+/* ═══════════════════════════════════════════════════
+   GUARDAR CONFIGURACIÓN
+═══════════════════════════════════════════════════ */
+function guardarConfiguracion() {
+  const m = modeloSeleccionado;
+  if (!m) { toast('Selecciona un modelo primero.', true); return; }
+
+  const nombre = document.getElementById('confNombre').value.trim();
+  if (!nombre) { toast('Escribe un nombre para la configuración.', true); return; }
+
+  const transporte  = parseFloat(document.getElementById('costeTransporte').value) || 0;
+  const instalacion = parseFloat(document.getElementById('costeInstalacion').value) || 0;
+  const totalLog    = transporte + instalacion;
+  const compIds     = Array.from(complementosSeleccionados);
+  const totalComp   = COMPLEMENTOS.reduce((sum, c) => sum + (complementosSeleccionados.has(c.id) ? c.precio : 0), 0);
+  const precioBaseInput = parseFloat(document.getElementById('confPrecioBase')?.value);
+  const equipo      = isNaN(precioBaseInput) ? (m.precioBase || 0) : precioBaseInput;
+  const totalSinIVA = equipo + totalComp + totalLog;
+
+  const config = {
+    id:               Date.now(),
+    nombre,
+    fechaCreacion:    fmtDate(Date.now()),
+    modeloId:         m.id,
+    modeloNombre:     m.nombre,
+    plazas:           m.plazas === 1 ? 1 : (parseInt(document.getElementById('confPlazas')?.value) || m.plazas),
+    ata:              m.ata,
+    precioBase:       equipo,
+    complementosIds:  compIds,
+    totalComplementos: totalComp,
+    logisticaTipo:    document.getElementById('logisticaTipo').value,
+    costeTransporte:  transporte,
+    costeInstalacion: instalacion,
+    totalLogistica:   totalLog,
+    totalSinIVA:      equipo > 0 ? totalSinIVA : null,
+    totalConIVA:      equipo > 0 ? totalSinIVA * 1.21 : null,
+    ivaRate:          21,
+    kwhSesion:        m.kwhSesion,
+    costeLuzSesion:   m.costeLuzSesion,
+    notas:            document.getElementById('confNotas').value.trim(),
+    consultar:        m.consultar,
+  };
+
+  const all = getConfigs();
+  all.push(config);
+  saveConfigs(all);
+  updateSavedCount();
+  toast(`✅ Configuración "${nombre}" guardada.`);
+  document.getElementById('confNotas').value = '';
+}
+
+/* ═══════════════════════════════════════════════════
+   LOCALSTORAGE
+═══════════════════════════════════════════════════ */
+const LS_KEY = 'soulbaric_configuraciones';
+
+function getConfigs() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+  catch(e) { return []; }
+}
+
+function saveConfigs(arr) {
+  localStorage.setItem(LS_KEY, JSON.stringify(arr));
+}
+
+function updateSavedCount() {
+  const n = getConfigs().length;
+  document.getElementById('savedCount').textContent  = n;
+  document.getElementById('savedCount2').textContent = n;
+}
+
+/* ═══════════════════════════════════════════════════
+   TAB 2 — CONFIGURACIONES GUARDADAS
+═══════════════════════════════════════════════════ */
+function loadConfiguraciones() {
+  const configs = getConfigs();
+  const grid = document.getElementById('savedGrid');
+
+  if (configs.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <span class="icon">⚙️</span>
+      <h3>Sin configuraciones guardadas</h3>
+      <p>Selecciona un modelo en el Catálogo, ajusta los parámetros y guarda tu primera configuración.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = configs.map(c => {
+    const tieneComplementos = c.complementosIds && c.complementosIds.length > 0;
+    const nombresComp = tieneComplementos
+      ? c.complementosIds.map(id => {
+          const comp = COMPLEMENTOS.find(x => x.id === id);
+          return comp ? comp.nombre : id;
+        }).join(', ')
+      : '—';
+
+    return `
+    <div class="saved-card">
+      <div class="saved-card-header">
+        <div class="saved-card-name">${escHtml(c.nombre)}</div>
+        <div class="saved-card-meta">${c.modeloNombre} · ${c.plazas}P · ${c.ata} ATA · Creada: ${c.fechaCreacion}</div>
+      </div>
+      <div class="saved-card-body">
+        <div class="saved-specs">
+          <div class="saved-spec">
+            <span class="saved-spec-label">Inversión total</span>
+            <span class="saved-spec-value big">${c.consultar || c.totalConIVA === null ? 'A consultar' : fmt(c.totalConIVA)}</span>
+          </div>
+          <div class="saved-spec">
+            <span class="saved-spec-label">Sin IVA</span>
+            <span class="saved-spec-value">${c.consultar || c.totalSinIVA === null ? '—' : fmt(c.totalSinIVA)}</span>
+          </div>
+          <div class="saved-spec">
+            <span class="saved-spec-label">Precio sesión</span>
+            <span class="saved-spec-value">${fmt(c.precioSesion)}</span>
+          </div>
+          <div class="saved-spec">
+            <span class="saved-spec-label">Horas / día</span>
+            <span class="saved-spec-value">${c.horasPerDay}h · ${c.diasSemana}d/sem</span>
+          </div>
+          <div class="saved-spec" style="grid-column:1/-1;">
+            <span class="saved-spec-label">Logística</span>
+            <span class="saved-spec-value">${c.logisticaTipo} · ${fmt(c.totalLogistica)}</span>
+          </div>
+          <div class="saved-spec" style="grid-column:1/-1;">
+            <span class="saved-spec-label">Complementos (${c.complementosIds ? c.complementosIds.length : 0})</span>
+            <span class="saved-spec-value" style="font-size:10px;font-weight:600;">${escHtml(nombresComp)}</span>
+          </div>
+        </div>
+        ${c.notas ? `<div class="saved-notes">${escHtml(c.notas)}</div>` : ''}
+        <div class="saved-card-actions" style="margin-top:12px;">
+          <button class="btn-action" onclick="editarConfiguracion(${c.id})">🔧 Editar</button>
+          <button class="btn-action primary full" onclick="usarEnProyecto(${c.id})">📋 Usar en proyecto →</button>
+          <button class="btn-action" onclick="generarPedido(${c.id})">📄 Generar Pedido</button>
+          <button class="btn-action danger" onclick="eliminarConfiguracion(${c.id})">🗑️ Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── SoulBaric Brand Assets ── */
+const SOULBARIC_LOGO_SVG = (w,h) => `<svg width="${w}" height="${h}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+  <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+  <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+  <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+  <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+  <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+  <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+  <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+  <circle cx="50" cy="18" r="4.5" fill="#C89968"/>
+  <circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+  <circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+  <circle cx="50" cy="82" r="4.5" fill="#C89968"/>
+  <circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+  <circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+  <circle cx="18" cy="50" r="4.5" fill="#C89968"/>
+  <circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+  <circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+  <circle cx="82" cy="50" r="4.5" fill="#C89968"/>
+  <circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+  <circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+</svg>`;
+
+function eliminarConfiguracion(id) {
+  const all = getConfigs();
+  const conf = all.find(c => c.id === id);
+  if (!conf) return;
+  if (!confirm(`¿Eliminar la configuración "${conf.nombre}"?\n\nEsta acción no se puede deshacer.`)) return;
+  const filtered = all.filter(c => c.id !== id);
+  saveConfigs(filtered);
+  updateSavedCount();
+  loadConfiguraciones();
+  toast(`🗑️ Configuración eliminada.`);
+}
+
+function usarEnProyecto(id) {
+  sessionStorage.setItem('soulbaric_config_para_proyecto', id);
+  window.location.href = 'index.html';
+}
+
+function editarConfiguracion(id) {
+  const all = getConfigs();
+  const c = all.find(x => x.id === id);
+  if (!c) return;
+
+  // Switch to tab 1
+  switchTab('catalogo');
+
+  // Select the model
+  const m = MODELOS_CAMARA.find(x => x.id === c.modeloId);
+  if (!m) { toast('Modelo no encontrado.', true); return; }
+
+  // Restore complementos
+  complementosSeleccionados = new Set(c.complementosIds || []);
+
+  // Open configurator
+  selectModelo(m.id);
+
+  // Fill saved values after a tick
+  setTimeout(() => {
+    document.getElementById('logisticaTipo').value = c.logisticaTipo || 'maritimo';
+    document.getElementById('costeTransporte').value = c.costeTransporte || 0;
+    document.getElementById('costeInstalacion').value = c.costeInstalacion || 0;
+    document.getElementById('confNombre').value = c.nombre;
+    document.getElementById('confNotas').value  = c.notas || '';
+    // Restore plazas editables (solo para modelos multiplaza)
+    const plazasInput = document.getElementById('confPlazas');
+    if (plazasInput && c.plazas) plazasInput.value = c.plazas;
+    calcularTotales();
+    toast(`📂 Configuración "${c.nombre}" cargada para editar.`);
+  }, 80);
+}
+
+/* ═══════════════════════════════════════════════════
+   GENERADOR DE PEDIDO
+═══════════════════════════════════════════════════ */
+function generarPedido(id) {
+  const all    = getConfigs();
+  const c      = all.find(x => x.id === id);
+  if (!c) return;
+
+  const m = MODELOS_CAMARA.find(x => x.id === c.modeloId);
+  const compNames = (c.complementosIds || []).map(cid => {
+    const comp = COMPLEMENTOS.find(x => x.id === cid);
+    return comp ? `<tr><td>${escHtml(comp.nombre)}</td><td style="text-align:right;">${fmt(comp.precio)}</td></tr>` : '';
+  }).join('');
+
+  const ref = `SB-${String(c.id).slice(-6).toUpperCase()}`;
+  const fechaHoy = fmtDate(Date.now());
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Pedido ${ref}</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Segoe UI',sans-serif; font-size:11px; color:#333; padding:30px; background:#fff; }
+    .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; padding-bottom:16px; border-bottom:3px solid #C89968; }
+    .brand { font-size:22px; font-weight:700; color:#C89968; }
+    .brand-sub { font-size:11px; color:#888; margin-top:3px; }
+    .ref-box { text-align:right; }
+    .ref-box .ref { font-size:14px; font-weight:700; color:#333; }
+    .ref-box .fecha { font-size:11px; color:#888; margin-top:3px; }
+    h2 { font-size:14px; margin:18px 0 8px; color:#1a1a1a; border-left:4px solid #C89968; padding-left:10px; }
+    table { width:100%; border-collapse:collapse; margin-bottom:12px; font-size:11px; }
+    th { background:#1a1a1a; color:#C89968; padding:7px 10px; text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; }
+    td { padding:7px 10px; border-bottom:1px solid #eee; }
+    tr:last-child td { border-bottom:none; }
+    .total-row td { background:#faf8f6; font-weight:700; color:#C89968; font-size:13px; border-top:2px solid #C89968; }
+    .footer { margin-top:24px; padding-top:16px; border-top:2px solid #eee; font-size:10px; color:#888; }
+    .conditions { background:#faf8f6; border:1px solid #e8e4df; border-radius:6px; padding:12px 16px; margin-top:16px; }
+    .conditions h3 { font-size:11px; color:#1a1a1a; font-weight:700; margin-bottom:8px; }
+    .conditions ul { list-style:disc; padding-left:16px; }
+    .conditions li { margin-bottom:4px; }
+    @media print { body { padding:15px; } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="brand">SoulBaric</div>
+    <div class="brand-sub">Cámaras Hiperbáricas · CellPods by SoulBaric</div>
+    <div class="brand-sub" style="margin-top:6px;">Alma Dimo Investments, S.L.</div>
+  </div>
+  <div class="ref-box">
+    <div class="ref">Ref. pedido: ${ref}</div>
+    <div class="fecha">Fecha: ${fechaHoy}</div>
+    <div class="fecha" style="margin-top:4px;">Config. guardada: ${c.fechaCreacion}</div>
+  </div>
+</div>
+
+<h2>Equipo principal</h2>
+<table>
+  <tr><th>Descripción</th><th>Detalle</th></tr>
+  <tr><td><strong>${escHtml(c.modeloNombre)}</strong></td><td>${c.plazas} Plazas · ${c.ata} ATA · ${m ? m.tipo : ''}</td></tr>
+  ${m ? `<tr><td>Especificaciones</td><td>${escHtml(m.desc)}</td></tr>` : ''}
+  <tr><td>Precio equipo</td><td style="text-align:right;font-weight:700;">${c.consultar || !c.precioBase ? 'A consultar' : fmt(c.precioBase)}</td></tr>
+</table>
+
+<h2>Complementos incluidos (${c.complementosIds ? c.complementosIds.length : 0})</h2>
+<table>
+  <tr><th>Complemento</th><th style="text-align:right;">Precio</th></tr>
+  ${compNames || '<tr><td colspan="2" style="color:#aaa;font-style:italic;">Ningún complemento seleccionado</td></tr>'}
+  <tr><td style="font-weight:700;">Total complementos</td><td style="text-align:right;font-weight:700;">${fmt(c.totalComplementos)}</td></tr>
+</table>
+
+<h2>Logística e instalación</h2>
+<table>
+  <tr><th>Concepto</th><th style="text-align:right;">Importe</th></tr>
+  <tr><td>Transporte (${escHtml(c.logisticaTipo)})</td><td style="text-align:right;">${fmt(c.costeTransporte)}</td></tr>
+  <tr><td>Instalación y puesta en marcha</td><td style="text-align:right;">${fmt(c.costeInstalacion)}</td></tr>
+  <tr><td style="font-weight:700;">Total logística</td><td style="text-align:right;font-weight:700;">${fmt(c.totalLogistica)}</td></tr>
+</table>
+
+<h2>Desglose de precios</h2>
+<table>
+  <tr><th>Concepto</th><th style="text-align:right;">Importe</th></tr>
+  <tr><td>Equipo</td><td style="text-align:right;">${c.consultar || !c.precioBase ? 'A consultar' : fmt(c.precioBase)}</td></tr>
+  <tr><td>Complementos</td><td style="text-align:right;">${fmt(c.totalComplementos)}</td></tr>
+  <tr><td>Logística</td><td style="text-align:right;">${fmt(c.totalLogistica)}</td></tr>
+  <tr><td style="font-weight:700;">Subtotal sin IVA</td><td style="text-align:right;font-weight:700;">${c.consultar || !c.totalSinIVA ? 'A consultar' : fmt(c.totalSinIVA)}</td></tr>
+  <tr><td>IVA 21%</td><td style="text-align:right;">${c.consultar || !c.totalSinIVA ? '—' : fmt(c.totalSinIVA * 0.21)}</td></tr>
+  <tr class="total-row"><td>TOTAL con IVA</td><td style="text-align:right;">${c.consultar || !c.totalConIVA ? 'A consultar' : fmt(c.totalConIVA)}</td></tr>
+</table>
+
+${c.notas ? `<h2>Notas / Observaciones</h2><div style="background:#faf8f6;border:1px solid #e8e4df;border-radius:6px;padding:12px 16px;font-size:11px;color:#555;">${escHtml(c.notas)}</div>` : ''}
+
+<div class="conditions">
+  <h3>Condiciones de pago y entrega</h3>
+  <ul>
+    <li>60% de anticipo a la confirmación del pedido.</li>
+    <li>Saldo del 40% antes de la salida del equipo de fábrica.</li>
+    <li>Plazo de entrega estimado según modalidad de envío: Marítimo ~3 meses · Aéreo ~1 mes.</li>
+    <li>Instalación incluida en el precio. Coordinar fechas con el distribuidor.</li>
+    <li>Garantía del fabricante según condiciones estándar SoulBaric.</li>
+    <li>Precios en euros (€). IVA aplicable según normativa vigente.</li>
+  </ul>
+</div>
+
+<div class="footer">
+  <strong>SoulBaric · CellPods</strong> — Alma Dimo Investments, S.L.<br/>
+  Documento generado el ${fechaHoy} · Ref. ${ref}<br/>
+  Este documento es orientativo. Confirmación sujeta a disponibilidad y validación técnica.
+</div>
+
+<script>window.onload = function() { window.print(); }<\/script>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=900,height=700');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+  } else {
+    toast('El navegador bloqueó la ventana emergente. Permite los pop-ups para esta página.', true);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   FICHA TÉCNICA — EDITOR COMPLETO
+═══════════════════════════════════════════════════ */
+let currentFichaId  = null;
+
+function verFicha(id) {
+  const m = MODELOS_CAMARA.find(x => x.id === id);
+  if (!m || !m.ficha) return;
+  currentFichaId = id;
+
+  // Asegurar campos extendidos inicializados
+  if (!m.ficha.imagen)             m.ficha.imagen             = null;
+  if (!m.ficha.complementosFicha)  m.ficha.complementosFicha  = new Set();
+  if (!m.ficha.complementosCustom) m.ficha.complementosCustom = [];
+  if (!m.ficha.logistica) m.ficha.logistica = {
+    modalidad:'personalizado', transporte:0, instalacion:0, plazo:'',
+    superficieMin:'', alturaMin:'', acceso:'', notas:''
+  };
+
+  document.getElementById('fichaModalTitle').textContent = `${m.nombre}`;
+  document.getElementById('fichaModal').style.display = 'flex';
+  switchFichaTab('specs');
+}
+
+function cerrarFicha() {
+  document.getElementById('fichaModal').style.display = 'none';
+  currentFichaId = null;
+}
+
+function switchFichaTab(tab) {
+  ['specs','imagen','comps','pdf'].forEach(t => {
+    document.getElementById(`fichaTabBtn-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`fichaPanel-${t}`).style.display = t === tab ? 'block' : 'none';
+  });
+  if (tab === 'specs')  renderFichaSpecs();
+  if (tab === 'imagen') renderFichaImagen();
+  if (tab === 'comps')  renderFichaComps();
+  if (tab === 'pdf')    renderFichaPDF();
+}
+
+/* ── Render: Ficha / Specs ── */
+function renderLogisticaSection(log) {
+  const modalidades = {
+    maritimo:      { emoji:'🚢', label:'Marítimo',      sub:'~3 meses · 8.000 € transp.' },
+    aereo:         { emoji:'✈️', label:'Aéreo',          sub:'~1 mes · transp. incluido'  },
+    personalizado: { emoji:'⚙️', label:'Personalizado',  sub:'Configurar manualmente'     },
+  };
+  const presetBtns = Object.entries(modalidades).map(([k, v]) =>
+    `<button class="log-preset-btn${log.modalidad===k?' active':''}" onclick="setLogisticaPreset('${k}')">
+      <span style="font-size:18px;">${v.emoji}</span>
+      <span style="font-weight:700;">${v.label}</span>
+      <span style="font-size:10px;opacity:0.75;">${v.sub}</span>
+    </button>`
+  ).join('');
+  return `
+    <div style="padding-top:18px;border-top:1px solid var(--border);">
+      <p class="ficha-section-title">🚚 Logística e Instalación</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">${presetBtns}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="ficha-field"><label>Coste transporte (€)</label>
+          <input type="number" id="log-transporte" value="${log.transporte}" min="0" step="100"
+            oninput="saveFichaLogistica('transporte',+this.value)" placeholder="0"></div>
+        <div class="ficha-field"><label>Coste instalación (€)</label>
+          <input type="number" id="log-instalacion" value="${log.instalacion}" min="0" step="100"
+            oninput="saveFichaLogistica('instalacion',+this.value)" placeholder="0"></div>
+        <div class="ficha-field"><label>Plazo de entrega</label>
+          <input type="text" id="log-plazo" value="${escHtml(log.plazo)}" placeholder="p. ej. ~3 meses"
+            oninput="saveFichaLogistica('plazo',this.value)"></div>
+        <div class="ficha-field"><label>Superficie mínima requerida</label>
+          <input type="text" id="log-superficie" value="${escHtml(log.superficieMin)}" placeholder="p. ej. 3 × 3 m"
+            oninput="saveFichaLogistica('superficieMin',this.value)"></div>
+        <div class="ficha-field"><label>Altura libre mínima</label>
+          <input type="text" id="log-altura" value="${escHtml(log.alturaMin)}" placeholder="p. ej. 2,5 m"
+            oninput="saveFichaLogistica('alturaMin',this.value)"></div>
+        <div class="ficha-field"><label>Acceso requerido</label>
+          <input type="text" id="log-acceso" value="${escHtml(log.acceso)}" placeholder="p. ej. Puerta ≥ 90 cm"
+            oninput="saveFichaLogistica('acceso',this.value)"></div>
+      </div>
+      <div class="ficha-field" style="margin-top:4px;"><label>Notas de logística e instalación</label>
+        <textarea id="log-notas" placeholder="Condiciones especiales, requisitos eléctricos, instrucciones de descarga..."
+          oninput="saveFichaLogistica('notas',this.value)">${escHtml(log.notas)}</textarea>
+      </div>
+    </div>`;
+}
+
+function renderFichaSpecs() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m) return;
+  const f = m.ficha;
+  const log = f.logistica || {};
+  const incluyeRows = f.incluye.map((item, i) => `
+    <div class="ficha-list-item">
+      <span>${escHtml(item)}</span>
+      <button class="ficha-del-btn" onclick="removeFichaIncluye(${i})" title="Eliminar">✕</button>
+    </div>`).join('');
+  const opcionesRows = f.opciones.map((item, i) => `
+    <div class="ficha-list-item">
+      <span>${escHtml(item)}</span>
+      <button class="ficha-del-btn" onclick="removeFichaOpcion(${i})" title="Eliminar">✕</button>
+    </div>`).join('');
+
+  document.getElementById('fichaPanel-specs').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:16px;">
+      <div>
+        <p class="ficha-section-title">🏗️ Especificaciones Físicas</p>
+        <div class="ficha-field"><label>Dimensiones (L×A×H)</label>
+          <input type="text" value="${escHtml(f.dim)}" placeholder="p. ej. 148 × 170 × 174 cm" oninput="saveFichaField('dim',this.value)"></div>
+        <div class="ficha-field"><label>Plazas</label>
+          <input type="number" value="${m.plazas}" min="1" max="10" oninput="saveFichaModelField('plazas',+this.value)"></div>
+        <div class="ficha-field"><label>Presión máxima (ATA)</label>
+          <input type="number" value="${m.ata}" step="0.1" min="1" max="3" oninput="saveFichaModelField('ata',+this.value)"></div>
+        <div class="ficha-field"><label>Presurización (min)</label>
+          <input type="number" value="${m.presurMin}" min="1" oninput="saveFichaModelField('presurMin',+this.value)"></div>
+        <div class="ficha-field"><label>Nivel de ruido (dB)</label>
+          <input type="number" value="${f.ruido}" min="0" oninput="saveFichaField('ruido',+this.value)"></div>
+        <div class="ficha-field"><label>Pureza O₂ (%)</label>
+          <input type="number" value="${f.o2}" min="80" max="99" oninput="saveFichaField('o2',+this.value)"></div>
+      </div>
+      <div>
+        <p class="ficha-section-title">⚡ Sistema AIO &amp; Energía</p>
+        <div class="ficha-field"><label>Sistema AIO</label>
+          <input type="text" value="${escHtml(f.aio)}" oninput="saveFichaField('aio',this.value)"></div>
+        <div class="ficha-field"><label>Potencia AIO (W)</label>
+          <input type="number" value="${f.potenciaAio}" min="0" oninput="saveFichaField('potenciaAio',+this.value);saveFichaModelField('potenciaW',+this.value)"></div>
+        <div class="ficha-field"><label>Climatización</label>
+          <input type="text" value="${escHtml(f.ac)}" oninput="saveFichaField('ac',this.value)"></div>
+        <div class="ficha-field"><label>Precio base cámara (€ sin IVA)</label>
+          <input type="number" value="${m.precioBase ?? ''}" min="0" step="0.01" placeholder="Introducir precio" oninput="updatePrecioBase('${m.id}',this.value);renderFichaSpecsPrices()"></div>
+        <div class="ficha-field"><label>Precio base con IVA 21% (auto)</label>
+          <input type="text" id="fps-coniva" value="${m.precioBase ? fmtNum(m.precioBase * 1.21) : '—'}" readonly style="background:var(--border);color:var(--primary);font-weight:800;cursor:default;"></div>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <p class="ficha-section-title">📝 Descripción</p>
+      <div class="ficha-field">
+        <textarea oninput="saveFichaModelField('desc',this.value)">${escHtml(m.desc)}</textarea>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;">
+      <div>
+        <p class="ficha-section-title">✅ Equipamiento de Serie</p>
+        <div id="fedit-incluye">${incluyeRows}</div>
+        <div class="ficha-add-row">
+          <input type="text" id="newIncluye" placeholder="Nuevo elemento..." onkeydown="if(event.key==='Enter')addFichaIncluye()">
+          <button class="btn-ficha-add" onclick="addFichaIncluye()">+</button>
+        </div>
+      </div>
+      <div>
+        <p class="ficha-section-title">➕ Opciones Disponibles</p>
+        <div id="fedit-opciones">${opcionesRows}</div>
+        <div class="ficha-add-row">
+          <input type="text" id="newOpcion" placeholder="Nueva opción..." onkeydown="if(event.key==='Enter')addFichaOpcion()">
+          <button class="btn-ficha-add" onclick="addFichaOpcion()">+</button>
+        </div>
+      </div>
+    </div>
+    ${renderLogisticaSection(log)}
+  `;
+}
+
+function renderFichaSpecsPrices() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m) return;
+  const ci = document.getElementById('fps-coniva');
+  if (ci) ci.value = m.precioBase ? fmtNum(m.precioBase * 1.21) : '—';
+}
+
+/* ── Render: Imagen ── */
+function renderFichaImagen() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m) return;
+  const f = m.ficha;
+  document.getElementById('fichaPanel-imagen').innerHTML = `
+    <div style="max-width:520px;margin:0 auto;">
+      <p class="ficha-section-title">🖼️ Imagen del Modelo</p>
+      <p style="font-size:11px;color:var(--text-m);margin-bottom:16px;">La imagen aparece en la ficha y en el PDF generado. PNG, JPG o WebP · Máx. 5 MB.</p>
+      ${f.imagen ? `
+        <div style="text-align:center;margin-bottom:16px;">
+          <img src="${f.imagen}" class="ficha-img-preview" alt="${escHtml(m.nombre)}">
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;">
+          <label for="fichaImgInput" class="btn-ficha-add" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">📁 Cambiar imagen</label>
+          <button onclick="clearFichaImagen()" style="padding:6px 14px;background:#e53935;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">🗑️ Eliminar</button>
+        </div>` : `
+        <label for="fichaImgInput" class="ficha-img-dropzone">
+          <div style="font-size:38px;margin-bottom:10px;">🖼️</div>
+          <div style="font-weight:700;margin-bottom:4px;">Haz clic para seleccionar imagen</div>
+          <div style="font-size:11px;">PNG, JPG o WebP · Máx. 5 MB</div>
+        </label>`}
+      <input type="file" id="fichaImgInput" accept="image/*" style="display:none;" onchange="handleFichaImagen(this)">
+    </div>`;
+}
+
+/* ── Render: Complementos ── */
+function renderFichaComps() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m) return;
+  const f = m.ficha;
+  const compsHtml = COMPLEMENTOS.map(c => {
+    const checked = f.complementosFicha.has(c.id);
+    return `<div class="comp-check-item${checked ? ' checked' : ''}" onclick="toggleFichaComp('${c.id}',this)">
+      <input type="checkbox" ${checked ? 'checked' : ''} onclick="event.stopPropagation();toggleFichaComp('${c.id}',this.closest('.comp-check-item'))">
+      <div class="comp-info">
+        <div class="comp-name">${escHtml(c.nombre)}</div>
+        <div class="comp-price">${fmt(c.precio)}</div>
+        <div class="comp-desc">${escHtml(c.desc)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const customHtml = f.complementosCustom.length ? f.complementosCustom.map((c, i) => `
+    <div class="ficha-list-item">
+      <span style="flex:1;">${escHtml(c.nombre)}</span>
+      <span style="color:var(--primary);font-size:12px;font-weight:700;margin-right:6px;">${fmt(c.precio)}</span>
+      <button class="ficha-del-btn" onclick="removeFichaCompCustom(${i})">✕</button>
+    </div>`).join('') : '<p style="font-size:11px;color:var(--text-m);font-style:italic;margin-top:4px;">Sin complementos personalizados.</p>';
+
+  document.getElementById('fichaPanel-comps').innerHTML = `
+    <p class="ficha-section-title">📦 Complementos del Catálogo</p>
+    <p style="font-size:11px;color:var(--text-m);margin-bottom:12px;">Selecciona los que aparecerán en la ficha y en el PDF.</p>
+    <div class="comp-check-grid" style="margin-bottom:22px;">${compsHtml}</div>
+    <p class="ficha-section-title">✏️ Complementos Personalizados</p>
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:flex-end;flex-wrap:wrap;">
+      <div class="ficha-field" style="flex:2;min-width:160px;margin:0;">
+        <label>Nombre</label>
+        <input type="text" id="newCompNombre" placeholder="Nombre del complemento" onkeydown="if(event.key==='Enter')addFichaCompCustom()">
+      </div>
+      <div class="ficha-field" style="width:110px;margin:0;">
+        <label>Precio (€)</label>
+        <input type="number" id="newCompPrecio" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <button class="btn-ficha-add" onclick="addFichaCompCustom()">+ Añadir</button>
+    </div>
+    <div id="fichaCustomComps">${customHtml}</div>`;
+}
+
+/* ── Render: PDF preview ── */
+function renderFichaPDF() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m) return;
+  const f = m.ficha;
+  const compsSelected = COMPLEMENTOS.filter(c => f.complementosFicha.has(c.id));
+  const compsTotal = [...compsSelected, ...f.complementosCustom].reduce((s,c)=>s+c.precio,0);
+
+  const log = f.logistica || {};
+  const logTotal = (log.transporte||0) + (log.instalacion||0);
+  const buildPDFBody = (forPrint) => {
+  // Recomputar siempre en fresco para evitar datos obsoletos
+  const _m  = MODELOS_CAMARA.find(x => x.id === currentFichaId) || m;
+  const _f  = _m.ficha || f;
+  const _cSel   = COMPLEMENTOS.filter(c => _f.complementosFicha && _f.complementosFicha.has(c.id));
+  const _cTotal = [..._cSel, ...(_f.complementosCustom||[])].reduce((s,c)=>s+(+c.precio||0), 0);
+  const _log    = _f.logistica || {};
+  const _lTotal = (+_log.transporte||0) + (+_log.instalacion||0);
+  const _subSinIVA = (_m.precioBase||0) + _cTotal + _lTotal;
+  const _iva       = _subSinIVA * 0.21;
+  const _total     = _subSinIVA * 1.21;
+  /* ── PDF Corporate Header ── */
+  const _logoSvg = SOULBARIC_LOGO_SVG(forPrint?52:44, forPrint?52:44);
+  return `
+    <!-- Corporate Header Band -->
+    <div style="background:linear-gradient(135deg,#1a1410 0%,#2d2218 100%);border-radius:6px 6px 0 0;padding:${forPrint?'18px 22px':'14px 18px'};margin:-1px -1px 0 -1px;display:flex;align-items:center;justify-content:space-between;gap:14px;">
+      <div style="display:flex;align-items:center;gap:${forPrint?'14':'11'}px;">
+        ${_logoSvg}
+        <div>
+          <div style="font-family:Georgia,serif;font-size:${forPrint?'20':'16'}pt;font-weight:900;color:#C89968;letter-spacing:1px;line-height:1;">SoulBaric</div>
+          <div style="font-size:${forPrint?'8':'7'}pt;color:#a07848;letter-spacing:2px;text-transform:uppercase;margin-top:2px;">CellPods · Cámaras Hiperbáricas</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:${forPrint?'8':'7'}pt;font-weight:800;color:#C89968;letter-spacing:2px;text-transform:uppercase;">FICHA TÉCNICA</div>
+        <div style="font-size:${forPrint?'14':'11'}pt;font-weight:900;color:#fff;margin-top:1px;">2026-T1</div>
+        <div style="font-size:${forPrint?'7':'6.5'}pt;color:#888;margin-top:3px;">Ref. ${escHtml(_m.id)} · ${new Date().toLocaleDateString('es-ES')}</div>
+      </div>
+    </div>
+
+    <!-- Model Title Bar -->
+    <div style="background:rgba(200,153,104,0.06);border-left:4px solid #c89968;padding:${forPrint?'12px 20px':'9px 16px'};margin-bottom:16px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;">
+      <div>
+        <div style="font-size:${forPrint?'22':'18'}pt;font-weight:900;color:#1a1410;line-height:1.1;">${escHtml(_m.nombre)}</div>
+        <div style="font-size:${forPrint?'10':'9'}pt;color:#888;margin-top:3px;font-style:italic;">${escHtml(_m.tipo)} &nbsp;·&nbsp; ${_m.plazas} ${_m.plazas===1?'plaza':'plazas'} &nbsp;·&nbsp; ${_m.ata} ATA</div>
+      </div>
+      <div style="flex-shrink:0;text-align:right;">
+        <span style="display:inline-block;background:#c89968;color:#fff;font-size:${forPrint?'8':'7'}pt;font-weight:800;letter-spacing:1px;padding:3px 10px;border-radius:20px;text-transform:uppercase;">Rígida · Sentada</span>
+      </div>
+    </div>
+
+    ${_f.imagen?`<div style="text-align:center;margin-bottom:16px;"><img src="${_f.imagen}" style="max-height:${forPrint?'200':'180'}px;max-width:100%;object-fit:contain;border-radius:8px;border:1px solid #eee;" alt="${escHtml(_m.nombre)}"></div>`:''}
+    <p style="margin-bottom:16px;color:#444;font-size:${forPrint?'11':'10'}pt;line-height:1.6;padding:0 2px;">${escHtml(_m.desc)}</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:16px;">
+      <div>
+        <div style="font-weight:800;font-size:8pt;text-transform:uppercase;letter-spacing:0.8px;color:#c89968;margin-bottom:7px;border-bottom:2px solid #c89968;padding-bottom:4px;">Especificaciones Técnicas</div>
+        <table style="width:100%;border-collapse:collapse;font-size:10pt;">
+          <tr><td style="color:#666;padding:4px 0;">Dimensiones</td><td style="font-weight:600;text-align:right;">${escHtml(_f.dim)}</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Capacidad</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">${_m.plazas} ${_m.plazas===1?'persona':'personas'}</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Presión máx.</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">${_m.ata} ATA</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Presurización</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">${_m.presurMin} min</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Ruido</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">≤${_f.ruido} dB</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Pureza O₂</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">≥${_f.o2}%</td></tr>
+        </table>
+      </div>
+      <div>
+        <div style="font-weight:800;font-size:8pt;text-transform:uppercase;letter-spacing:0.8px;color:#c89968;margin-bottom:7px;border-bottom:2px solid #c89968;padding-bottom:4px;">Sistema AIO &amp; Energía</div>
+        <table style="width:100%;border-collapse:collapse;font-size:10pt;">
+          <tr><td style="color:#666;padding:4px 0;">Sistema AIO</td><td style="font-weight:600;text-align:right;">${escHtml(_f.aio)}</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Potencia</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">${(_f.potenciaAio/1000).toFixed(1)} kW</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Climatización</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">${escHtml(_f.ac)}</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Consumo/sesión</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">${_m.kwhSesion.toFixed(3)} kWh</td></tr>
+          <tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">Coste luz/sesión</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;">${fmt(_m.costeLuzSesion)}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    ${_f.incluye&&_f.incluye.length?`
+    <div style="margin-bottom:16px;">
+      <div style="font-weight:800;font-size:8pt;text-transform:uppercase;letter-spacing:0.8px;color:#c89968;margin-bottom:7px;border-bottom:2px solid #c89968;padding-bottom:4px;">Equipamiento de Serie</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
+        ${_f.incluye.map(i=>`<div style="font-size:10pt;padding:3px 0 3px 16px;position:relative;color:#333;"><span style="position:absolute;left:0;color:#c89968;font-weight:800;">✓</span>${escHtml(i)}</div>`).join('')}
+      </div>
+    </div>`:''}
+
+    ${_f.opciones&&_f.opciones.length?`
+    <div style="margin-bottom:16px;">
+      <div style="font-weight:800;font-size:8pt;text-transform:uppercase;letter-spacing:0.8px;color:#c89968;margin-bottom:7px;border-bottom:2px solid #c89968;padding-bottom:4px;">Opciones Disponibles</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
+        ${_f.opciones.map(i=>`<div style="font-size:10pt;padding:3px 0 3px 16px;position:relative;color:#333;"><span style="position:absolute;left:0;color:#c89968;font-weight:800;">+</span>${escHtml(i)}</div>`).join('')}
+      </div>
+    </div>`:''}
+
+    ${(_cSel.length||(_f.complementosCustom&&_f.complementosCustom.length))?`
+    <div style="margin-bottom:16px;">
+      <div style="font-weight:800;font-size:8pt;text-transform:uppercase;letter-spacing:0.8px;color:#c89968;margin-bottom:7px;border-bottom:2px solid #c89968;padding-bottom:4px;">Complementos Seleccionados</div>
+      <table style="width:100%;border-collapse:collapse;font-size:10pt;">
+        ${_cSel.map(c=>`<tr><td style="padding:4px 0;border-top:1px solid #f0ede8;color:#444;">${escHtml(c.nombre)}</td><td style="text-align:right;font-weight:700;color:#c89968;border-top:1px solid #f0ede8;">${fmt(c.precio)}</td></tr>`).join('')}
+        ${(_f.complementosCustom||[]).map(c=>`<tr><td style="padding:4px 0;border-top:1px solid #f0ede8;color:#444;">${escHtml(c.nombre)}</td><td style="text-align:right;font-weight:700;color:#c89968;border-top:1px solid #f0ede8;">${fmt(c.precio)}</td></tr>`).join('')}
+        ${_cTotal?`<tr style="border-top:2px solid #c89968;"><td style="font-weight:700;padding:5px 0;">Total complementos</td><td style="text-align:right;font-weight:800;color:#c89968;padding:5px 0;">${fmt(_cTotal)}</td></tr>`:''}
+      </table>
+    </div>`:''}
+
+    ${(_log.transporte||_log.instalacion||_log.superficieMin||_log.alturaMin||_log.acceso||_log.plazo||_log.notas)?`
+    <div style="margin-bottom:16px;">
+      <div style="font-weight:800;font-size:8pt;text-transform:uppercase;letter-spacing:0.8px;color:#c89968;margin-bottom:7px;border-bottom:2px solid #c89968;padding-bottom:4px;">Logística e Instalación</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+        ${_log.plazo?`<div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;color:#666;">Plazo de entrega</div><div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;font-weight:600;text-align:right;">${escHtml(_log.plazo)}</div>`:''}
+        ${_log.transporte?`<div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;color:#666;">Transporte</div><div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;font-weight:600;text-align:right;">${fmt(_log.transporte)}</div>`:''}
+        ${_log.instalacion?`<div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;color:#666;">Instalación</div><div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;font-weight:600;text-align:right;">${fmt(_log.instalacion)}</div>`:''}
+        ${_log.superficieMin?`<div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;color:#666;">Superficie mínima</div><div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;font-weight:600;text-align:right;">${escHtml(_log.superficieMin)}</div>`:''}
+        ${_log.alturaMin?`<div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;color:#666;">Altura libre mínima</div><div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;font-weight:600;text-align:right;">${escHtml(_log.alturaMin)}</div>`:''}
+        ${_log.acceso?`<div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;color:#666;">Acceso requerido</div><div style="font-size:10pt;padding:4px 0;border-top:1px solid #f0ede8;font-weight:600;text-align:right;">${escHtml(_log.acceso)}</div>`:''}
+      </div>
+      ${_log.notas?`<div style="margin-top:8px;padding:9px 12px;background:#fafaf8;border-radius:6px;border-left:3px solid #c89968;font-size:9pt;color:#555;font-style:italic;">${escHtml(_log.notas)}</div>`:''}
+    </div>`:''}
+
+    <!-- Pricing Section -->
+    <div style="background:rgba(200,153,104,0.04);border:1.5px solid rgba(200,153,104,0.3);border-radius:8px;padding:${forPrint?'16px 18px':'12px 15px'};margin-top:4px;">
+      <div style="font-weight:800;font-size:8pt;text-transform:uppercase;letter-spacing:0.8px;color:#c89968;margin-bottom:10px;">Presupuesto · Precios 2026-T1</div>
+      <table style="width:100%;border-collapse:collapse;font-size:10pt;">
+        <tr><td style="color:#666;padding:4px 0;">Precio base cámara (sin IVA)</td><td style="font-weight:600;text-align:right;">${_m.precioBase?fmt(_m.precioBase):'A consultar'}</td></tr>
+        ${_cTotal?`<tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">+ Complementos</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;color:#c89968;">${fmt(_cTotal)}</td></tr>`:''}
+        ${_lTotal?`<tr><td style="color:#666;padding:4px 0;border-top:1px solid #f0ede8;">+ Logística (transporte + instalación)</td><td style="font-weight:600;text-align:right;border-top:1px solid #f0ede8;color:#c89968;">${fmt(_lTotal)}</td></tr>`:''}
+        <tr style="border-top:1.5px solid #c89968;">
+          <td style="font-weight:700;padding:6px 0;">Subtotal sin IVA</td>
+          <td style="font-weight:700;text-align:right;padding:6px 0;">${_m.precioBase?fmt(_subSinIVA):'A consultar'}</td>
+        </tr>
+        <tr>
+          <td style="color:#999;padding:3px 0;font-size:9pt;">IVA (21%)</td>
+          <td style="color:#999;text-align:right;padding:3px 0;font-size:9pt;">${_m.precioBase?fmt(_iva):'—'}</td>
+        </tr>
+        <tr style="border-top:2px solid #c89968;background:rgba(200,153,104,0.08);">
+          <td style="font-weight:900;font-size:${forPrint?'13':'12'}pt;padding:8px 0;color:#1a1410;">TOTAL con IVA 21%</td>
+          <td style="font-weight:900;font-size:${forPrint?'15':'13'}pt;text-align:right;color:#c89968;padding:8px 0;">${_m.precioBase?fmt(_total):'A consultar'}</td>
+        </tr>
+      </table>
+      <p style="font-size:7.5pt;color:#aaa;margin-top:8px;border-top:1px solid #f0ede8;padding-top:6px;">* Precios 2026-T1. IVA 21% aplicado sobre el subtotal. Complementos y logística se añaden si están configurados. Documento orientativo, no vinculante.</p>
+    </div>
+
+    <!-- Corporate Footer -->
+    <div style="margin-top:20px;padding-top:12px;border-top:1px solid #e8e2d8;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        ${SOULBARIC_LOGO_SVG(forPrint?24:20, forPrint?24:20)}
+        <div style="font-size:7.5pt;color:#bbb;line-height:1.4;">
+          <span style="font-weight:700;color:#c89968;">SoulBaric · CellPods</span><br/>
+          Alma Dimo Investments, S.L.
+        </div>
+      </div>
+      <div style="text-align:right;font-size:7pt;color:#ccc;">
+        Ficha orientativa 2026-T1<br/>
+        ${new Date().toLocaleDateString('es-ES')}
+      </div>
+    </div>`;
+  };
+
+  document.getElementById('fichaPanel-pdf').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <p class="ficha-section-title" style="margin:0;flex:1;">📄 Vista Previa del PDF</p>
+      <button onclick="imprimirFichaPDF()" style="padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+    <div class="ficha-pdf-preview">${buildPDFBody(false)}</div>`;
+
+  // Store builder function for actual print
+  window._fichaPDFBuilder = () => buildPDFBody(true);
+}
+
+/* ── Helpers: Save ── */
+function saveFichaField(field, value) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m || !m.ficha) return;
+  m.ficha[field] = value;
+}
+function saveFichaModelField(field, value) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m) return;
+  m[field] = value;
+  if (field === 'potenciaW') {
+    m.kwhSesion       = parseFloat((value * 0.7 / 1000).toFixed(4));
+    m.costeLuzSesion  = parseFloat((m.kwhSesion * 0.28).toFixed(4));
+    if (m.ficha) m.ficha.potenciaAio = value;
+  }
+}
+
+/* ── Helpers: Incluye / Opciones lists ── */
+function addFichaIncluye() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  const el = document.getElementById('newIncluye');
+  const val = el?.value.trim();
+  if (!val) return;
+  m.ficha.incluye.push(val);
+  el.value = '';
+  const cont = document.getElementById('fedit-incluye');
+  if (cont) cont.innerHTML += `<div class="ficha-list-item"><span>${escHtml(val)}</span><button class="ficha-del-btn" onclick="removeFichaIncluye(${m.ficha.incluye.length-1})">✕</button></div>`;
+}
+function removeFichaIncluye(idx) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  m.ficha.incluye.splice(idx, 1);
+  renderFichaSpecs();
+}
+function addFichaOpcion() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  const el = document.getElementById('newOpcion');
+  const val = el?.value.trim();
+  if (!val) return;
+  m.ficha.opciones.push(val);
+  el.value = '';
+  const cont = document.getElementById('fedit-opciones');
+  if (cont) cont.innerHTML += `<div class="ficha-list-item"><span>${escHtml(val)}</span><button class="ficha-del-btn" onclick="removeFichaOpcion(${m.ficha.opciones.length-1})">✕</button></div>`;
+}
+function removeFichaOpcion(idx) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  m.ficha.opciones.splice(idx, 1);
+  renderFichaSpecs();
+}
+
+/* ── Helpers: Logística ── */
+function setLogisticaPreset(modalidad) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  const presets = {
+    maritimo:      { modalidad:'maritimo',      transporte:8000, instalacion:0, plazo:'~3 meses' },
+    aereo:         { modalidad:'aereo',         transporte:0,    instalacion:0, plazo:'~1 mes'   },
+    personalizado: { modalidad:'personalizado', transporte:0,    instalacion:0, plazo:''          },
+  };
+  const p = presets[modalidad];
+  if (!p) return;
+  Object.assign(m.ficha.logistica, p);
+  // Update visible fields without full re-render for smoothness
+  const t = document.getElementById('log-transporte');
+  const i = document.getElementById('log-instalacion');
+  const pl = document.getElementById('log-plazo');
+  if (t)  t.value  = m.ficha.logistica.transporte;
+  if (i)  i.value  = m.ficha.logistica.instalacion;
+  if (pl) pl.value = m.ficha.logistica.plazo;
+  // Refresh preset buttons active state
+  document.querySelectorAll('.log-preset-btn').forEach(btn => {
+    const k = btn.getAttribute('onclick').match(/'(\w+)'/)?.[1];
+    btn.classList.toggle('active', k === modalidad);
+  });
+}
+function saveFichaLogistica(field, value) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha?.logistica) return;
+  m.ficha.logistica[field] = value;
+  // Mark as personalizado if user edits cost fields directly
+  if (field === 'transporte' || field === 'instalacion') {
+    m.ficha.logistica.modalidad = 'personalizado';
+    document.querySelectorAll('.log-preset-btn').forEach(btn => {
+      const k = btn.getAttribute('onclick').match(/'(\w+)'/)?.[1];
+      btn.classList.toggle('active', k === 'personalizado');
+    });
+  }
+}
+
+/* ── Helpers: Imagen ── */
+function handleFichaImagen(input) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha || !input.files[0]) return;
+  if (input.files[0].size > 5 * 1024 * 1024) { toast('La imagen supera el límite de 5 MB.', true); return; }
+  const reader = new FileReader();
+  reader.onload = e => { m.ficha.imagen = e.target.result; renderFichaImagen(); };
+  reader.readAsDataURL(input.files[0]);
+}
+function clearFichaImagen() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  m.ficha.imagen = null;
+  renderFichaImagen();
+}
+
+/* ── Helpers: Complementos ── */
+function toggleFichaComp(id, el) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  if (m.ficha.complementosFicha.has(id)) {
+    m.ficha.complementosFicha.delete(id);
+    el.classList.remove('checked');
+    el.querySelector('input[type=checkbox]').checked = false;
+  } else {
+    m.ficha.complementosFicha.add(id);
+    el.classList.add('checked');
+    el.querySelector('input[type=checkbox]').checked = true;
+  }
+}
+function addFichaCompCustom() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  const nombre = document.getElementById('newCompNombre')?.value.trim();
+  const precio = parseFloat(document.getElementById('newCompPrecio')?.value);
+  if (!nombre) { toast('Introduce un nombre para el complemento.', true); return; }
+  m.ficha.complementosCustom.push({ nombre, precio: isNaN(precio) ? 0 : precio });
+  document.getElementById('newCompNombre').value = '';
+  document.getElementById('newCompPrecio').value = '';
+  renderFichaComps();
+}
+function removeFichaCompCustom(idx) {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  m.ficha.complementosCustom.splice(idx, 1);
+  renderFichaComps();
+}
+
+/* ── Imprimir PDF ── */
+function imprimirFichaPDF() {
+  const m = MODELOS_CAMARA.find(x => x.id === currentFichaId);
+  if (!m?.ficha) return;
+  const body = window._fichaPDFBuilder ? window._fichaPDFBuilder() : '';
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<title>Ficha Técnica ${escHtml(m.nombre)} — SoulBaric 2026-T1</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Georgia,serif;font-size:11pt;color:#222;background:#fff;padding:24px 32px;max-width:820px;margin:0 auto;}
+  table{width:100%;border-collapse:collapse;}
+  td{padding:4px 6px;}
+  td:first-child{color:#666;}td:last-child{font-weight:600;text-align:right;}
+  @media print{
+    body{padding:0;}
+    @page{margin:12mm 14mm;}
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  }
+</style></head><body>
+${body}
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+  const win = window.open('', '_blank', 'width=900,height=720');
+  if (win) { win.document.write(html); win.document.close(); }
+  else toast('El navegador bloqueó la ventana emergente. Permite los pop-ups para esta página.', true);
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderModels();
+  updateSavedCount();
+});
+</script>
+<script src="asistente-chat.js"></script>
+
+<!-- MODAL FICHA TÉCNICA — EDITOR -->
+<div id="fichaModal"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:3500;align-items:center;justify-content:center;padding:14px;"
+  onclick="if(event.target===this)cerrarFicha()">
+  <div style="background:var(--card);border-radius:var(--radius);max-width:880px;width:100%;max-height:94vh;display:flex;flex-direction:column;box-shadow:0 14px 54px rgba(0,0,0,0.38);border:1.5px solid var(--gold);overflow:hidden;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid var(--border);flex-shrink:0;gap:10px;background:linear-gradient(135deg,rgba(200,153,104,0.07) 0%,transparent 60%);">
+      <div style="display:flex;align-items:center;gap:11px;">
+        <svg width="38" height="38" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+          <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+          <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+          <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+          <circle cx="50" cy="18" r="4.5" fill="#C89968"/>
+          <circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="50" cy="82" r="4.5" fill="#C89968"/>
+          <circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="18" cy="50" r="4.5" fill="#C89968"/>
+          <circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="82" cy="50" r="4.5" fill="#C89968"/>
+          <circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+        </svg>
+        <div>
+          <div style="font-size:9px;font-weight:800;color:var(--primary);letter-spacing:1.8px;text-transform:uppercase;line-height:1;">SoulBaric · CellPods</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:3px;">
+            <span id="fichaModalTitle" style="font-size:16px;font-weight:900;color:var(--text);line-height:1;"></span>
+            <span style="font-size:9px;color:var(--primary);background:rgba(200,153,104,0.12);border:1px solid rgba(200,153,104,0.3);border-radius:4px;padding:2px 7px;font-weight:700;letter-spacing:0.5px;white-space:nowrap;">FICHA TÉCNICA 2026-T1</span>
+          </div>
+        </div>
+      </div>
+      <button onclick="cerrarFicha()" style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-m);line-height:1;padding:2px 8px;flex-shrink:0;">✕</button>
+    </div>
+
+    <!-- Tab bar -->
+    <div style="display:flex;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;">
+      <button id="fichaTabBtn-specs"  class="ficha-tab-btn active" onclick="switchFichaTab('specs')">📋 Ficha</button>
+      <button id="fichaTabBtn-imagen" class="ficha-tab-btn"        onclick="switchFichaTab('imagen')">🖼️ Imagen</button>
+      <button id="fichaTabBtn-comps"  class="ficha-tab-btn"        onclick="switchFichaTab('comps')">➕ Extras</button>
+      <button id="fichaTabBtn-pdf"    class="ficha-tab-btn"        onclick="switchFichaTab('pdf')">📄 PDF</button>
+    </div>
+
+    <!-- Tab panels -->
+    <div style="flex:1;overflow-y:auto;">
+      <div id="fichaPanel-specs"  style="padding:18px 20px;display:block;"></div>
+      <div id="fichaPanel-imagen" style="padding:18px 20px;display:none;"></div>
+      <div id="fichaPanel-comps"  style="padding:18px 20px;display:none;"></div>
+      <div id="fichaPanel-pdf"    style="padding:18px 20px;display:none;"></div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual SoulBaric · Documentación completa</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #C89968;
+      --primary-dark: #8B6F47;
+      --bg: #f9f8f6;
+      --bg-card: #ffffff;
+      --text: #1a1a1a;
+      --text-m: #666;
+      --text-light: #999;
+      --border: #e8e3dc;
+      --sidebar-w: 260px;
+      --header-h: 64px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────────────────── */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 200;
+      border-bottom: 2px solid var(--primary);
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .header-logo {
+      width: 38px; height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .header-title {
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+    .header-subtitle {
+      color: rgba(255,255,255,.45);
+      font-size: 11px;
+      margin-top: 1px;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-print {
+      padding: 8px 18px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-print:hover { opacity: .85; }
+    .btn-back {
+      padding: 8px 16px;
+      background: rgba(255,255,255,.1);
+      color: rgba(255,255,255,.8);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,.18); }
+
+    /* ── SIDEBAR ─────────────────────────────────────────────────────────── */
+    .sidebar {
+      position: fixed;
+      top: var(--header-h);
+      left: 0;
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      overflow-y: auto;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 20px 0 40px;
+      z-index: 100;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .nav-section {
+      padding: 6px 20px 4px;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      margin-top: 12px;
+    }
+    .nav-link {
+      display: block;
+      padding: 7px 20px 7px 28px;
+      font-size: 12px;
+      color: var(--text-m);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all .12s;
+      line-height: 1.3;
+    }
+    .nav-link:hover {
+      color: var(--primary);
+      background: rgba(200,153,104,.06);
+      border-left-color: var(--primary);
+    }
+    .nav-link.active {
+      color: var(--primary);
+      background: rgba(200,153,104,.1);
+      border-left-color: var(--primary);
+      font-weight: 700;
+    }
+    .nav-link-parent {
+      padding-left: 20px;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 12px;
+    }
+    .nav-link-child {
+      padding-left: 36px;
+      font-size: 11px;
+    }
+
+    /* ── MAIN CONTENT ────────────────────────────────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      padding-top: calc(var(--header-h) + 40px);
+      padding-bottom: 80px;
+      padding-right: 48px;
+      padding-left: 48px;
+      max-width: calc(var(--sidebar-w) + 860px);
+    }
+
+    /* ── SECTIONS ────────────────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 56px;
+      scroll-margin-top: calc(var(--header-h) + 20px);
+    }
+    .section-hero {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      border-radius: 14px;
+      padding: 36px 40px;
+      margin-bottom: 40px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .section-hero::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,153,104,.3) 0%, transparent 70%);
+    }
+    .section-hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    .section-hero-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,.6);
+      max-width: 540px;
+      line-height: 1.6;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title span { font-size: 22px; }
+
+    .subsection {
+      margin-bottom: 32px;
+      scroll-margin-top: calc(var(--header-h) + 20px);
+    }
+    .subsection-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      padding-left: 10px;
+      border-left: 3px solid var(--primary);
+    }
+
+    /* ── CARDS / BLOCKS ─────────────────────────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .card-body {
+      font-size: 13px;
+      color: var(--text-m);
+      line-height: 1.6;
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .step-num {
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-m);
+      line-height: 1.55;
+    }
+
+    .tip-box {
+      display: flex;
+      gap: 10px;
+      padding: 11px 14px;
+      background: rgba(200,153,104,.08);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 7px 7px 0;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .tip-icon { font-size: 16px; flex-shrink: 0; }
+
+    .warning-box {
+      display: flex;
+      gap: 10px;
+      padding: 11px 14px;
+      background: rgba(255,152,0,.08);
+      border-left: 3px solid #ff9800;
+      border-radius: 0 7px 7px 0;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .info-box {
+      display: flex;
+      gap: 10px;
+      padding: 11px 14px;
+      background: rgba(33,150,243,.07);
+      border-left: 3px solid #2196f3;
+      border-radius: 0 7px 7px 0;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ── TABLES ─────────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin-bottom: 20px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      background: #1a1a1a;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: var(--bg); }
+    tr:hover td { background: rgba(200,153,104,.05); }
+
+    /* ── CODE BLOCKS ─────────────────────────────────────────────────────── */
+    pre, code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 12px;
+    }
+    pre {
+      background: #1a1a1a;
+      color: #e8e3dc;
+      padding: 14px 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    code {
+      background: rgba(200,153,104,.12);
+      color: var(--primary-dark);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── BADGES ─────────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-gold { background: rgba(200,153,104,.15); color: var(--primary-dark); }
+    .badge-green { background: rgba(76,175,80,.12); color: #2e7d32; }
+    .badge-blue { background: rgba(33,150,243,.1); color: #1565c0; }
+    .badge-orange { background: rgba(255,152,0,.12); color: #e65100; }
+    .badge-purple { background: rgba(156,39,176,.1); color: #6a1b9a; }
+    .badge-red { background: rgba(244,67,54,.1); color: #b71c1c; }
+
+    /* ── GRID ────────────────────────────────────────────────────────────── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    /* ── FAQ ─────────────────────────────────────────────────────────────── */
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      user-select: none;
+    }
+    .faq-q:hover { background: rgba(200,153,104,.05); }
+    .faq-a {
+      padding: 0 18px;
+      font-size: 13px;
+      color: var(--text-m);
+      line-height: 1.6;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .25s ease, padding .25s ease;
+    }
+    .faq-item.open .faq-a {
+      max-height: 400px;
+      padding: 12px 18px 16px;
+    }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-arrow { transition: transform .2s; font-size: 12px; color: var(--text-light); }
+
+    /* ── GLOSARIO ────────────────────────────────────────────────────────── */
+    .glosario-item {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .glosario-item:last-child { border-bottom: none; }
+    .glosario-term {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+    .glosario-def {
+      font-size: 13px;
+      color: var(--text-m);
+      line-height: 1.6;
+    }
+
+    /* ── FLOW DIAGRAM ────────────────────────────────────────────────────── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+    .flow-step {
+      padding: 6px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .flow-step.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .flow-arrow { color: var(--text-light); font-size: 14px; }
+
+    /* ── PRINT STYLES ────────────────────────────────────────────────────── */
+    @media print {
+      .header { position: static; box-shadow: none; }
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 20px; max-width: 100%; }
+      .btn-print, .btn-back { display: none; }
+      .faq-a { max-height: none !important; padding: 12px 18px 16px !important; }
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 20px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ HEADER ═══ -->
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">💼</div>
+    <div>
+      <div class="header-title">SoulBaric</div>
+      <div class="header-subtitle">Manual de usuario · Documentación completa</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <a href="propuestas.html" class="btn-back">← Volver a la app</a>
+    <button class="btn-print" onclick="window.print()">🖨 Imprimir / PDF</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════ SIDEBAR ══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="nav-section">Inicio</div>
+  <a href="#intro" class="nav-link nav-link-parent">📘 Introducción</a>
+
+  <div class="nav-section">Módulos</div>
+  <a href="#candidatos" class="nav-link nav-link-parent">👥 Candidatos</a>
+  <a href="#cand-anadir" class="nav-link nav-link-child">Añadir candidato</a>
+  <a href="#cand-buscar" class="nav-link nav-link-child">Buscar y filtrar</a>
+  <a href="#cand-editar" class="nav-link nav-link-child">Editar y eliminar</a>
+  <a href="#cand-asignar" class="nav-link nav-link-child">Asignar proyecto</a>
+
+  <a href="#propuestas" class="nav-link nav-link-parent">📋 Propuestas</a>
+  <a href="#prop-crear" class="nav-link nav-link-child">Crear propuesta</a>
+  <a href="#prop-sync" class="nav-link nav-link-child">Sincronización</a>
+
+  <a href="#asignacion" class="nav-link nav-link-parent">🎯 Asignación</a>
+  <a href="#asig-flujo" class="nav-link nav-link-child">Flujo de asignación</a>
+  <a href="#asig-filtros" class="nav-link nav-link-child">Filtros y matching</a>
+
+  <a href="#seguimiento" class="nav-link nav-link-parent">📊 Seguimiento</a>
+  <a href="#seg-estados" class="nav-link nav-link-child">Estados del pipeline</a>
+  <a href="#seg-kpis" class="nav-link nav-link-child">KPIs y métricas</a>
+
+  <a href="#operativa" class="nav-link nav-link-parent">💼 Inversión Operativa</a>
+  <a href="#op-simulador" class="nav-link nav-link-child">Simulador financiero</a>
+  <a href="#op-inversores" class="nav-link nav-link-child">Gestión de inversores</a>
+  <a href="#op-contratos" class="nav-link nav-link-child">Generador de contratos</a>
+  <a href="#op-liquidaciones" class="nav-link nav-link-child">Liquidaciones</a>
+
+  <a href="#importar" class="nav-link nav-link-parent">📥 Importar / Exportar</a>
+
+  <div class="nav-section">Referencia</div>
+  <a href="#glosario" class="nav-link nav-link-parent">📖 Glosario financiero</a>
+  <a href="#faq" class="nav-link nav-link-parent">❓ Preguntas frecuentes</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ CONTENT ══ -->
+<main class="main">
+
+  <!-- ──────────────────────────── HERO ───────────────────────────────── -->
+  <div class="section-hero">
+    <div style="position:relative;z-index:1;">
+      <div style="font-size:11px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">
+        DOCUMENTACIÓN OFICIAL
+      </div>
+      <div class="section-hero-title">Manual SoulBaric</div>
+      <div class="section-hero-sub">
+        Guía completa de uso de la plataforma de gestión de inversiones en centros de bienestar. Cubre todos los módulos: candidatos, propuestas, asignación, seguimiento e inversión operativa.
+      </div>
+      <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+        <span class="badge badge-gold">Versión 2.0</span>
+        <span class="badge" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);">Abril 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────── INTRO ──────────────────────────────── -->
+  <section class="section" id="intro">
+    <div class="section-title"><span>📘</span> Introducción</div>
+
+    <p style="font-size:14px;color:var(--text-m);line-height:1.7;margin-bottom:20px;">
+      SoulBaric es una plataforma web para la gestión integral de inversiones en centros de bienestar. Permite gestionar el ciclo completo del inversor: desde la captación de candidatos hasta la liquidación mensual de retornos, pasando por la simulación financiera y la generación automática de contratos.
+    </p>
+
+    <div class="grid-3">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">👥</div>
+        <div class="card-title">Gestión de candidatos</div>
+        <div class="card-body">Base de datos de potenciales inversores con perfiles de riesgo y presupuesto.</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">💼</div>
+        <div class="card-title">Inversión operativa</div>
+        <div class="card-body">Simulador financiero, contratos automáticos y liquidaciones mensuales.</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">📊</div>
+        <div class="card-title">Pipeline de inversores</div>
+        <div class="card-body">Seguimiento del estado de cada propuesta enviada y asignación.</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Flujo de trabajo recomendado</div>
+      <div class="flow">
+        <div class="flow-step active">1. Crear candidato</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">2. Asignar proyecto</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">3. Enviar propuesta</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">4. Confirmar inversión</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">5. Firmar contrato</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">6. Liquidar mensualmente</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── CANDIDATOS ─────────────────────────── -->
+  <section class="section" id="candidatos">
+    <div class="section-title"><span>👥</span> Candidatos</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      El módulo de candidatos es el punto de entrada del pipeline. Aquí se registran todos los potenciales inversores con su información de contacto, presupuesto disponible y perfil de riesgo.
+    </p>
+
+    <!-- Añadir candidato -->
+    <div class="subsection" id="cand-anadir">
+      <div class="subsection-title">Añadir candidato</div>
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Abrir el formulario</div>
+            <div class="step-desc">Haz clic en el botón <strong>"+ Nuevo Candidato"</strong> en la parte superior de la vista Candidatos. Se abrirá el modal de creación.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Rellenar datos obligatorios</div>
+            <div class="step-desc">Introduce el <strong>nombre completo</strong> y el <strong>email</strong> del candidato. Estos dos campos son requeridos y el email debe ser único en el sistema.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Configurar perfil de inversión</div>
+            <div class="step-desc">Establece el <strong>presupuesto de inversión</strong> (importe en euros) y el <strong>perfil de riesgo</strong>: Conservador, Moderado o Agresivo. Estos datos se usan para el matching automático.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Guardar</div>
+            <div class="step-desc">Haz clic en "Guardar candidato". El candidato aparecerá inmediatamente en la lista.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="tip-box" style="margin-top:14px;">
+        <span class="tip-icon">💡</span>
+        <span>Los candidatos importados desde el Dashboard SoulBaric aparecen con el badge morado <strong>"🔗 Dashboard"</strong>. Estos candidatos se sincronizan automáticamente y no se duplican aunque existan en ambos sistemas.</span>
+      </div>
+    </div>
+
+    <!-- Buscar -->
+    <div class="subsection" id="cand-buscar">
+      <div class="subsection-title">Buscar y filtrar candidatos</div>
+      <div class="card">
+        <div class="card-title">Buscador progresivo</div>
+        <div class="card-body">El buscador de candidatos filtra desde el primer carácter tecleado. Busca en nombre, email y empresa simultáneamente. La búsqueda es insensible a acentos y mayúsculas.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Filtros de estado</div>
+        <div class="card-body">Usa los botones de filtro rápido para ver candidatos por estado: Activo, Interesado, En proceso, Cerrado. Los filtros se combinan con la búsqueda de texto.</div>
+      </div>
+    </div>
+
+    <!-- Editar y eliminar -->
+    <div class="subsection" id="cand-editar">
+      <div class="subsection-title">Editar y eliminar candidatos</div>
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Desplegar ficha</div>
+            <div class="step-desc">Haz clic en la tarjeta del candidato para expandir su ficha completa con toda la información y opciones disponibles.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Editar datos</div>
+            <div class="step-desc">Haz clic en el icono <strong>✏️</strong> para abrir el modal de edición. Puedes modificar todos los campos incluyendo el estado del candidato.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Eliminar candidato</div>
+            <div class="step-desc">Haz clic en <strong>🗑️</strong>. Se mostrará una confirmación. Debes confirmar dos veces por seguridad. La eliminación es permanente e irreversible.</div>
+          </div>
+        </li>
+      </ul>
+      <div class="warning-box">
+        <span class="tip-icon">⚠️</span>
+        <span>Al eliminar un candidato se eliminan también todas sus asignaciones asociadas. Esta acción no se puede deshacer.</span>
+      </div>
+    </div>
+
+    <!-- Asignar proyecto -->
+    <div class="subsection" id="cand-asignar">
+      <div class="subsection-title">Asignar proyecto desde la ficha</div>
+      <div class="card">
+        <div class="card-body">Dentro de la ficha expandida del candidato encontrarás un selector de proyectos. Selecciona el proyecto y haz clic en "Asignar". La asignación se crea directamente sin necesidad de ir al módulo de Asignación. Ideal para asignaciones rápidas desde la vista de candidatos.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── PROPUESTAS ──────────────────────────── -->
+  <section class="section" id="propuestas">
+    <div class="section-title"><span>📋</span> Propuestas</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      Las propuestas son los proyectos de inversión que se ofrecen a los candidatos. Hay dos tipos: proyectos sincronizados automáticamente desde la Calculadora, y propuestas manuales creadas directamente en este módulo.
+    </p>
+
+    <div class="subsection" id="prop-crear">
+      <div class="subsection-title">Crear propuesta manual</div>
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Acceder al formulario</div>
+            <div class="step-desc">En la parte inferior de la vista Propuestas encontrarás el formulario de creación manual. Introduce nombre, ROI estimado e importe de inversión.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Guardar propuesta</div>
+            <div class="step-desc">Haz clic en "Crear propuesta". La propuesta aparecerá en la lista junto con los proyectos de la calculadora.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Editar o eliminar</div>
+            <div class="step-desc">Usa los iconos ✏️ y 🗑️ junto a cada propuesta. Los proyectos sincronizados desde la Calculadora no pueden editarse aquí; debes modificarlos en la Calculadora.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="subsection" id="prop-sync">
+      <div class="subsection-title">Sincronización con la Calculadora</div>
+      <div class="info-box">
+        <span class="tip-icon">ℹ️</span>
+        <span>Los proyectos creados en la Calculadora de Inversión aparecen automáticamente en la vista Propuestas con todos sus datos financieros (ROI, importe, modelo de negocio, ubicación). La sincronización es en tiempo real al cargar la vista.</span>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span>Puedes asignar el mismo proyecto a múltiples candidatos simultáneamente. Cada asignación tiene su propio seguimiento de estado independiente.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── ASIGNACIÓN ──────────────────────────── -->
+  <section class="section" id="asignacion">
+    <div class="section-title"><span>🎯</span> Asignación de Proyectos</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      El módulo de Asignación permite vincular candidatos con proyectos de inversión. Dispone de búsqueda dual para encontrar rápidamente tanto el candidato como el proyecto adecuado.
+    </p>
+
+    <div class="subsection" id="asig-flujo">
+      <div class="subsection-title">Flujo de asignación paso a paso</div>
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Buscar candidato (panel izquierdo)</div>
+            <div class="step-desc">Escribe en el buscador izquierdo. Los resultados aparecen desde el primer carácter. Puedes filtrar por perfil de riesgo usando los botones de filtro.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Seleccionar candidato</div>
+            <div class="step-desc">Haz clic en la tarjeta del candidato. Se destacará con borde dorado. En el panel inferior verás su presupuesto disponible y perfil de riesgo.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Buscar proyecto (panel derecho)</div>
+            <div class="step-desc">Escribe en el buscador derecho para filtrar proyectos por nombre, ubicación o tipo de cámara. Los proyectos compatibles con el presupuesto del candidato muestran el badge "✅ Compatible".</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Seleccionar proyecto</div>
+            <div class="step-desc">Haz clic en el proyecto deseado. Si el importe supera el presupuesto del candidato, verás el badge "⚠️ Sobre presupuesto" como aviso orientativo.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">5</div>
+          <div>
+            <div class="step-title">Confirmar asignación</div>
+            <div class="step-desc">Con candidato y proyecto seleccionados, pulsa el botón <strong>"Confirmar asignación"</strong> en el panel inferior. La asignación se crea con estado "Asignada" y pasa automáticamente al módulo de Seguimiento.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="subsection" id="asig-filtros">
+      <div class="subsection-title">Filtros y matching automático</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Filtros de perfil</div>
+          <div class="card-body">Los botones Conservador / Moderado / Agresivo filtran la lista de candidatos. Al escribir en el buscador, los filtros de perfil se desactivan automáticamente para no limitar los resultados de búsqueda.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Matching inteligente</div>
+          <div class="card-body">El sistema puede sugerir coincidencias automáticas basándose en el perfil de riesgo del candidato y el importe del proyecto. Los badges de compatibilidad aparecen en tiempo real al seleccionar un candidato.</div>
+        </div>
+      </div>
+      <div class="info-box">
+        <span class="tip-icon">ℹ️</span>
+        <span>El badge "⚠️ Sobre presupuesto" es solo orientativo. Siempre puedes confirmar la asignación aunque el proyecto supere el presupuesto declarado del candidato.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── SEGUIMIENTO ─────────────────────────── -->
+  <section class="section" id="seguimiento">
+    <div class="section-title"><span>📊</span> Seguimiento</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      El módulo de Seguimiento es el pipeline comercial de inversores. Muestra todas las asignaciones activas y permite actualizar el estado de cada una a medida que avanza la negociación.
+    </p>
+
+    <div class="subsection" id="seg-estados">
+      <div class="subsection-title">Estados del pipeline</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Estado</th>
+              <th>Significado</th>
+              <th>Siguiente paso habitual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-blue">Asignada</span></td>
+              <td>El proyecto ha sido asignado al candidato. Pendiente de enviar.</td>
+              <td>Enviar propuesta por email o reunión</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-orange">Enviada</span></td>
+              <td>La propuesta ha sido enviada al candidato.</td>
+              <td>Esperar respuesta o hacer seguimiento</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">Visto</span></td>
+              <td>El candidato ha visto la propuesta.</td>
+              <td>Llamada de seguimiento para resolver dudas</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">Interés</span></td>
+              <td>El candidato ha mostrado interés activo.</td>
+              <td>Reunión detallada, presentar simulador</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-gold">Cerrada</span></td>
+              <td>Inversión confirmada y firmada.</td>
+              <td>Crear inversor en módulo Operativa</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">Descartada</span></td>
+              <td>El candidato ha rechazado la propuesta.</td>
+              <td>Archivar o intentar con otro proyecto</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Cambiar estado</div>
+            <div class="step-desc">Usa el selector desplegable en cada asignación. El cambio se guarda automáticamente y actualiza los KPIs superiores al instante.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Eliminar asignación</div>
+            <div class="step-desc">Haz clic en el botón ✕ de la asignación. Se solicita doble confirmación antes de eliminar.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="subsection" id="seg-kpis">
+      <div class="subsection-title">KPIs y métricas</div>
+      <div class="grid-3">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:var(--primary);" id="kpi1">—</div>
+          <div class="card-body" style="font-size:12px;">Total asignaciones</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:#4caf50;">—</div>
+          <div class="card-body" style="font-size:12px;">Con interés activo</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:24px;font-weight:800;color:#2196f3;">—</div>
+          <div class="card-body" style="font-size:12px;">Cerradas / firmadas</div>
+        </div>
+      </div>
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span>Los KPIs se actualizan en tiempo real al cambiar cualquier estado. Úsalos para medir la tasa de conversión del pipeline.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── OPERATIVA ───────────────────────────── -->
+  <section class="section" id="operativa">
+    <div class="section-title"><span>💼</span> Inversión Operativa</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      El módulo más completo de la plataforma. Permite simular la rentabilidad de una inversión, gestionar los inversores de cada proyecto, generar contratos legales automáticamente y registrar las liquidaciones mensuales.
+    </p>
+
+    <!-- Simulador -->
+    <div class="subsection" id="op-simulador">
+      <div class="subsection-title">Simulador financiero</div>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Seleccionar proyecto</div>
+            <div class="step-desc">Haz clic en un proyecto de la lista izquierda. Se cargarán automáticamente los datos del proyecto (costes directos, tipo de cámara, etc.) y verás la barra de BNP que indica el porcentaje ya comprometido.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Elegir modelo de retorno</div>
+            <div class="step-desc">Selecciona uno de los tres modelos disponibles: <strong>BNP Share</strong> (porcentaje sobre beneficio neto), <strong>Revenue Share</strong> (porcentaje sobre facturación) o <strong>Híbrido</strong> (combinación de ambos).</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Configurar parámetros</div>
+            <div class="step-desc">Introduce: % de retorno, capital invertido, duración del contrato (años) y tipo de salida (multiplicador ×N o importe fijo). Todos los cambios actualizan los escenarios en tiempo real.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Interpretar los 3 escenarios</div>
+            <div class="step-desc">El simulador calcula automáticamente los escenarios <strong>Conservador</strong>, <strong>Base</strong> y <strong>Optimista</strong> con distintas proyecciones de facturación. Cada uno muestra retorno mensual, ROI total, TIR y período de payback.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">5</div>
+          <div>
+            <div class="step-title">Leer la recomendación automática</div>
+            <div class="step-desc">Bajo los escenarios aparece un análisis de sensibilidad y una recomendación generada automáticamente basada en los parámetros introducidos.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">6</div>
+          <div>
+            <div class="step-title">Exportar propuesta PDF</div>
+            <div class="step-desc">Pulsa <strong>"📊 Exportar propuesta PDF"</strong>. Se abrirá la ventana de impresión del navegador. Selecciona "Guardar como PDF" para obtener el documento profesional con todos los datos del simulador.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div style="margin-top:20px;">
+        <div class="subsection-title">Modelos de retorno explicados</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Modelo</th>
+                <th>Base de cálculo</th>
+                <th>Fórmula</th>
+                <th>Cuándo usarlo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>BNP Share</strong></td>
+                <td>Beneficio Neto del Proyecto</td>
+                <td><code>Retorno = BNP × % acordado</code></td>
+                <td>Contratos actuales SoulBaric. El inversor comparte riesgo operativo.</td>
+              </tr>
+              <tr>
+                <td><strong>Revenue Share</strong></td>
+                <td>Facturación sin IVA</td>
+                <td><code>Retorno = Facturación × % acordado</code></td>
+                <td>Modelo más simple. El inversor no asume costes variables.</td>
+              </tr>
+              <tr>
+                <td><strong>Híbrido</strong></td>
+                <td>Combinación BNP + Revenue</td>
+                <td><code>Retorno = (BNP × %1) + (Facturación × %2)</code></td>
+                <td>Mayor flexibilidad. Permite estructuras de retorno más complejas.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="subsection-title">Métricas financieras calculadas</div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">ROI (Return on Investment)</div>
+            <div class="card-body">Porcentaje de retorno total sobre el capital invertido durante toda la duración del contrato.<br><br><code>ROI = (Total retornos / Capital) × 100</code></div>
+          </div>
+          <div class="card">
+            <div class="card-title">TIR (Tasa Interna de Retorno)</div>
+            <div class="card-body">Tasa de descuento que hace que el VAN de la inversión sea cero. Permite comparar con otras inversiones alternativas.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Payback (Período de recuperación)</div>
+            <div class="card-body">Tiempo necesario para recuperar el capital invertido a través de los retornos acumulados. Expresado en meses.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Retorno mensual</div>
+            <div class="card-body">Importe estimado que recibirá el inversor cada mes en el escenario considerado, basado en los parámetros de facturación proyectada.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box" style="margin-top:10px;">
+        <span class="tip-icon">⚠️</span>
+        <span>El límite máximo del BNP comprometido entre todos los inversores de un proyecto es el <strong>50%</strong>. La barra de ocupación de BNP muestra el porcentaje ya asignado. Superar este límite no está permitido por los contratos actuales.</span>
+      </div>
+    </div>
+
+    <!-- Inversores -->
+    <div class="subsection" id="op-inversores">
+      <div class="subsection-title">Gestión de inversores</div>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Añadir inversor desde el simulador</div>
+            <div class="step-desc">Configura los parámetros en el simulador y pulsa <strong>"➕ Añadir inversor"</strong>. El capital y el porcentaje se pre-rellenan automáticamente desde la configuración del simulador. Solo necesitas vincular con un candidato.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Vincular con candidato</div>
+            <div class="step-desc">En el formulario de nuevo inversor, busca el candidato por nombre o email. El sistema sugiere coincidencias automáticamente.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Ver y gestionar inversores</div>
+            <div class="step-desc">En la pestaña <strong>👥 Inversores</strong> del proyecto seleccionado verás todas las fichas de inversores con su capital, porcentaje y estado actual.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Estados del inversor</div>
+            <div class="step-desc">Cada inversor tiene un estado: Pendiente → Activo → Finalizado. Actualiza el estado desde la ficha del inversor.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Contratos -->
+    <div class="subsection" id="op-contratos">
+      <div class="subsection-title">Generador de contratos</div>
+
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        SoulBaric genera automáticamente dos tipos de documentos legales para cada inversor: el Compromiso de Inversión y el Contrato de Cuentas en Participación completo.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🤝 Compromiso de Inversión</div>
+          <div class="card-body">Documento previo al contrato definitivo. Recoge los términos básicos de la inversión: capital, porcentaje, duración y condiciones principales. Se genera con un clic desde la ficha del inversor.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📄 Contrato completo</div>
+          <div class="card-body">Contrato de Cuentas en Participación con todas las cláusulas legales. Incluye datos del inversor, proyecto, condiciones financieras, derechos, obligaciones y firma.</div>
+        </div>
+      </div>
+
+      <ul class="steps-list" style="margin-top:14px;">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Acceder a la ficha del inversor</div>
+            <div class="step-desc">En la pestaña 👥 Inversores, expande la ficha del inversor para quien quieres generar el documento.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Generar documento</div>
+            <div class="step-desc">Haz clic en <strong>"🤝 Compromiso"</strong> o <strong>"📄 Contrato"</strong>. El sistema genera el documento con todos los datos rellenados automáticamente.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Guardar como PDF</div>
+            <div class="step-desc">Se abrirá la ventana de impresión del navegador. Selecciona "Guardar como PDF". El documento está formateado para impresión A4.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="tip-box" style="margin-top:14px;">
+        <span class="tip-icon">💡</span>
+        <span>Los contratos se rellenan automáticamente con los datos del proyecto (nombre, dirección, cámara) y del inversor (nombre completo, DNI, dirección). Asegúrate de tener todos los datos del inversor correctamente introducidos antes de generar el contrato.</span>
+      </div>
+    </div>
+
+    <!-- Liquidaciones -->
+    <div class="subsection" id="op-liquidaciones">
+      <div class="subsection-title">Liquidaciones mensuales</div>
+
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        El sistema de liquidaciones permite registrar los datos reales de cada mes de operación (facturación, costes, sesiones) y calcula automáticamente el BNP y el reparto entre inversores.
+      </p>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Acceder a Liquidaciones</div>
+            <div class="step-desc">Con un proyecto seleccionado, haz clic en la pestaña <strong>💰 Liquidaciones</strong>.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Registrar nuevo mes</div>
+            <div class="step-desc">Pulsa "Registrar mes". Introduce el mes/año, número de sesiones realizadas, facturación total (sin IVA) y costes directos del período. El BNP se calcula automáticamente como <code>Facturación − Costes</code>.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Revisar el reparto calculado</div>
+            <div class="step-desc">El sistema muestra el desglose de reparto para cada inversor: su porcentaje de BNP y el importe resultante en euros.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Marcar pagos</div>
+            <div class="step-desc">Una vez realizado el pago a cada inversor, marca "✅ Pagado" en su fila. Puedes usar "Marcar todos como pagados" para liquidar el mes completo de una vez.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="tip-box" style="margin-top:14px;">
+        <span class="tip-icon">💡</span>
+        <span>Los costes directos se cargan automáticamente al seleccionar el proyecto, tomando los datos configurados en la Calculadora. Puedes ajustarlos mes a mes si varían.</span>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="card-title" style="margin-bottom:10px;">Fórmula de cálculo BNP Share</div>
+        <pre>BNP = Facturación − Costes directos
+Retorno inversor = BNP × % acordado con inversor
+Ejemplo: BNP = 8.000 € − 3.500 € = 4.500 €
+         Retorno (20% BNP) = 4.500 × 0,20 = 900 €/mes</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── IMPORTAR ────────────────────────────── -->
+  <section class="section" id="importar">
+    <div class="section-title"><span>📥</span> Importar y Exportar</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      El módulo de importación permite cargar candidatos masivamente desde un archivo CSV y exportar la base de candidatos completa.
+    </p>
+
+    <div class="subsection">
+      <div class="subsection-title">Formato del archivo CSV</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:10px;">El archivo CSV debe tener las columnas en este orden, sin cabecera:</p>
+      <pre>nombre,email,inversion,perfil</pre>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Columna</th>
+              <th>Tipo</th>
+              <th>Valores aceptados</th>
+              <th>Ejemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>nombre</code></td>
+              <td>Texto</td>
+              <td>Nombre completo del candidato</td>
+              <td>Juan García López</td>
+            </tr>
+            <tr>
+              <td><code>email</code></td>
+              <td>Email</td>
+              <td>Dirección de email válida y única</td>
+              <td>juan@email.com</td>
+            </tr>
+            <tr>
+              <td><code>inversion</code></td>
+              <td>Número</td>
+              <td>Importe en euros (sin puntos ni €)</td>
+              <td>50000</td>
+            </tr>
+            <tr>
+              <td><code>perfil</code></td>
+              <td>Texto</td>
+              <td><code>conservative</code> / <code>moderate</code> / <code>aggressive</code></td>
+              <td>conservative</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="subsection-title" style="margin-top:16px;">Ejemplo de archivo CSV</div>
+      <pre>Juan García,juan@email.com,50000,conservative
+María López,maria@empresa.es,120000,moderate
+Carlos Ruiz,carlos@gmail.com,200000,aggressive
+Ana Martínez,ana@outlook.com,75000,moderate</pre>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Proceso de importación</div>
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Preparar el CSV</div>
+            <div class="step-desc">Crea el archivo CSV con el formato indicado. Puedes usar Excel o Google Sheets; al guardar elige "CSV separado por comas".</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Seleccionar archivo</div>
+            <div class="step-desc">Haz clic en "Seleccionar CSV" y elige el archivo desde tu ordenador.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Importar</div>
+            <div class="step-desc">Pulsa "Importar". El sistema procesa cada fila: los emails duplicados se saltan automáticamente, los nuevos se añaden a la base de datos.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Exportar candidatos</div>
+            <div class="step-desc">Usa el botón "Exportar CSV" para descargar todos los candidatos actuales en formato CSV. Útil para hacer copias de seguridad o migrar datos.</div>
+          </div>
+        </li>
+      </ul>
+      <div class="info-box">
+        <span class="tip-icon">ℹ️</span>
+        <span>La importación usa el email como identificador único. Si un candidato con ese email ya existe en el sistema, esa fila del CSV se omite sin generar error.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── GLOSARIO ────────────────────────────── -->
+  <section class="section" id="glosario">
+    <div class="section-title"><span>📖</span> Glosario financiero</div>
+
+    <div class="card">
+      <div class="glosario-item">
+        <div class="glosario-term">BNP — Beneficio Neto del Proyecto</div>
+        <div class="glosario-def">Resultado de restar los costes directos de operación a la facturación total del proyecto. Es la base sobre la que se calcula el retorno en el modelo BNP Share.<br><code style="display:inline-block;margin-top:6px;">BNP = Facturación (sin IVA) − Costes directos</code></div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">BNP Share</div>
+        <div class="glosario-def">Modelo de retorno en el que el inversor recibe un porcentaje del Beneficio Neto del Proyecto cada mes. El inversor comparte el riesgo operativo: si el proyecto va mal, el retorno es menor. Es el modelo estándar de los contratos SoulBaric actuales.</div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">Revenue Share</div>
+        <div class="glosario-def">Modelo de retorno en el que el inversor recibe un porcentaje directo sobre la facturación total, independientemente de los costes. El inversor no asume el riesgo de los costes variables. Modelo más simple y predecible para el inversor.</div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">Cuentas en Participación</div>
+        <div class="glosario-def">Figura jurídica española regulada en el Código de Comercio (arts. 239-243) que permite a un inversor participar en los beneficios de un negocio ajeno aportando capital. El gestor del negocio actúa en nombre propio y el inversor permanece oculto ante terceros.</div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">ROI — Return on Investment</div>
+        <div class="glosario-def">Porcentaje de rentabilidad total sobre el capital invertido durante toda la duración del contrato. No tiene en cuenta el valor temporal del dinero.<br><code style="display:inline-block;margin-top:6px;">ROI = ((Total retornos − Capital) / Capital) × 100</code></div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">TIR — Tasa Interna de Retorno</div>
+        <div class="glosario-def">Tasa de descuento que hace que el Valor Actual Neto (VAN) de todos los flujos de caja sea igual a cero. A diferencia del ROI, la TIR sí tiene en cuenta el valor temporal del dinero y permite comparar inversiones de diferente duración. Una TIR más alta indica mayor rentabilidad.</div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">Payback (Período de recuperación)</div>
+        <div class="glosario-def">Tiempo que tarda el inversor en recuperar el capital inicial a través de los retornos acumulados. Se expresa en meses. Cuanto menor sea el payback, antes recupera el inversor su dinero y menor es el riesgo.</div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">Salida (Exit)</div>
+        <div class="glosario-def">Condiciones bajo las que se devuelve el capital al inversor al finalizar el contrato. SoulBaric ofrece dos tipos: <strong>Multiplicador</strong> (se devuelve el capital multiplicado por ×N, por ejemplo ×1,25 = capital + 25% de prima) o <strong>Importe fijo</strong> (se devuelve una cantidad predeterminada).</div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">Perfil de riesgo del inversor</div>
+        <div class="glosario-def"><strong>Conservador:</strong> busca seguridad y estabilidad, acepta rentabilidades menores a cambio de menor riesgo. <strong>Moderado:</strong> equilibrio entre rentabilidad y seguridad. <strong>Agresivo:</strong> acepta mayor riesgo en busca de rentabilidades más altas.</div>
+      </div>
+      <div class="glosario-item">
+        <div class="glosario-term">Escenario (Conservador / Base / Optimista)</div>
+        <div class="glosario-def">Las tres proyecciones financieras del simulador basadas en distintos niveles de facturación estimada. El escenario Conservador asume la facturación mínima, el Base la más probable y el Optimista la máxima alcanzable.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── FAQ ─────────────────────────────────── -->
+  <section class="section" id="faq">
+    <div class="section-title"><span>❓</span> Preguntas frecuentes</div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Puedo asignar el mismo proyecto a varios candidatos? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Sí. Puedes asignar el mismo proyecto a tantos candidatos como quieras. Cada asignación tiene su propio estado independiente en el pipeline de seguimiento. Esto permite enviar la misma propuesta a varios inversores potenciales y gestionar cada negociación por separado.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Qué diferencia hay entre una Propuesta y un Proyecto? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Un <strong>Proyecto</strong> es el activo real creado en la Calculadora de Inversión (con todos sus datos financieros, ubicación, modelo de negocio, etc.). Una <strong>Propuesta</strong> es la representación de ese proyecto en el módulo de Candidatos/Propuestas, que puede ser un proyecto sincronizado automáticamente o una propuesta manual creada en este módulo.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Por qué no puedo editar un proyecto sincronizado desde la Calculadora? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Los proyectos sincronizados se gestionan en la Calculadora de Inversión. Para modificar sus datos (nombre, importe, ROI, etc.) debes ir a la Calculadora y editarlos allí. Los cambios se reflejarán automáticamente en el módulo de Propuestas al recargar la vista.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Qué significa el límite del 50% del BNP? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Por los contratos de Cuentas en Participación actuales de SoulBaric, el total de porcentajes de BNP comprometidos entre todos los inversores de un proyecto no puede superar el 50%. Esto asegura que el gestor del proyecto siempre retiene al menos el 50% del beneficio neto. La barra de ocupación de BNP en el simulador muestra visualmente cuánto se ha comprometido ya y cuánto queda disponible.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Los candidatos del Dashboard de SoulBaric se duplican? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">No. Los candidatos provenientes del Dashboard se identifican por su ID único y aparecen con el badge morado "🔗 Dashboard". El sistema no los duplica aunque existan en ambos sistemas simultáneamente. Si editas un candidato del Dashboard, los cambios se guardan localmente en esta aplicación.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Cómo genero el contrato para un inversor? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Ve al módulo de Inversión Operativa, selecciona el proyecto, abre la pestaña "👥 Inversores" y expande la ficha del inversor. Encontrarás dos botones: "🤝 Compromiso" (para el documento previo) y "📄 Contrato" (para el contrato completo de Cuentas en Participación). Al hacer clic, se abre la ventana de impresión del navegador; selecciona "Guardar como PDF".</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Se guardan los datos automáticamente? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Sí. Todos los cambios se guardan automáticamente en el almacenamiento local del navegador (localStorage). No existe un botón de "Guardar" explícito porque el guardado es inmediato. Ten en cuenta que los datos están vinculados al navegador y dispositivo que uses. Si limpias los datos del navegador, perderás los datos de la aplicación.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Puedo exportar los datos para hacer una copia de seguridad? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Sí, puedes exportar los candidatos desde el módulo Importar usando el botón "Exportar CSV". Para los proyectos y datos financieros, la Calculadora también dispone de opciones de exportación. Se recomienda hacer exportaciones periódicas para tener copias de seguridad de los datos más importantes.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Qué es la TIR y en qué se diferencia del ROI? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">El <strong>ROI</strong> mide la rentabilidad total sin considerar cuándo se reciben los retornos. La <strong>TIR</strong> tiene en cuenta el valor temporal del dinero: un euro hoy vale más que un euro en el futuro. Una inversión con TIR del 15% genera más valor real que una con ROI del 15% calculado sin tener en cuenta el tiempo. Para comparar inversiones de diferente duración, la TIR es más fiable que el ROI.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Cómo funciona la salida con multiplicador? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">La salida con multiplicador significa que al final del contrato (por ejemplo al año 5) se devuelve el capital con una prima. Si inviertes 50.000 € con una salida ×1,25, al finalizar el contrato recibes 50.000 × 1,25 = 62.500 €. Esto es adicional a los retornos mensuales recibidos durante la vigencia del contrato. El multiplicador típico en SoulBaric es ×1,25 (25% de prima sobre el capital).</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  function updateActiveNav() {
+    const scrollPos = window.scrollY + 100;
+    let active = null;
+    sections.forEach(s => {
+      if (s.offsetTop <= scrollPos) active = s.id;
+    });
+    navLinks.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + active);
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveNav, { passive: true });
+  updateActiveNav();
+</script>
+<script src="asistente-chat.js"></script>
+</body>
+</html>

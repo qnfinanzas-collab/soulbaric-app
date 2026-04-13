@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SoulBaric — Calculadora de Inversión</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="confirm-delete.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #C89968;
+      --primary-d: #8B6F47;
+      --accent: #D4A574;
+      --black: #1a1a1a;
+      --black-light: #2d2d2d;
+      --bg: #faf8f6;
+      --bg-dark: #f0ebe5;
+      --card: #ffffff;
+      --border: #e8e4df;
+      --text: #3d3530;
+      --text-m: #8b7d76;
+      --green: #4caf50;
+      --red: #f44336;
+      --blue: #2196F3;
+      --radius: 8px;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ HEADER ═══ */
+    header {
+      background: linear-gradient(135deg, var(--black) 0%, var(--black-light) 100%);
+      border-bottom: 4px solid var(--primary);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    .lang-selector {
+      display: flex;
+      gap: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 5px;
+      padding: 3px;
+    }
+
+    .lang-btn {
+      padding: 4px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .lang-btn:hover {
+      color: #fff;
+      background: rgba(200, 153, 104, 0.3);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ APP GRID ═══ */
+    .app {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ SIDEBAR ═══ */
+    .sidebar {
+      background: var(--bg-dark);
+      border-right: 1px solid var(--border);
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ SECTIONS ═══ */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+      background: linear-gradient(135deg, var(--black-light) 0%, var(--black) 100%);
+      color: var(--primary);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .section-body {
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .section-body.full {
+      grid-template-columns: 1fr;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ INPUTS ═══ */
+    label {
+      display: block;
+      font-size: 10px;
+      color: var(--text-m);
+      margin-bottom: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="time"],
+    input[type="file"],
+    select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text);
+      padding: 6px 8px;
+      font-size: 11px;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(200, 153, 104, 0.1);
+    }
+
+    input[type="file"] {
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ TABS ═══ */
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--bg);
+      border-radius: 5px;
+      padding: 2px;
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+    }
+
+    .tab-btn {
+      padding: 6px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-m);
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 1px 3px rgba(200, 153, 104, 0.3);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: rgba(200, 153, 104, 0.1);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ INFO BOX ═══ */
+    .info-box {
+      background: linear-gradient(135deg, rgba(200, 153, 104, 0.08) 0%, rgba(212, 165, 116, 0.04) 100%);
+      border-left: 3px solid var(--primary);
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: var(--text);
+      margin: 6px 0;
+      grid-column: 1 / -1;
+    }
+
+    .info-box strong {
+      display: block;
+      color: var(--primary);
+      margin-bottom: 2px;
+      font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ BUTTONS ═══ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.3s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-d) 100%);
+      color: #fff;
+      width: 100%;
+      margin-top: 4px;
+      box-shadow: 0 2px 6px rgba(200, 153, 104, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 12px rgba(200, 153, 104, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--bg-dark);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--green) 0%, #45a049 100%);
+      color: #fff;
+      width: 100%;
+      box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-success:hover {
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-small {
+      padding: 5px 10px;
+      font-size: 10px;
+      width: auto;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ MAIN ═══ */
+    .main {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      color: var(--text-m);
+      text-align: center;
+      gap: 16px;
+    }
+
+    .empty-icon {
+      font-size: 56px;
+      opacity: 0.25;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(1.05); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ KPI ═══ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 4px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .kpi.green {
+      border-top-color: var(--green);
+    }
+
+    .kpi.red {
+      border-top-color: var(--red);
+    }
+
+    .kpi-label {
+      font-size: 9px;
+      color: var(--text-m);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      font-weight: 700;
+    }
+
+    .kpi-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .kpi-sub {
+      font-size: 9px;
+      color: var(--text-m);
+      margin-top: 3px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ CHARTS ═══ */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-header {
+      background: linear-gradient(135deg, var(--black-light) 0%, var(--black) 100%);
+      color: var(--primary);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 200px;
+      padding: 12px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ TABLE ═══ */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-header {
+      background: linear-gradient(135deg, var(--black-light) 0%, var(--black) 100%);
+      color: var(--primary);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    thead th {
+      background: var(--bg-dark);
+      padding: 8px 12px;
+      text-align: right;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--primary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th:first-child {
+      text-align: left;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover {
+      background: rgba(200, 153, 104, 0.05);
+    }
+
+    tbody td {
+      padding: 8px 12px;
+      text-align: right;
+      color: var(--text);
+    }
+
+    tbody td:first-child {
+      text-align: left;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ MONTHS GRID ═══ */
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 10px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 8px 0;
+      grid-column: 1 / -1;
+    }
+
+    .month-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 5px;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .month-card label {
+      display: block;
+      font-size: 9px;
+      margin: 0 0 2px;
+    }
+
+    .month-card input {
+      width: 100%;
+      padding: 3px;
+      font-size: 10px;
+    }
+
+    .month-name {
+      font-size: 9px;
+      color: var(--primary);
+      margin-bottom: 2px;
+      font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ RESPONSIVE ═══ */
+    @media (max-width: 1200px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="60" r="55" fill="none" stroke="#D4A574" stroke-width="2.5"/>
+      <circle cx="60" cy="60" r="48" fill="none" stroke="#D4A574" stroke-width="2.5"/>
+      <circle cx="60" cy="60" r="41" fill="none" stroke="#C89968" stroke-width="2"/>
+      <line x1="15" y1="60" x2="105" y2="60" stroke="#C89968" stroke-width="1.5" opacity="0.6"/>
+      <line x1="60" y1="15" x2="60" y2="105" stroke="#C89968" stroke-width="1.5" opacity="0.6"/>
+      <circle cx="60" cy="60" r="8" fill="#D4A574" opacity="0.9"/>
+    </svg>
+    <h1>SoulBaric</h1>
+  </div>
+
+  <div class="lang-selector">
+    <button class="lang-btn active" onclick="setLanguage('es')">🇪🇸 ES</button>
+    <button class="lang-btn" onclick="setLanguage('en')">🇬🇧 EN</button>
+    <button class="lang-btn" onclick="setLanguage('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" onclick="setLanguage('de')">🇩🇪 DE</button>
+    <button class="lang-btn" onclick="setLanguage('it')">🇮🇹 IT</button>
+  </div>
+</header>
+
+<div class="app">
+
+  <!-- ════════════════════════════════════════ SIDEBAR ════════════════ -->
+  <aside class="sidebar">
+
+    <!-- CÁMARA -->
+    <div class="section">
+      <div class="section-header">⚙️ Cámara Hiperbárica</div>
+      <div class="section-body full">
+        <div>
+          <label>Capacidad</label>
+          <div class="tabs">
+            <button class="tab-btn active" data-cap="1" onclick="selectCap(this)">1P</button>
+            <button class="tab-btn" data-cap="2" onclick="selectCap(this)">2P</button>
+            <button class="tab-btn" data-cap="4" onclick="selectCap(this)">4P</button>
+          </div>
+        </div>
+        <div>
+          <label>Nombre Modelo</label>
+          <input type="text" id="modelName" placeholder="Diamond Pro">
+        </div>
+        <div>
+          <label>Precio SIN IVA €</label>
+          <input type="number" id="chamberPriceNet" placeholder="0" min="0" step="100" onchange="calcGrossPrice()" oninput="calcGrossPrice()">
+        </div>
+        <div>
+          <label>IVA %</label>
+          <input type="number" id="ivaRate" value="21" min="0" max="100" step="0.5" onchange="calcGrossPrice()" oninput="calcGrossPrice()">
+        </div>
+        <div>
+          <label>Precio Sesión SIN IVA €</label>
+          <input type="number" id="sessionPrice" placeholder="80" min="0" step="5" onchange="autoCalcSessions()" oninput="autoCalcSessions()">
+        </div>
+        <div class="info-box">
+          <strong>Precio CON IVA: <span id="chamberPriceGross">€0</span></strong>
+        </div>
+        <div>
+          <label>Imagen Cámara</label>
+          <input type="file" id="chamberImageFile" accept="image/*">
+        </div>
+        <div id="chamberImagePreview"></div>
+      </div>
+    </div>
+
+    <!-- OPERATIVIDAD -->
+    <div class="section">
+      <div class="section-header">⏰ Operatividad</div>
+      <div class="section-body">
+        <div>
+          <label>Horas/Día</label>
+          <input type="number" id="hoursPerDay" value="8" min="1" max="24" step="0.5" onchange="autoCalcSessions()" oninput="autoCalcSessions()">
+        </div>
+        <div>
+          <label>Días/Semana</label>
+          <select id="daysPerWeek" onchange="autoCalcSessions()">
+            <option value="5">5 días</option>
+            <option value="6">6 días</option>
+            <option value="7">7 días</option>
+          </select>
+        </div>
+        <div>
+          <label>Duración Sesión</label>
+          <input type="number" id="sessionDuration" value="75" min="15" max="240" step="5" onchange="autoCalcSessions()" oninput="autoCalcSessions()">
+        </div>
+        <div>
+          <label>Días/Mes Operativos</label>
+          <input type="number" id="daysPerMonth" value="22" min="1" max="31" step="1">
+        </div>
+        <div>
+          <label>Horario Inicio</label>
+          <input type="time" id="operatingHoursStart" value="09:00">
+        </div>
+        <div>
+          <label>Horario Fin</label>
+          <input type="time" id="operatingHoursEnd" value="21:00">
+        </div>
+        <div class="info-box">
+          <strong>Sesiones/Día: <span id="maxSessionsDay">0</span></strong><br>
+          <strong>Sesiones/Mes: <span id="sessionsMonth">0</span></strong>
+        </div>
+        <div>
+          <label>Coste Operativo/Mes €</label>
+          <input type="number" id="opCost" placeholder="1200" min="0" step="50">
+        </div>
+      </div>
+    </div>
+
+    <!-- UBICACIÓN -->
+    <div class="section">
+      <div class="section-header">📍 Ubicación & Socio</div>
+      <div class="section-body">
+        <div>
+          <label>Tipo Instalación</label>
+          <select id="locationType">
+            <option value="hotel">Hotel</option>
+            <option value="resort">Resort</option>
+            <option value="clinica">Clínica</option>
+            <option value="gym">Gimnasio</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div>
+          <label>Nombre Establecimiento</label>
+          <input type="text" id="locationName" placeholder="Hotel Gran Sol">
+        </div>
+        <div>
+          <label>Dirección</label>
+          <input type="text" id="facilityAddress" placeholder="Calle Principal 123">
+        </div>
+        <div>
+          <label>Ciudad & Código</label>
+          <input type="text" id="facilityCity" placeholder="29001 Málaga">
+        </div>
+        <div>
+          <label>Empresa Socio</label>
+          <input type="text" id="partnerName" placeholder="Wellness Corp S.L.">
+        </div>
+        <div>
+          <label>Email Socio</label>
+          <input type="email" id="partnerEmail" placeholder="contact@partner.com">
+        </div>
+        <div>
+          <label>Teléfono Socio</label>
+          <input type="text" id="partnerPhone" placeholder="+34 666 555 444">
+        </div>
+        <div>
+          <label>Imagen Instalación</label>
+          <input type="file" id="facilityImageFile" accept="image/*">
+        </div>
+        <div id="facilityImagePreview"></div>
+      </div>
+    </div>
+
+    <!-- INVERSIÓN -->
+    <div class="section">
+      <div class="section-header">💰 Condiciones Inversión</div>
+      <div class="section-body">
+        <div>
+          <label>Transporte €</label>
+          <input type="number" id="transportCost" placeholder="2000" min="0" step="100" onchange="updateInvestmentTotal()" oninput="updateInvestmentTotal()">
+        </div>
+        <div>
+          <label>Instalación €</label>
+          <input type="number" id="installationCost" placeholder="1500" min="0" step="100" onchange="updateInvestmentTotal()" oninput="updateInvestmentTotal()">
+        </div>
+        <div>
+          <label>% Beneficio Inversor</label>
+          <input type="number" id="investPct" value="15" min="1" max="100" step="0.5">
+        </div>
+        <div>
+          <label>Crecimiento Anual %</label>
+          <input type="number" id="growthRate" value="5" min="0" max="50" step="0.5">
+        </div>
+        <div class="info-box">
+          <strong>Cámara: <span id="investChamberPrice">€0</span></strong><br>
+          <strong>Transporte: <span id="investTransportDisplay">€0</span></strong><br>
+          <strong>Instalación: <span id="investInstallDisplay">€0</span></strong><br>
+          <strong style="color: var(--primary); font-size: 12px;">Inversión Total: <span id="investTotalDisplay">€0</span></strong>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="calculate()">📊 CALCULAR PROYECCIÓN</button>
+    <button class="btn btn-secondary" onclick="openProjectsLibrary()" style="margin-top: 2px;">📚 Mis Proyectos</button>
+
+    <div id="save-project-container" style="display:none;">
+      <input type="text" id="projectName" placeholder="Ej: Resort Sol - 2P" style="width:100%;padding:6px;margin-bottom:6px;border:1px solid var(--border);border-radius:5px;font-size:11px;">
+      <button class="btn btn-success" onclick="saveProject()">💾 GUARDAR PROYECTO</button>
+    </div>
+
+  </aside>
+
+  <!-- ════════════════════════════════════════ MAIN ════════════════════ -->
+  <main class="main" id="mainContent">
+    <div class="empty">
+      <div class="empty-icon">📊</div>
+      <p><strong>Configura los parámetros</strong> en el panel izquierdo<br>y haz clic en <strong>CALCULAR PROYECCIÓN</strong></p>
+    </div>
+  </main>
+
+</div>
+
+<!-- ════════════════════════════════════════ MODALES ════════════════════ -->
+
+<!-- PROJECTS LIBRARY MODAL -->
+<div id="projectsLibraryModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--card);border-radius:var(--radius);width:100%;max-width:900px;max-height:85vh;overflow-y:auto;padding:24px;box-shadow:0 10px 40px rgba(0,0,0,.3);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--primary);">
+      <h2 style="color:var(--text);margin:0;font-size:18px;font-weight:700;">📚 Mis Proyectos Guardados</h2>
+      <button onclick="closeProjectsLibrary()" style="border:none;background:none;font-size:24px;cursor:pointer;color:var(--text-m);">✕</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;">
+      <input type="text" id="projectSearchInput" placeholder="🔍 Buscar..." style="grid-column:1/-1;padding:8px;border:1px solid var(--border);border-radius:5px;font-size:12px;">
+      <button class="btn btn-primary btn-small" style="width:100%;" onclick="createFromTemplate()">📋 Plantillas</button>
+      <button class="btn btn-primary btn-small" style="width:100%;" onclick="exportProjects()">📤 Exportar</button>
+      <button class="btn btn-primary btn-small" style="width:100%;" onclick="importProjects()">📥 Importar</button>
+    </div>
+
+    <div id="projectsLibraryList" style="display:grid;gap:10px;"></div>
+    <input type="file" id="projectImportFile" style="display:none;" accept=".json" onchange="handleProjectImport()">
+  </div>
+</div>
+
+<script>
+// TRANSLATIONS & GLOBALS
+const translations = {
+  es: {
+    header_subtitle: "Cálculo ROI y proyecciones para cámaras hiperbáricas"
+  },
+  en: { header_subtitle: "ROI calculation and projections for hyperbaric chambers" },
+  fr: { header_subtitle: "Calcul du ROI et projections pour chambres hyperbare" },
+  de: { header_subtitle: "ROI-Berechnung und Prognosen für Überdruckkammern" },
+  it: { header_subtitle: "Calcolo ROI e proiezioni per camere iperbariche" }
+};
+
+let currentLanguage = 'es';
+let currentCap = 1;
+let monthlyOccupancy = Array(12).fill(70);
+
+// IMAGE HANDLING
+function handleImageUpload(inputId, previewId) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  input.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        preview.innerHTML = `<div style="border:1px solid var(--border);border-radius:5px;padding:6px;background:var(--bg);margin:6px 0;"><img src="${event.target.result}" style="max-width:100%;max-height:120px;border-radius:4px;"></div>`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+handleImageUpload('chamberImageFile', 'chamberImagePreview');
+handleImageUpload('facilityImageFile', 'facilityImagePreview');
+
+// CALCULATIONS
+function setLanguage(lang) {
+  currentLanguage = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function selectCap(btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentCap = parseInt(btn.dataset.cap);
+}
+
+function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function vs(id) { return document.getElementById(id).value.trim(); }
+function fmt(n, d = 0) { return Number(n).toLocaleString('es-ES', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+function fmtEur(n, d = 0) { return '€' + fmt(n, d); }
+
+function calcGrossPrice() {
+  const net = v('chamberPriceNet');
+  const iva = v('ivaRate');
+  const gross = net * (1 + iva / 100);
+  document.getElementById('chamberPriceGross').textContent = fmtEur(gross, 2);
+  updateInvestmentTotal();
+}
+
+function autoCalcSessions() {
+  const hours = v('hoursPerDay');
+  const duration = v('sessionDuration');
+  const daysWeek = parseInt(v('daysPerWeek'));
+  const maxPerDay = Math.floor((hours * 60) / duration);
+  const perMonth = maxPerDay * daysWeek * 4.33;
+  document.getElementById('maxSessionsDay').textContent = maxPerDay;
+  document.getElementById('sessionsMonth').textContent = fmt(perMonth, 0);
+}
+
+function updateInvestmentTotal() {
+  const net = v('chamberPriceNet');
+  const iva = v('ivaRate');
+  const chamberGross = net * (1 + iva / 100);
+  const transportCost = v('transportCost');
+  const installationCost = v('installationCost');
+  const totalInvestment = chamberGross + transportCost + installationCost;
+  document.getElementById('investChamberPrice').textContent = fmtEur(chamberGross);
+  document.getElementById('investTransportDisplay').textContent = fmtEur(transportCost);
+  document.getElementById('investInstallDisplay').textContent = fmtEur(installationCost);
+  document.getElementById('investTotalDisplay').textContent = fmtEur(totalInvestment);
+}
+
+function buildScenario() {
+  const netPrice = v('chamberPriceNet');
+  const iva = v('ivaRate');
+  const grossPrice = netPrice * (1 + iva / 100);
+  const transportCost = v('transportCost');
+  const installationCost = v('installationCost');
+  const investAmount = grossPrice + transportCost + installationCost;
+  const sessionPrice = v('sessionPrice');
+  const hours = v('hoursPerDay');
+  const duration = v('sessionDuration');
+  const daysWeek = parseInt(v('daysPerWeek'));
+  const daysMonth = v('daysPerMonth');
+  const opCost = v('opCost');
+  const investPct = v('investPct') / 100;
+  const growthRate = v('growthRate') / 100;
+  const years = 5;
+
+  const modelName = vs('modelName') || `Cámara ${currentCap}P`;
+  const locationName = vs('locationName') || vs('locationType');
+
+  const maxSessionsDay = Math.floor((hours * 60) / duration);
+  const sessionsPerMonth = maxSessionsDay * daysWeek * 4.33;
+
+  const monthlyData = [];
+  let totalAccumulated = 0;
+  let amortMonth = null;
+  let monthCount = 0;
+
+  for (let m = 0; m < 12; m++) {
+    const occ = monthlyOccupancy[m] / 100;
+    const sessionsThisMonth = Math.round(sessionsPerMonth * occ);
+    const revenue = sessionsThisMonth * sessionPrice * currentCap;
+    const netMonthly = revenue - opCost;
+    const investorMonth = netMonthly > 0 ? netMonthly * investPct : 0;
+    monthlyData.push({ month: ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][m], occupancy: monthlyOccupancy[m], sessions: sessionsThisMonth, revenue, netProfit: netMonthly, investorReturn: investorMonth });
+  }
+
+  const yearlyData = [];
+  for (let y = 1; y <= years; y++) {
+    const factor = Math.pow(1 + growthRate, y - 1);
+    let yearRev = 0, yearNet = 0, yearInv = 0;
+    for (let m = 0; m < 12; m++) {
+      const occ = monthlyOccupancy[m] / 100;
+      const sessions = Math.round(sessionsPerMonth * occ * factor);
+      const mRev = sessions * sessionPrice * currentCap;
+      const mNet = mRev - opCost;
+      const mInv = mNet > 0 ? mNet * investPct : 0;
+      yearRev += mRev;
+      yearNet += mNet;
+      yearInv += mInv;
+      totalAccumulated += mInv;
+      monthCount++;
+      if (amortMonth === null && totalAccumulated >= investAmount && investAmount > 0) { amortMonth = monthCount; }
+    }
+    yearlyData.push({ year: y, revenue: yearRev, netProfit: yearNet, investorReturn: yearInv, accumulated: totalAccumulated });
+  }
+
+  const roi = investAmount > 0 ? ((totalAccumulated - investAmount) / investAmount) * 100 : 0;
+  const amortPct = investAmount > 0 ? Math.min((totalAccumulated / investAmount) * 100, 100) : 0;
+
+  return { modelName, currentCap, locationName, chamberPriceNet: netPrice, chamberPriceGross: grossPrice, ivaRate: iva, sessionPrice, hours, duration, daysWeek, maxSessionsDay, sessionsPerMonth, daysMonth, opCost, investAmount, investPct, years, growthRate, monthlyData, yearlyData, amortMonth, totalAccumulated, roi, amortPct };
+}
+
+function getProjects() { return JSON.parse(localStorage.getItem('soulbaric_projects')) || []; }
+
+function openProjectsLibrary() {
+  document.getElementById('projectsLibraryModal').style.display = 'flex';
+  renderProjectsLibrary();
+}
+
+function closeProjectsLibrary() {
+  document.getElementById('projectsLibraryModal').style.display = 'none';
+}
+
+function renderProjectsLibrary() {
+  const projects = getProjects();
+  const container = document.getElementById('projectsLibraryList');
+  if (projects.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-m);text-align:center;padding:30px;">Aún no hay proyectos. Crea uno haciendo clic en <strong>CALCULAR</strong> y <strong>GUARDAR PROYECTO</strong>.</p>';
+    return;
+  }
+  container.innerHTML = '';
+  projects.forEach((proj, idx) => {
+    const versionInfo = proj.versions ? ` (v${proj.versions.length + 1})` : ' (v1)';
+    const partnerInfo = proj.partner && proj.partner.name ? ` • ${proj.partner.name}` : '';
+    const html = `
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;">
+        <div>
+          <div style="font-weight:700;color:var(--primary);font-size:12px;margin-bottom:4px;">${proj.name}${versionInfo}</div>
+          <div style="font-size:10px;color:var(--text-m);display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
+            <span>🏢 ${proj.chamber.capacity}P</span>
+            <span>€${proj.investment.total.toLocaleString('es-ES')}</span>
+            <span>📊 ROI ${Math.round(proj.scenario.roi)}%</span>
+          </div>
+          ${partnerInfo ? `<div style="font-size:9px;color:var(--text-m);">📋${partnerInfo}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <button class="btn btn-small" style="background:var(--primary);color:#fff;width:80px;" onclick="loadProjectToForm(${idx})">📂 Usar</button>
+          <button class="btn btn-small" style="background:var(--accent);color:#000;width:80px;" onclick="duplicateProject(${idx})">📋 Copiar</button>
+          <button class="btn btn-small" style="background:var(--red);color:#fff;width:80px;" onclick="deleteProjectLibrary(${idx})">✕ Borrar</button>
+        </div>
+      </div>
+    `;
+    container.innerHTML += html;
+  });
+}
+
+function loadProjectToForm(idx) {
+  const projects = getProjects();
+  const proj = projects[idx];
+  currentCap = proj.chamber.capacity;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-cap="${currentCap}"]`).classList.add('active');
+  document.getElementById('modelName').value = proj.chamber.modelName;
+  document.getElementById('chamberPriceNet').value = proj.chamber.priceNet;
+  document.getElementById('ivaRate').value = proj.chamber.ivaRate;
+  document.getElementById('sessionPrice').value = proj.chamber.sessionPrice;
+  document.getElementById('hoursPerDay').value = proj.operability.hoursPerDay;
+  document.getElementById('daysPerWeek').value = proj.operability.daysPerWeek;
+  document.getElementById('sessionDuration').value = proj.operability.sessionDuration;
+  document.getElementById('daysPerMonth').value = proj.operability.daysPerMonth;
+  document.getElementById('opCost').value = proj.operability.opCost;
+  if (proj.operability.hoursStart) document.getElementById('operatingHoursStart').value = proj.operability.hoursStart;
+  if (proj.operability.hoursEnd) document.getElementById('operatingHoursEnd').value = proj.operability.hoursEnd;
+  document.getElementById('locationType').value = proj.location.type;
+  document.getElementById('locationName').value = proj.location.name;
+  if (proj.location.address) document.getElementById('facilityAddress').value = proj.location.address;
+  if (proj.location.city) document.getElementById('facilityCity').value = proj.location.city;
+  if (proj.partner) {
+    if (proj.partner.name) document.getElementById('partnerName').value = proj.partner.name;
+    if (proj.partner.email) document.getElementById('partnerEmail').value = proj.partner.email;
+    if (proj.partner.phone) document.getElementById('partnerPhone').value = proj.partner.phone;
+  }
+  document.getElementById('transportCost').value = proj.investment.transportCost;
+  document.getElementById('installationCost').value = proj.investment.installationCost;
+  document.getElementById('investPct').value = proj.investment.investorPct;
+  document.getElementById('growthRate').value = proj.investment.growthRate;
+  monthlyOccupancy = [...proj.monthlyOccupancy];
+  calcGrossPrice();
+  autoCalcSessions();
+  updateInvestmentTotal();
+  closeProjectsLibrary();
+  alert('✅ Proyecto cargado. Haz clic en CALCULAR para actualizar.');
+}
+
+function saveProject() {
+  const projectName = document.getElementById('projectName').value.trim();
+  if (!projectName) { alert('⚠️ Ingresa un nombre para el proyecto'); return; }
+  const scenario = buildScenario();
+  let chamberImage = null, facilityImage = null;
+  if (document.getElementById('chamberImageFile').files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) { chamberImage = e.target.result; };
+    reader.readAsDataURL(document.getElementById('chamberImageFile').files[0]);
+  }
+  if (document.getElementById('facilityImageFile').files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) { facilityImage = e.target.result; };
+    reader.readAsDataURL(document.getElementById('facilityImageFile').files[0]);
+  }
+  const project = {
+    id: Date.now(),
+    name: projectName,
+    chamber: { capacity: currentCap, modelName: vs('modelName'), priceNet: v('chamberPriceNet'), ivaRate: v('ivaRate'), sessionPrice: v('sessionPrice'), image: chamberImage },
+    operability: { hoursPerDay: v('hoursPerDay'), daysPerWeek: parseInt(v('daysPerWeek')), sessionDuration: v('sessionDuration'), daysPerMonth: v('daysPerMonth'), opCost: v('opCost'), hoursStart: vs('operatingHoursStart'), hoursEnd: vs('operatingHoursEnd') },
+    location: { type: vs('locationType'), name: vs('locationName'), address: vs('facilityAddress'), city: vs('facilityCity'), image: facilityImage },
+    partner: { name: vs('partnerName'), email: vs('partnerEmail'), phone: vs('partnerPhone') },
+    investment: { transportCost: v('transportCost'), installationCost: v('installationCost'), total: scenario.investAmount, investorPct: v('investPct'), growthRate: v('growthRate') },
+    monthlyOccupancy: [...monthlyOccupancy],
+    scenario: scenario,
+    createdDate: new Date().toLocaleDateString('es-ES')
+  };
+  let projects = getProjects();
+  projects.push(project);
+  localStorage.setItem('soulbaric_projects', JSON.stringify(projects));
+  document.getElementById('projectName').value = '';
+  alert('✅ Proyecto guardado correctamente');
+}
+
+function duplicateProject(idx) {
+  const projects = getProjects();
+  const orig = projects[idx];
+  const newProj = JSON.parse(JSON.stringify(orig));
+  newProj.id = Date.now();
+  newProj.name = `${orig.name} (Copia)`;
+  newProj.createdDate = new Date().toLocaleDateString('es-ES');
+  newProj.versions = [];
+  projects.push(newProj);
+  localStorage.setItem('soulbaric_projects', JSON.stringify(projects));
+  renderProjectsLibrary();
+  alert('✅ Proyecto duplicado');
+}
+
+function deleteProjectLibrary(idx) {
+  const projects = getProjects();
+  const nombre = projects[idx]?.name || 'este proyecto';
+  confirmDelete(nombre, () => {
+    const projects2 = getProjects();
+    projects2.splice(idx, 1);
+    localStorage.setItem('soulbaric_projects', JSON.stringify(projects2));
+    renderProjectsLibrary();
+  });
+}
+
+function exportProjects() {
+  const projects = getProjects();
+  if (projects.length === 0) { alert('No hay proyectos para exportar'); return; }
+  const data = { exportDate: new Date().toLocaleString('es-ES'), version: '1.0', projects: projects };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `soulbaric-proyectos-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  alert(`✅ ${projects.length} proyecto(s) exportado(s)`);
+}
+
+function importProjects() {
+  document.getElementById('projectImportFile').click();
+}
+
+function handleProjectImport() {
+  const file = document.getElementById('projectImportFile').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const newProjects = data.projects || data;
+      if (!Array.isArray(newProjects)) { alert('Formato de archivo inválido'); return; }
+      let projects = getProjects();
+      let imported = 0;
+      newProjects.forEach(proj => {
+        proj.id = Date.now() + Math.random();
+        proj.name = `${proj.name} (importado)`;
+        projects.push(proj);
+        imported++;
+      });
+      localStorage.setItem('soulbaric_projects', JSON.stringify(projects));
+      renderProjectsLibrary();
+      alert(`✅ ${imported} proyecto(s) importado(s)`);
+    } catch (err) {
+      alert('Error al leer archivo: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  document.getElementById('projectImportFile').value = '';
+}
+
+function createFromTemplate() {
+  alert('Función de plantillas disponible próximamente');
+  closeProjectsLibrary();
+}
+
+function calculate() {
+  document.getElementById('save-project-container').style.display = 'block';
+  alert('✅ Proyección calculada. Guarda el proyecto si deseas guardarlo.');
+}
+
+// INIT
+autoCalcSessions();
+calcGrossPrice();
+updateInvestmentTotal();
+</script>
+<script src="asistente-chat.js"></script>
+</body>
+</html>

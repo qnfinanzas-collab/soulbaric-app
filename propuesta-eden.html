@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Propuesta EDEN · Beach Club Estepona — SoulBaric CellPods</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C89968; --gold-d: #8B6F47; --gold-l: #D4A574; --gold-bg: #fdf6ee;
+      --bg: #faf8f6; --bg-warm: #f0ebe5; --card: #ffffff;
+      --border: #e8e4df; --text: #3d3530; --text-m: #8b7d76; --text-s: #b8a99f;
+      --blue: #1a3a5c; --green: #1b5e20; --red: #b71c1c;
+      --radius: 10px; --radius-l: 16px;
+    }
+
+    body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
+
+    /* ── NAV ── */
+    nav {
+      background: #1a1a1a; border-bottom: 3px solid var(--gold);
+      padding: 14px 32px; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; }
+    .nav-brand span { font-size: 16px; font-weight: 700; color: var(--gold); }
+    .nav-brand small { font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; }
+    .nav-actions { display: flex; gap: 8px; }
+    .nav-btn { padding: 7px 14px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--gold); color: var(--gold); background: transparent; text-decoration: none; transition: all 0.2s; }
+    .nav-btn:hover { background: var(--gold); color: #fff; }
+    .nav-btn.solid { background: var(--gold); color: #fff; }
+    .nav-btn.solid:hover { background: var(--gold-d); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, #1a1a1a 0%, #2d2520 55%, #1a2a1a 100%);
+      padding: 80px 32px 70px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,153,104,0.18) 0%, transparent 70%);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(200,153,104,0.15); border: 1px solid rgba(200,153,104,0.35);
+      color: var(--gold-l); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 6px 16px; border-radius: 20px; margin-bottom: 20px; position: relative;
+    }
+    .hero h1 { font-size: 42px; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 8px; position: relative; letter-spacing: -0.5px; }
+    .hero h1 span { color: var(--gold); }
+    .hero .hero-sub { font-size: 16px; color: rgba(255,255,255,0.65); margin-bottom: 32px; position: relative; }
+    .hero-metrics { display: flex; justify-content: center; gap: 40px; position: relative; flex-wrap: wrap; }
+    .hero-metric { text-align: center; }
+    .hero-metric .val { font-size: 28px; font-weight: 800; color: var(--gold); line-height: 1; }
+    .hero-metric .lbl { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+    .hero-metric .sep { width: 1px; height: 40px; background: rgba(200,153,104,0.25); align-self: center; }
+
+    /* ── SECTIONS ── */
+    .section { padding: 60px 32px; max-width: 960px; margin: 0 auto; }
+    .section-header { margin-bottom: 36px; }
+    .section-tag { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .section-title { font-size: 26px; font-weight: 800; color: var(--text); line-height: 1.2; }
+    .section-desc { font-size: 13px; color: var(--text-m); margin-top: 8px; max-width: 560px; line-height: 1.7; }
+
+    /* ── CARDS ── */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 24px; }
+    .card-gold { border-color: var(--gold); background: var(--gold-bg); }
+
+    /* ── GRID LAYOUTS ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+    /* ── METRIC CARDS ── */
+    .m-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+    .m-card .m-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-m); margin-bottom: 4px; }
+    .m-card .m-value { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1.1; }
+    .m-card .m-value.gold { color: var(--gold); }
+    .m-card .m-value.green { color: #2e7d32; }
+    .m-card .m-sub { font-size: 10px; color: var(--text-m); margin-top: 3px; }
+
+    /* ── TABLE ── */
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead th { background: var(--text); color: #fff; padding: 10px 14px; text-align: left; font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase; }
+    thead th:first-child { border-radius: 6px 0 0 0; }
+    thead th:last-child { border-radius: 0 6px 0 0; }
+    tbody tr:nth-child(even) { background: var(--bg); }
+    tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:hover { background: var(--bg-warm); }
+    .t-gold { color: var(--gold); font-weight: 700; }
+    .t-green { color: #2e7d32; font-weight: 700; }
+    .t-red { color: #c62828; font-weight: 700; }
+    .t-total { background: #1a1a1a !important; color: #fff; font-weight: 700; }
+    .t-total td { color: #fff !important; border-color: #333; }
+    .t-total td.gold-val { color: var(--gold-l) !important; }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 32px; }
+    .timeline::before { content: ''; position: absolute; left: 10px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(to bottom, var(--gold), var(--border)); }
+    .tl-item { position: relative; margin-bottom: 24px; }
+    .tl-dot { position: absolute; left: -26px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--gold); }
+    .tl-date { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+    .tl-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .tl-desc { font-size: 12px; color: var(--text-m); line-height: 1.6; }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight { background: linear-gradient(135deg, #1a1a1a, #2d2520); color: #fff; border-radius: var(--radius-l); padding: 32px; }
+    .highlight h3 { font-size: 18px; font-weight: 800; color: var(--gold); margin-bottom: 6px; }
+    .highlight p { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.7; }
+
+    /* ── OCCUPATION BAR ── */
+    .occ-bar-wrap { margin: 6px 0 2px; }
+    .occ-bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+    .occ-fill { height: 100%; border-radius: 3px; background: linear-gradient(to right, var(--gold), var(--gold-l)); transition: width 0.6s; }
+
+    /* ── INVESTMENT TIERS ── */
+    .tier { background: var(--card); border: 2px solid var(--border); border-radius: var(--radius-l); padding: 24px; position: relative; transition: all 0.2s; }
+    .tier:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(200,153,104,0.12); }
+    .tier.featured { border-color: var(--gold); background: var(--gold-bg); }
+    .tier .tier-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 3px 12px; border-radius: 10px; white-space: nowrap; text-transform: uppercase; }
+    .tier .tier-amount { font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+    .tier .tier-pct { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 16px; }
+    .tier-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .tier-row:last-child { border-bottom: none; }
+    .tier-row .lbl { color: var(--text-m); }
+    .tier-row .val { font-weight: 700; color: var(--text); }
+    .tier-row .val.green { color: #2e7d32; }
+
+    /* ── LEGAL BOX ── */
+    .legal-box { background: var(--bg-warm); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; }
+    .legal-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed var(--border); font-size: 12px; }
+    .legal-row:last-child { border-bottom: none; }
+    .legal-row .key { color: var(--text-m); font-weight: 600; }
+    .legal-row .val { color: var(--text); text-align: right; }
+
+    /* ── FOOTER ── */
+    footer { background: #1a1a1a; color: rgba(255,255,255,0.5); text-align: center; padding: 32px; font-size: 10px; line-height: 2; }
+    footer strong { color: var(--gold); }
+    .divider { height: 1px; background: var(--border); max-width: 960px; margin: 0 auto; }
+
+    /* ── PRINT ── */
+    @media print {
+      nav .nav-actions, .no-print { display: none !important; }
+      .hero { padding: 40px 24px; }
+      .section { padding: 30px 24px; }
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-up { opacity: 1; transform: none; }
+
+    /* ── PILOT TABLE SPECIAL ── */
+    .pilot-neg { color: #c62828; }
+    .pilot-zero { color: #888; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <svg width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="3" fill="none"/>
+      <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="2"/>
+      <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="2"/>
+      <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="2"/>
+      <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="2"/>
+      <circle cx="43" cy="50" r="7" stroke="#C89968" stroke-width="2" fill="none"/>
+      <circle cx="57" cy="50" r="7" stroke="#C89968" stroke-width="2" fill="none"/>
+      <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+      <circle cx="50" cy="19" r="3.5" fill="#C89968"/>
+      <circle cx="43" cy="14" r="2.5" fill="#C89968"/>
+      <circle cx="57" cy="14" r="2.5" fill="#C89968"/>
+      <circle cx="50" cy="81" r="3.5" fill="#C89968"/>
+      <circle cx="43" cy="86" r="2.5" fill="#C89968"/>
+      <circle cx="57" cy="86" r="2.5" fill="#C89968"/>
+      <circle cx="19" cy="50" r="3.5" fill="#C89968"/>
+      <circle cx="14" cy="43" r="2.5" fill="#C89968"/>
+      <circle cx="14" cy="57" r="2.5" fill="#C89968"/>
+      <circle cx="81" cy="50" r="3.5" fill="#C89968"/>
+      <circle cx="86" cy="43" r="2.5" fill="#C89968"/>
+      <circle cx="86" cy="57" r="2.5" fill="#C89968"/>
+    </svg>
+    <div>
+      <span>SoulBaric CellPods</span>
+      <small>Propuesta Colaboración · EDEN</small>
+    </div>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="window.print()">🖨 Imprimir</button>
+    <a href="eden-import.html" class="nav-btn">💾 Importar proyecto</a>
+    <a href="home.html" class="nav-btn solid">← Volver</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🌊 Propuesta exclusiva · Abril 2026</div>
+  <h1>EDEN <span>Beach Club</span></h1>
+  <p class="hero-sub">Paseo Marítimo · Estepona, Málaga · Colaboración SoulBaric CellPods</p>
+  <div class="hero-metrics">
+    <div class="hero-metric"><div class="val">85€</div><div class="lbl">Precio sesión</div></div>
+    <div class="hero-metric sep"></div>
+    <div class="hero-metric"><div class="val">288</div><div class="lbl">Sesiones/mes 100%</div></div>
+    <div class="hero-metric sep"></div>
+    <div class="hero-metric"><div class="val">10%</div><div class="lbl">BNP para EDEN</div></div>
+    <div class="hero-metric sep"></div>
+    <div class="hero-metric"><div class="val">7.000€</div><div class="lbl">Activación piloto</div></div>
+    <div class="hero-metric sep"></div>
+    <div class="hero-metric"><div class="val">90d</div><div class="lbl">Período piloto</div></div>
+  </div>
+</section>
+
+<!-- SECCIÓN 1 — EL CONCEPTO -->
+<div class="section fade-up">
+  <div class="section-header">
+    <div class="section-tag">01 · El Concepto</div>
+    <h2 class="section-title">CellPods HP750 en EDEN Beach Club</h2>
+    <p class="section-desc">Instalación de una cámara hiperbárica de oxígeno SoulBaric HP750 en las instalaciones de EDEN Beach Club. Un servicio premium de bienestar que complementa la oferta gastronómica y de lifestyle del club.</p>
+  </div>
+  <div class="grid-4">
+    <div class="m-card">
+      <div class="m-label">Modelo</div>
+      <div class="m-value" style="font-size:15px;">HP750</div>
+      <div class="m-sub">SoulBaric CellPods · 1 plaza</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Duración sesión</div>
+      <div class="m-value gold">75 min</div>
+      <div class="m-sub">Protocolo estándar</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Operación diaria</div>
+      <div class="m-value">12 h</div>
+      <div class="m-sub">09:00 — 21:00 · 7 días</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Sesiones/día (100%)</div>
+      <div class="m-value">9,6</div>
+      <div class="m-sub">288 sesiones/mes</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 2 — PRECIO Y FACTURACIÓN -->
+<div class="section fade-up">
+  <div class="section-header">
+    <div class="section-tag">02 · Precio y Facturación</div>
+    <h2 class="section-title">Estructura de Ingresos</h2>
+  </div>
+  <div class="grid-3" style="margin-bottom:20px;">
+    <div class="m-card card-gold">
+      <div class="m-label">Precio al cliente (IVA incl.)</div>
+      <div class="m-value gold" style="font-size:28px;">85,00 €</div>
+      <div class="m-sub">Por sesión · 75 minutos</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Precio base (sin IVA)</div>
+      <div class="m-value">70,25 €</div>
+      <div class="m-sub">IVA 21% = 14,75 €</div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Facturación máxima/mes</div>
+      <div class="m-value green">20.232 €</div>
+      <div class="m-sub">288 sesiones × 70,25€ (sin IVA)</div>
+    </div>
+  </div>
+
+  <!-- Tabla de facturación por ocupación -->
+  <table>
+    <thead>
+      <tr>
+        <th>Ocupación</th><th>Sesiones/mes</th><th>Facturación sin IVA</th>
+        <th>Facturación con IVA</th><th>BNP estimado</th><th>EDEN 10% BNP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>30% <span style="font-size:10px;color:#888;">(piloto mes 1)</span></td>
+        <td>86</td><td>6.042 €</td><td>7.311 €</td>
+        <td class="pilot-neg">−137 € <span style="font-size:10px;">(break-even)</span></td>
+        <td class="pilot-zero">0 €</td>
+      </tr>
+      <tr>
+        <td>50% <span style="font-size:10px;color:#888;">(piloto mes 2–3)</span></td>
+        <td>144</td><td>10.116 €</td><td>12.240 €</td>
+        <td class="t-green">3.850 €</td><td class="t-gold">385 €</td>
+      </tr>
+      <tr>
+        <td>60%</td>
+        <td>173</td><td>12.153 €</td><td>14.705 €</td>
+        <td class="t-green">5.887 €</td><td class="t-gold">589 €</td>
+      </tr>
+      <tr>
+        <td>75% <span style="font-size:10px;color:#888;">(invierno base)</span></td>
+        <td>216</td><td>15.174 €</td><td>18.360 €</td>
+        <td class="t-green">8.800 €</td><td class="t-gold">880 €</td>
+      </tr>
+      <tr>
+        <td>85% <span style="font-size:10px;color:#888;">(media temporada)</span></td>
+        <td>245</td><td>17.211 €</td><td>20.825 €</td>
+        <td class="t-green">10.793 €</td><td class="t-gold">1.079 €</td>
+      </tr>
+      <tr>
+        <td><strong>100%</strong> <span style="font-size:10px;color:#888;">(temporada alta)</span></td>
+        <td><strong>288</strong></td><td><strong>20.232 €</strong></td><td><strong>24.481 €</strong></td>
+        <td class="t-green"><strong>13.750 €</strong></td><td class="t-gold"><strong>1.375 €</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:10px;color:var(--text-m);margin-top:8px;">
+    BNP = Beneficio Neto del Proyecto = Facturación sin IVA − Costes directos. Punto de equilibrio: <strong>88 sesiones/mes (30,6% ocupación)</strong>.
+  </p>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 3 — COSTES -->
+<div class="section fade-up">
+  <div class="section-header">
+    <div class="section-tag">03 · Estructura de Costes</div>
+    <h2 class="section-title">Costes Operativos Mensuales</h2>
+    <p class="section-desc">Desglose completo de los costes directos de operación de la cámara hiperbárica en las instalaciones de EDEN.</p>
+  </div>
+  <div class="grid-2">
+    <table>
+      <thead><tr><th>Concepto</th><th>Tipo</th><th>Importe/mes</th></tr></thead>
+      <tbody>
+        <tr><td>Operativa / Personal</td><td style="font-size:10px;color:var(--text-m);">Fijo</td><td class="t-gold">3.750 €</td></tr>
+        <tr><td>Servicio externo cámara</td><td style="font-size:10px;color:var(--text-m);">Fijo</td><td class="t-gold">1.500 €</td></tr>
+        <tr><td>Marketing del proyecto</td><td style="font-size:10px;color:var(--text-m);">Fijo</td><td class="t-gold">500 €</td></tr>
+        <tr><td>Electricidad</td><td style="font-size:10px;color:var(--text-m);">Fijo</td><td class="t-gold">300 €</td></tr>
+        <tr><td>Consumibles</td><td style="font-size:10px;color:var(--text-m);">Variable · 1,50€/sesión</td><td class="t-gold">216–432 €</td></tr>
+        <tr class="t-total"><td><strong>TOTAL costes fijos</strong></td><td></td><td class="gold-val"><strong>6.050 €</strong></td></tr>
+      </tbody>
+    </table>
+    <div>
+      <div class="card" style="margin-bottom:12px;">
+        <div class="m-label" style="margin-bottom:6px;">Punto de equilibrio</div>
+        <div style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:2px;">88 sesiones<span style="font-size:14px;color:var(--gold);"> / mes</span></div>
+        <div style="font-size:12px;color:var(--text-m);">Equivale al <strong>30,6%</strong> de ocupación</div>
+        <div style="margin-top:10px;">
+          <div class="occ-bar-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-m);margin-bottom:3px;"><span>Break-even</span><span>30,6%</span></div>
+            <div class="occ-bar"><div class="occ-fill" style="width:30.6%;background:linear-gradient(to right,#c62828,#e57373);"></div></div>
+          </div>
+          <div class="occ-bar-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-m);margin-bottom:3px;"><span>Base (temporada media)</span><span>85%</span></div>
+            <div class="occ-bar"><div class="occ-fill" style="width:85%;"></div></div>
+          </div>
+          <div class="occ-bar-wrap">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-m);margin-bottom:3px;"><span>Alta temporada</span><span>100%</span></div>
+            <div class="occ-bar"><div class="occ-fill" style="width:100%;"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card card-gold">
+        <div class="m-label" style="margin-bottom:4px;">Aportación EDEN como Colaborador</div>
+        <div style="font-size:24px;font-weight:800;color:var(--gold);">10% del BNP</div>
+        <div style="font-size:11px;color:var(--text-m);margin-top:4px;">Abono mensual sobre Beneficio Neto del Proyecto real y auditado</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 4 — PILOTO 90 DÍAS -->
+<div class="section fade-up">
+  <div class="section-header">
+    <div class="section-tag">04 · Piloto 90 Días</div>
+    <h2 class="section-title">Fase de Arranque — 1 Cámara</h2>
+    <p class="section-desc">Durante los primeros 90 días validamos el modelo de negocio en las instalaciones de EDEN con proyecciones conservadoras de ocupación.</p>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="highlight">
+      <h3>Condiciones del Piloto</h3>
+      <p style="margin-top:12px;line-height:2;">
+        <strong style="color:var(--gold-l);">Activación:</strong> 7.000 € (pago en dos tramos)<br>
+        <strong style="color:var(--gold-l);">Tramo 1:</strong> 2.000 € en la firma del acuerdo<br>
+        <strong style="color:var(--gold-l);">Tramo 2:</strong> 5.000 € antes de la instalación<br>
+        <strong style="color:var(--gold-l);">Duración:</strong> 90 días naturales<br>
+        <strong style="color:var(--gold-l);">Cámaras:</strong> 1 unidad HP750<br>
+        <strong style="color:var(--gold-l);">Inicio:</strong> Abril 2026
+      </p>
+    </div>
+    <div>
+      <table>
+        <thead>
+          <tr><th>Mes</th><th>Ocup.</th><th>Sesiones</th><th>Facturación</th><th>BNP</th><th>EDEN 10%</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Mes 1</strong></td><td>30%</td><td>86</td>
+            <td>6.042 €</td><td class="pilot-neg">−137 €</td><td class="pilot-zero">0 €</td>
+          </tr>
+          <tr>
+            <td><strong>Mes 2</strong></td><td>50%</td><td>144</td>
+            <td>10.116 €</td><td class="t-green">3.850 €</td><td class="t-gold">385 €</td>
+          </tr>
+          <tr>
+            <td><strong>Mes 3</strong></td><td>50%</td><td>144</td>
+            <td>10.116 €</td><td class="t-green">3.850 €</td><td class="t-gold">385 €</td>
+          </tr>
+          <tr class="t-total">
+            <td><strong>TOTAL</strong></td><td></td><td><strong>374</strong></td>
+            <td class="gold-val"><strong>26.274 €</strong></td>
+            <td class="gold-val"><strong>7.563 €</strong></td>
+            <td class="gold-val"><strong>770 €</strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:10px;color:var(--text-m);margin-top:8px;">
+        En el mes 1, el BNP es negativo por baja ocupación — EDEN no recibe distribución ese mes. A partir del mes 2 el negocio es rentable.
+      </p>
+    </div>
+  </div>
+
+  <!-- Timeline piloto -->
+  <div class="card" style="padding:28px;">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:20px;">Plan de Implementación</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Firma del acuerdo · Abril 2026</div>
+        <div class="tl-title">Pago inicial: 2.000 €</div>
+        <div class="tl-desc">Firma del contrato de colaboración. Inicio de gestiones de instalación y permisos.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Pre-instalación · Abril–Mayo 2026</div>
+        <div class="tl-title">Pago antes instalación: 5.000 €</div>
+        <div class="tl-desc">Adaptación del espacio, logística de instalación. Total activación piloto: <strong>7.000 €</strong>.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Mes 1 piloto · Mayo 2026</div>
+        <div class="tl-title">Arranque comercial — 30% ocupación objetivo</div>
+        <div class="tl-desc">86 sesiones previstas. BNP negativo por costes de arranque — sin distribución al colaborador este mes.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Mes 2–3 piloto · Jun–Jul 2026</div>
+        <div class="tl-title">Estabilización — 50% ocupación</div>
+        <div class="tl-desc">144 sesiones/mes. BNP positivo: 3.850€/mes. EDEN recibe 385 €/mes.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--gold-d);"></div>
+        <div class="tl-date">Post-piloto · Agosto 2026</div>
+        <div class="tl-title">Evaluación y transición a modelo completo</div>
+        <div class="tl-desc">Valoración conjunta. Activación opción 5 años o continuación piloto. Alta temporada — 100% ocupación objetivo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 5 — MODELO COMPLETO 5 AÑOS -->
+<div class="section fade-up">
+  <div class="section-header">
+    <div class="section-tag">05 · Proyección 5 Años</div>
+    <h2 class="section-title">Modelo de Negocio Completo</h2>
+    <p class="section-desc">Proyección a 5 años con estacionalidad de playa: alta temporada (Jun–Ago 100%), temporada media (Mar–May, Sep–Oct 85%), invierno (Nov–Feb 75%) en escenario base.</p>
+  </div>
+
+  <!-- Escenarios anuales (1 cámara) -->
+  <div class="grid-3" style="margin-bottom:28px;">
+    <div class="tier">
+      <div class="tier-amount">Conservador</div>
+      <div class="tier-pct">Alta 85% · Media 70% · Invierno 60%</div>
+      <div class="tier-row"><span class="lbl">Facturación/año</span><span class="val">~150.000 €</span></div>
+      <div class="tier-row"><span class="lbl">BNP/año</span><span class="val">~83.000 €</span></div>
+      <div class="tier-row"><span class="lbl">EDEN 10%/año</span><span class="val green">~8.300 €</span></div>
+      <div class="tier-row"><span class="lbl">BNP 5 años</span><span class="val">~415.000 €</span></div>
+      <div class="tier-row"><span class="lbl">EDEN 5 años</span><span class="val green">~41.500 €</span></div>
+    </div>
+    <div class="tier featured">
+      <div class="tier-badge">📊 Escenario Base</div>
+      <div class="tier-amount">Base</div>
+      <div class="tier-pct">Alta 100% · Media 85% · Invierno 75%</div>
+      <div class="tier-row"><span class="lbl">Facturación/año</span><span class="val">~181.000 €</span></div>
+      <div class="tier-row"><span class="lbl">BNP/año</span><span class="val">~108.000 €</span></div>
+      <div class="tier-row"><span class="lbl">EDEN 10%/año</span><span class="val green">~10.800 €</span></div>
+      <div class="tier-row"><span class="lbl">BNP 5 años</span><span class="val">~540.000 €</span></div>
+      <div class="tier-row"><span class="lbl">EDEN 5 años</span><span class="val green">~54.000 €</span></div>
+    </div>
+    <div class="tier">
+      <div class="tier-amount">Óptimo</div>
+      <div class="tier-pct">Alta 100% · Media 95% · Invierno 85%</div>
+      <div class="tier-row"><span class="lbl">Facturación/año</span><span class="val">~203.000 €</span></div>
+      <div class="tier-row"><span class="lbl">BNP/año</span><span class="val">~132.000 €</span></div>
+      <div class="tier-row"><span class="lbl">EDEN 10%/año</span><span class="val green">~13.200 €</span></div>
+      <div class="tier-row"><span class="lbl">BNP 5 años</span><span class="val">~660.000 €</span></div>
+      <div class="tier-row"><span class="lbl">EDEN 5 años</span><span class="val green">~66.000 €</span></div>
+    </div>
+  </div>
+
+  <!-- Tabla estacionalidad -->
+  <div class="card">
+    <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:16px;">Estacionalidad Mensual — Escenario Base (1 cámara)</div>
+    <table>
+      <thead><tr><th>Mes</th><th>Temporada</th><th>Ocupación</th><th>Sesiones</th><th>Facturación s/IVA</th><th>Costes</th><th>BNP</th><th>EDEN 10%</th></tr></thead>
+      <tbody id="seasonTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 6 — OPCIÓN 5 AÑOS -->
+<div class="section fade-up">
+  <div class="section-header">
+    <div class="section-tag">06 · Opción 5 Años</div>
+    <h2 class="section-title">Estructura de Inversión a Largo Plazo</h2>
+    <p class="section-desc">Tras el período piloto, EDEN puede activar la opción de acuerdo a 5 años. El capital del piloto (7.000€) se descuenta del total.</p>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:24px;align-items:start;">
+    <div class="card card-gold">
+      <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:16px;">Opción 5 Años</div>
+      <div class="legal-row"><span class="key">Inversión total</span><span class="val" style="font-weight:800;font-size:15px;">16.667 €</span></div>
+      <div class="legal-row"><span class="key">Descuento piloto (−7.000€)</span><span class="val">= 9.667 € diferencial</span></div>
+      <div class="legal-row"><span class="key">EDEN · participación BNP</span><span class="val" style="color:var(--gold);font-weight:700;">10% mensual</span></div>
+      <div class="legal-row"><span class="key">Duración</span><span class="val">5 años desde activación</span></div>
+      <div class="legal-row"><span class="key">Recompra garantizada (Año 5)</span><span class="val" style="color:#2e7d32;font-weight:700;">×1.25 del capital</span></div>
+      <div class="legal-row"><span class="key">Plazo recompra</span><span class="val">máx. 90 días año 5</span></div>
+      <div style="margin-top:14px;padding:12px;background:rgba(200,153,104,0.1);border-radius:8px;font-size:11px;color:var(--text-m);">
+        Recompra ×1.25 sobre 16.667 € = <strong>20.834 €</strong> garantizados al año 5, además de los ingresos acumulados del BNP durante 5 años.
+      </div>
+    </div>
+    <div>
+      <!-- Modelo de inversión externo -->
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:12px;">Modelo de Inversión Externo (por cada 10.000€)</div>
+      <table>
+        <thead><tr><th>Inversión</th><th>% BNP</th><th>Retorno conserv.</th><th>Retorno base</th><th>Salida ×1.25</th><th>Total base</th></tr></thead>
+        <tbody>
+          <tr><td>10.000 €</td><td class="t-gold">6%</td><td>~27.900 €</td><td>~38.400 €</td><td class="t-green">12.500 €</td><td class="t-gold"><strong>~50.900 €</strong></td></tr>
+          <tr style="background:var(--gold-bg);">
+            <td><strong>20.000 €</strong></td><td class="t-gold"><strong>12%</strong></td><td>55.896 €</td><td class="t-green"><strong>76.745 €</strong></td><td class="t-green">25.000 €</td><td class="t-gold"><strong>101.745 €</strong></td>
+          </tr>
+          <tr><td>50.000 €</td><td class="t-gold">30%</td><td>139.738 €</td><td>191.862 €</td><td class="t-green">62.500 €</td><td class="t-gold"><strong>254.362 €</strong></td></tr>
+          <tr><td>83.333 €</td><td class="t-gold">50%*</td><td>232.897 €</td><td>319.770 €</td><td class="t-green">104.166 €</td><td class="t-gold"><strong>423.936 €</strong></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:9px;color:var(--text-m);margin-top:6px;">* Máximo 50% del BNP. Cifras en escenario 1 cámara 5 años. El modelo del dossier original contempla 2 cámaras.</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 7 — DATOS LEGALES -->
+<div class="section fade-up">
+  <div class="section-header">
+    <div class="section-tag">07 · Datos Legales</div>
+    <h2 class="section-title">Identificación del Colaborador</h2>
+  </div>
+  <div class="grid-2">
+    <div class="legal-box">
+      <div class="legal-row"><span class="key">Razón social</span><span class="val"><strong>EDEN BEACH GASTROBAR SL</strong></span></div>
+      <div class="legal-row"><span class="key">CIF</span><span class="val"><strong>B26897223</strong></span></div>
+      <div class="legal-row"><span class="key">Domicilio social</span><span class="val">Pasaje Victoria 1</span></div>
+      <div class="legal-row"><span class="key">Localidad</span><span class="val">Estepona, Málaga</span></div>
+      <div class="legal-row"><span class="key">Representante</span><span class="val">Marc</span></div>
+      <div class="legal-row"><span class="key">Ubicación instalación</span><span class="val">Paseo Marítimo de Estepona</span></div>
+    </div>
+    <div class="legal-box">
+      <div class="legal-row"><span class="key">Tipo colaboración</span><span class="val">Colaborador — 10% BNP</span></div>
+      <div class="legal-row"><span class="key">Activación piloto</span><span class="val"><strong>7.000 €</strong> (2.000 + 5.000)</span></div>
+      <div class="legal-row"><span class="key">Opción 5 años</span><span class="val"><strong>16.667 €</strong> total</span></div>
+      <div class="legal-row"><span class="key">Diferencial post-piloto</span><span class="val">9.667 €</span></div>
+      <div class="legal-row"><span class="key">Recompra garantizada</span><span class="val">×1.25 al año 5</span></div>
+      <div class="legal-row"><span class="key">Inicio previsto</span><span class="val"><strong>Abril 2026</strong></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 8 — AVISO LEGAL -->
+<div class="section fade-up">
+  <div style="background:var(--bg-warm);border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:10px;color:var(--text-m);line-height:1.8;">
+    <strong style="color:var(--text);font-size:11px;">⚠️ Aviso legal y limitación de responsabilidad</strong><br><br>
+    La presente propuesta tiene carácter informativo y no constituye un contrato vinculante hasta la firma del acuerdo definitivo. Todos los importes de facturación y BNP indicados son proyecciones basadas en escenarios de ocupación estimados, sin garantía de rendimiento. Los pagos al colaborador (10% BNP) se realizarán mensualmente sobre el BNP real auditado, antes de impuestos. En caso de BNP negativo o cero en algún mes, no habrá distribución ese período.<br><br>
+    La cámara hiperbárica HP750 de SoulBaric CellPods es un equipo de bienestar y no constituye un dispositivo médico con indicación terapéutica. No se garantiza ningún resultado médico o de salud derivado de su uso. El promotor del proyecto (SoulBaric) mantiene la propiedad del equipo hasta la ejecución de la opción de recompra. El acuerdo definitivo estará sujeto a la normativa vigente española en materia mercantil y de inversión.
+  </div>
+</div>
+
+<footer>
+  <strong>SoulBaric CellPods</strong> · Propuesta exclusiva para EDEN Beach Club · Confidencial<br>
+  Documento generado el <span id="docDate"></span> · Válido 30 días desde emisión<br>
+  Para cualquier consulta: <strong>SoulBaric · info@soulbaric.com</strong>
+</footer>
+
+<script>
+// Fecha
+document.getElementById('docDate').textContent = new Date().toLocaleDateString('es-ES', { day:'2-digit', month:'long', year:'numeric' });
+
+// Tabla estacional base (1 cámara)
+(function buildSeasonTable() {
+  const rows = [
+    { m:'Enero',     t:'Invierno',  occ:75,  ses:216, fac:15174, cost:6374, bnp:8800  },
+    { m:'Febrero',   t:'Invierno',  occ:75,  ses:216, fac:15174, cost:6374, bnp:8800  },
+    { m:'Marzo',     t:'Media',     occ:85,  ses:245, fac:17211, cost:6418, bnp:10793 },
+    { m:'Abril',     t:'Media',     occ:85,  ses:245, fac:17211, cost:6418, bnp:10793 },
+    { m:'Mayo',      t:'Media',     occ:85,  ses:245, fac:17211, cost:6418, bnp:10793 },
+    { m:'Junio',     t:'Alta 🌊',   occ:100, ses:288, fac:20232, cost:6482, bnp:13750 },
+    { m:'Julio',     t:'Alta 🌊',   occ:100, ses:288, fac:20232, cost:6482, bnp:13750 },
+    { m:'Agosto',    t:'Alta 🌊',   occ:100, ses:288, fac:20232, cost:6482, bnp:13750 },
+    { m:'Septiembre',t:'Media',     occ:85,  ses:245, fac:17211, cost:6418, bnp:10793 },
+    { m:'Octubre',   t:'Media',     occ:85,  ses:245, fac:17211, cost:6418, bnp:10793 },
+    { m:'Noviembre', t:'Invierno',  occ:75,  ses:216, fac:15174, cost:6374, bnp:8800  },
+    { m:'Diciembre', t:'Invierno',  occ:75,  ses:216, fac:15174, cost:6374, bnp:8800  },
+  ];
+  let tFac=0, tBnp=0, tEden=0;
+  const tbody = document.getElementById('seasonTable');
+  rows.forEach(r => {
+    const eden = Math.round(r.bnp * 0.1);
+    tFac += r.fac; tBnp += r.bnp; tEden += eden;
+    const barW = r.occ;
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${r.m}</strong></td>
+        <td style="font-size:10px;color:var(--text-m);">${r.t}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div class="occ-bar" style="width:60px;"><div class="occ-fill" style="width:${barW}%;"></div></div>
+            <span>${r.occ}%</span>
+          </div>
+        </td>
+        <td>${r.ses.toLocaleString('es-ES')}</td>
+        <td>${r.fac.toLocaleString('es-ES')} €</td>
+        <td style="color:var(--text-m);">${r.cost.toLocaleString('es-ES')} €</td>
+        <td class="t-green">${r.bnp.toLocaleString('es-ES')} €</td>
+        <td class="t-gold">${eden.toLocaleString('es-ES')} €</td>
+      </tr>`;
+  });
+  tbody.innerHTML += `
+    <tr class="t-total">
+      <td colspan="4"><strong>TOTAL ANUAL</strong></td>
+      <td class="gold-val"><strong>${tFac.toLocaleString('es-ES')} €</strong></td>
+      <td class="gold-val"></td>
+      <td class="gold-val"><strong>${tBnp.toLocaleString('es-ES')} €</strong></td>
+      <td class="gold-val"><strong>${tEden.toLocaleString('es-ES')} €</strong></td>
+    </tr>`;
+})();
+
+// Sin animación de scroll — todo visible desde el inicio
+</script>
+
+<script src="asistente-chat.js"></script>
+</body>
+</html>

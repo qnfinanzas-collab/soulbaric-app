@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoulBaric Dashboard - Centro de Control Integrado</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="confirm-delete.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 3px solid #C89968;
+            text-align: center;
+            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+        }
+
+        .sidebar-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #C89968;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-menu li {
+            margin: 8px 0;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #bbb;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(200, 153, 104, 0.1);
+            color: #C89968;
+            border-left-color: #C89968;
+            padding-left: 25px;
+        }
+
+        .sidebar-menu a.active {
+            background: rgba(200, 153, 104, 0.15);
+            color: #C89968;
+            border-left-color: #C89968;
+            font-weight: 600;
+        }
+
+        .sidebar-menu a span {
+            margin-right: 12px;
+            font-size: 18px;
+            min-width: 25px;
+        }
+
+        .menu-section {
+            margin-top: 25px;
+        }
+
+        .menu-section-title {
+            padding: 12px 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            background: #f5f7fa;
+        }
+
+        /* ===== TOPBAR ===== */
+        .topbar {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            padding: 18px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .topbar-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-filter label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .date-filter input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-topbar {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #C89968 0%, #D4A574 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(200, 153, 104, 0.3);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 15px 0 0;
+            border-left: 1px solid #e0e0e0;
+            padding-left: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #C89968, #D4A574);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* ===== CONTENT ===== */
+        .content {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: #C89968;
+        }
+
+        .tab-button.active {
+            color: #C89968;
+            border-bottom-color: #C89968;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ===== GRID LAYOUT ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* ===== KPI CARDS ===== */
+        .kpi-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-top: 4px solid #C89968;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -30px;
+            width: 80px;
+            height: 80px;
+            background: rgba(200, 153, 104, 0.1);
+            border-radius: 50%;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .kpi-change {
+            font-size: 12px;
+            color: #4CAF50;
+            position: relative;
+            z-index: 1;
+        }
+
+        .kpi-change.negative {
+            color: #f44336;
+        }
+
+        /* ===== SECTION CARDS ===== */
+        .section-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .section-header-action {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-accent {
+            background: rgba(200, 153, 104, 0.1);
+            color: #C89968;
+        }
+
+        .btn-accent:hover {
+            background: rgba(200, 153, 104, 0.2);
+        }
+
+        /* ===== TABLES ===== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .data-table thead {
+            background: #f8f9fa;
+        }
+
+        .data-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .table-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .table-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .badge-info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        /* ===== CHARTS ===== */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-bottom: 20px;
+        }
+
+        .chart-small {
+            position: relative;
+            height: 200px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #C89968 0%, #D4A574 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-box-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                transition: width 0.3s ease;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .content {
+                padding: 20px;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .topbar {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-card {
+            animation: slideIn 0.3s ease;
+        }
+
+        /* ===== SCROLL ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #C89968;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4A574;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>SoulBaric</h1>
+                <p>Centro Control</p>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="#" class="nav-link active" data-section="overview">
+                    <span>📊</span> Dashboard Completo
+                </a></li>
+            </ul>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Operaciones</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" onclick="navigateTo('index.html')">
+                        <span>🧮</span> Calculadora
+                    </a></li>
+                    <li><a href="#" onclick="navigateTo('propuestas.html')">
+                        <span>📋</span> Propuestas
+                    </a></li>
+                </ul>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Gestión</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="nav-link" data-section="projects">
+                        <span>📚</span> Proyectos
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="partners">
+                        <span>🤝</span> Socios
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="candidates">
+                        <span>👥</span> Candidatos
+                    </a></li>
+                </ul>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Análisis</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="nav-link" data-section="analytics">
+                        <span>📈</span> Analítica Avanzada
+                    </a></li>
+                    <li><a href="#" class="nav-link" data-section="reports">
+                        <span>🖨️</span> Reportes
+                    </a></li>
+                </ul>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-section-title">Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" onclick="exportAllData()">
+                        <span>💾</span> Exportar Datos
+                    </a></li>
+                    <li><a href="#" onclick="importAllData()">
+                        <span>📥</span> Importar Datos
+                    </a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- TOPBAR -->
+            <div class="topbar" style="flex-wrap:wrap;gap:10px;">
+                <div class="topbar-left" style="flex-wrap:wrap;gap:10px;">
+                    <div class="topbar-title">📊 Dashboard</div>
+                    <!-- NAV -->
+                    <nav style="display:flex;gap:4px;align-items:center;">
+                        <a href="home.html" style="padding:6px 12px;background:#f0f0f0;border:1px solid #ddd;border-radius:5px;color:#555;text-decoration:none;font-size:11px;font-weight:600;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,153,104,0.15)';this.style.color='#C89968';" onmouseout="this.style.background='#f0f0f0';this.style.color='#555';">🏠 Inicio</a>
+                        <a href="dashboard.html" style="padding:6px 12px;background:rgba(200,153,104,0.15);border:1px solid #C89968;border-radius:5px;color:#C89968;text-decoration:none;font-size:11px;font-weight:700;">📊 Dashboard</a>
+                        <a href="index.html" style="padding:6px 12px;background:#f0f0f0;border:1px solid #ddd;border-radius:5px;color:#555;text-decoration:none;font-size:11px;font-weight:600;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,153,104,0.15)';this.style.color='#C89968';" onmouseout="this.style.background='#f0f0f0';this.style.color='#555';">🧮 Calculadora</a>
+                        <a href="propuestas.html" style="padding:6px 12px;background:#f0f0f0;border:1px solid #ddd;border-radius:5px;color:#555;text-decoration:none;font-size:11px;font-weight:600;transition:all 0.2s;" onmouseover="this.style.background='rgba(200,153,104,0.15)';this.style.color='#C89968';" onmouseout="this.style.background='#f0f0f0';this.style.color='#555';">📋 Propuestas</a>
+                    </nav>
+                    <div class="date-filter">
+                        <label>Desde:</label>
+                        <input type="date" id="dateFrom">
+                        <label>Hasta:</label>
+                        <input type="date" id="dateTo">
+                        <button class="btn-topbar btn-accent" onclick="applyDateFilter()">Filtrar</button>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn-topbar btn-primary" onclick="generatePDFReport()">📄 Reporte PDF</button>
+                    <div class="user-profile">
+                        <div class="user-avatar">AD</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 13px; color: #1a1a1a;">Antonio Díaz</div>
+                            <div style="font-size: 11px; color: #999;">Administrador</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="content">
+                <!-- TABS -->
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="overview">📊 Overview</button>
+                    <button class="tab-button" data-tab="detailed">📈 Análisis Detallado</button>
+                    <button class="tab-button" data-tab="performance">⚡ Performance</button>
+                    <button class="tab-button" data-tab="projections">🔮 Proyecciones</button>
+                </div>
+
+                <!-- TAB 1: OVERVIEW -->
+                <div id="overview" class="tab-content active">
+                    <!-- KPI CARDS -->
+                    <div class="dashboard-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-icon">📊</div>
+                            <div class="kpi-label">Proyectos Totales</div>
+                            <div class="kpi-value" id="total-projects">0</div>
+                            <div class="kpi-change">Activos en sistema</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">💰</div>
+                            <div class="kpi-label">Inversión Total</div>
+                            <div class="kpi-value" id="total-investment">€0</div>
+                            <div class="kpi-change">Capital invertido</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">📈</div>
+                            <div class="kpi-label">ROI Promedio</div>
+                            <div class="kpi-value" id="avg-roi">0%</div>
+                            <div class="kpi-change positive">Rentabilidad estimada</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">👥</div>
+                            <div class="kpi-label">Candidatos Activos</div>
+                            <div class="kpi-value" id="total-candidates">0</div>
+                            <div class="kpi-change">Inversores registrados</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">📋</div>
+                            <div class="kpi-label">Propuestas Pendientes</div>
+                            <div class="kpi-value" id="pending-proposals">0</div>
+                            <div class="kpi-change warning">Requieren atención</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">🤝</div>
+                            <div class="kpi-label">Socios Únicos</div>
+                            <div class="kpi-value" id="total-partners">0</div>
+                            <div class="kpi-change">Colaboradores activos</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">💵</div>
+                            <div class="kpi-label">Beneficio Estimado 5 Años</div>
+                            <div class="kpi-value" id="total-benefit">€0</div>
+                            <div class="kpi-change">Proyección acumulada</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon">⏱️</div>
+                            <div class="kpi-label">Amortización Promedio</div>
+                            <div class="kpi-value" id="avg-amortization">0 meses</div>
+                            <div class="kpi-change">Tiempo recuperación</div>
+                        </div>
+                    </div>
+
+                    <!-- CHARTS -->
+                    <div class="charts-grid">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>📈 Distribución de ROI</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="roiChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>💰 Inversión por Tipo de Cámara</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="investmentChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>📊 Proyectos por Socio</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="partnerChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>📈 Tendencia de Inversiones</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RECENT DATA -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>📚 Top Proyectos</h2>
+                            </div>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Proyecto</th>
+                                        <th>ROI</th>
+                                        <th>Inversión</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-projects-tbody">
+                                    <tr><td colspan="3" class="empty-state">Sin datos</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>🏆 Top Socios</h2>
+                            </div>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Socio</th>
+                                        <th>Proyectos</th>
+                                        <th>ROI Avg</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-partners-tbody">
+                                    <tr><td colspan="3" class="empty-state">Sin datos</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: DETAILED ANALYSIS -->
+                <div id="detailed" class="tab-content">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2>📊 Análisis Detallado de Proyectos</h2>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Proyecto</th>
+                                    <th>Socio</th>
+                                    <th>Ubicación</th>
+                                    <th>Cámara</th>
+                                    <th>Inversión</th>
+                                    <th>ROI</th>
+                                    <th>Amortización</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailed-projects-tbody">
+                                <tr><td colspan="8" class="empty-state">No hay proyectos</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 3: PERFORMANCE -->
+                <div id="performance" class="tab-content">
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <div class="stat-box-label">Ocupancia Promedio</div>
+                            <div class="stat-box-value" id="avg-occupancy">0%</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-label">Sesiones al Mes (Promedio)</div>
+                            <div class="stat-box-value" id="avg-sessions">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-label">Costo Operacional Mensual</div>
+                            <div class="stat-box-value" id="avg-op-cost">€0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-label">Ingreso Mensual Promedio</div>
+                            <div class="stat-box-value" id="avg-monthly-income">€0</div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>⏰ Horas de Operación</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="hoursChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>🎯 Ocupancia por Proyecto</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="occupancyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: PROJECTIONS -->
+                <div id="projections" class="tab-content">
+                    <div class="charts-grid">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>📊 Proyección de Beneficios (5 años)</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="projectionChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h2>💹 ROI Acumulado</h2>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="roiAccumChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2>🔮 Análisis de Sensibilidad</h2>
+                        </div>
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                            <p style="margin-bottom: 15px; color: #666;">Impacto de variaciones en ocupancia y precios:</p>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Escenario</th>
+                                        <th>Ocupancia</th>
+                                        <th>ROI 5 Años</th>
+                                        <th>Beneficio</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sensitivity-tbody">
+                                    <tr><td colspan="4" class="empty-state">Sin datos</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SECCIÓN: PROYECTOS ══ -->
+                <div id="section-projects" class="sidebar-section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2>📚 Todos los Proyectos</h2>
+                            <div class="section-header-action">
+                                <button class="btn-small btn-primary" onclick="navigateTo('index.html')" style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:600;font-size:12px;">+ Nuevo Proyecto</button>
+                            </div>
+                        </div>
+                        <div id="all-projects-list"></div>
+                    </div>
+                </div>
+
+                <!-- ══ SECCIÓN: SOCIOS ══ -->
+                <div id="section-partners" class="sidebar-section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2>🤝 Socios / Colaboradores</h2>
+                        </div>
+                        <div id="all-partners-list"></div>
+                    </div>
+                </div>
+
+                <!-- ══ MODAL: EDITAR SOCIO ══ -->
+                <div id="modal-edit-partner" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+                    <div style="background:#fff;border-radius:12px;padding:32px;width:460px;max-width:95%;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:slideIn 0.2s ease;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+                            <h3 style="font-size:18px;color:#1a1a1a;">✏️ Editar Socio Colaborador</h3>
+                            <button onclick="closeEditPartnerModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#999;line-height:1;">×</button>
+                        </div>
+                        <input type="hidden" id="edit-partner-key">
+                        <div style="display:flex;flex-direction:column;gap:14px;">
+                            <div>
+                                <label style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;">Empresa / Nombre</label>
+                                <input id="edit-partner-name" type="text" placeholder="Nombre de empresa o persona" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:7px;font-size:14px;outline:none;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;">Email</label>
+                                <input id="edit-partner-email" type="email" placeholder="contacto@empresa.com" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:7px;font-size:14px;outline:none;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;">Teléfono</label>
+                                <input id="edit-partner-phone" type="tel" placeholder="+34 600 000 000" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:7px;font-size:14px;outline:none;">
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end;">
+                            <button onclick="closeEditPartnerModal()" style="background:#f5f5f5;color:#666;border:1px solid #ddd;padding:10px 20px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600;">Cancelar</button>
+                            <button onclick="savePartnerEdit()" style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:10px 24px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:700;">💾 Guardar Cambios</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SECCIÓN: CANDIDATOS ══ -->
+                <div id="section-candidates" class="sidebar-section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h2>👥 Candidatos Inversores</h2>
+                            <div class="section-header-action">
+                                <button class="btn-small btn-primary" onclick="navigateTo('propuestas.html')" style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:8px 16px;border-radius:5px;cursor:pointer;font-weight:600;font-size:12px;">Gestionar</button>
+                            </div>
+                        </div>
+                        <div id="all-candidates-list"></div>
+                    </div>
+                </div>
+
+                <!-- ══ SECCIÓN: ANALÍTICA ══ -->
+                <div id="section-analytics" class="sidebar-section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header"><h2>📈 Analítica Avanzada</h2></div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                            <div><canvas id="analyticsROIChart" style="max-height:300px;"></canvas></div>
+                            <div><canvas id="analyticsInvestChart" style="max-height:300px;"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SECCIÓN: REPORTES ══ -->
+                <div id="section-reports" class="sidebar-section" style="display:none;">
+                    <div class="section-card">
+                        <div class="section-header"><h2>🖨️ Reportes</h2></div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;">
+                            <div style="background:#f8f9fa;padding:30px;border-radius:10px;text-align:center;border:2px dashed #C89968;cursor:pointer;" onclick="generatePDFReport()">
+                                <div style="font-size:40px;margin-bottom:12px;">📊</div>
+                                <div style="font-weight:700;margin-bottom:8px;">Reporte Dashboard PDF</div>
+                                <div style="font-size:12px;color:#666;">KPIs + Gráficos + Tablas</div>
+                            </div>
+                            <div style="background:#f8f9fa;padding:30px;border-radius:10px;text-align:center;border:2px dashed #C89968;cursor:pointer;" onclick="exportAllData()">
+                                <div style="font-size:40px;margin-bottom:12px;">💾</div>
+                                <div style="font-weight:700;margin-bottom:8px;">Exportar Datos JSON</div>
+                                <div style="font-size:12px;color:#666;">Backup completo del sistema</div>
+                            </div>
+                            <div style="background:#f8f9fa;padding:30px;border-radius:10px;text-align:center;border:2px dashed #C89968;cursor:pointer;" onclick="navigateTo('index.html')">
+                                <div style="font-size:40px;margin-bottom:12px;">🧮</div>
+                                <div style="font-weight:700;margin-bottom:8px;">PDF por Proyecto</div>
+                                <div style="font-size:12px;color:#666;">Ve a la calculadora y usa "Generar PDF"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DATOS GLOBALES =====
+        function getProjects() {
+            const data = localStorage.getItem('soulbaric_projects');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function getProposals() {
+            const data = localStorage.getItem('soulbaric_proposals');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function getCandidates() {
+            const data = localStorage.getItem('soulbaric_candidates');
+            return data ? JSON.parse(data) : [];
+        }
+
+        // ===== DATE FILTER =====
+        function applyDateFilter() {
+            const from = document.getElementById('dateFrom').value;
+            const to = document.getElementById('dateTo').value;
+            // Los gráficos se actualizarán automáticamente
+            updateAllCharts();
+        }
+
+        // ===== KPI CALCULATIONS =====
+        function calculateKPIs() {
+            const projects = getProjects();
+            const proposals = getProposals();
+            const candidates = getCandidates();
+
+            document.getElementById('total-projects').textContent = projects.length;
+
+            const totalInvestment = projects.reduce((sum, p) => sum + (p.investment?.total || 0), 0);
+            document.getElementById('total-investment').textContent =
+                '€' + totalInvestment.toLocaleString('es-ES', { maximumFractionDigits: 0 });
+
+            const roiValues = projects.map(p => p.scenario?.roi || 0).filter(r => r > 0);
+            const avgROI = roiValues.length > 0 ? Math.round(roiValues.reduce((a, b) => a + b) / roiValues.length) : 0;
+            document.getElementById('avg-roi').textContent = avgROI + '%';
+
+            document.getElementById('total-candidates').textContent = candidates.length;
+            const pendingProposals = proposals.filter(p => !p.assignedTo).length;
+            document.getElementById('pending-proposals').textContent = pendingProposals;
+
+            const uniquePartners = new Set(projects.map(p => p.partner?.name || 'N/A').filter(n => n !== 'N/A')).size;
+            document.getElementById('total-partners').textContent = uniquePartners;
+
+            const totalBenefit = projects.reduce((sum, p) => {
+                if (p.scenario?.yearlyData) {
+                    return sum + p.scenario.yearlyData[4]?.accumulated || 0;
+                }
+                return sum;
+            }, 0);
+            document.getElementById('total-benefit').textContent =
+                '€' + totalBenefit.toLocaleString('es-ES', { maximumFractionDigits: 0 });
+
+            const amortizationMonths = projects.filter(p => p.scenario?.amortMonth)
+                .map(p => p.scenario.amortMonth);
+            const avgAmortization = amortizationMonths.length > 0
+                ? Math.round(amortizationMonths.reduce((a, b) => a + b) / amortizationMonths.length)
+                : 0;
+            document.getElementById('avg-amortization').textContent = avgAmortization + ' meses';
+
+            // Performance KPIs
+            const occupancies = projects.map(p => p.monthlyOccupancy?.[0] || 0);
+            const avgOccupancy = occupancies.length > 0
+                ? Math.round(occupancies.reduce((a, b) => a + b) / occupancies.length)
+                : 0;
+            document.getElementById('avg-occupancy').textContent = avgOccupancy + '%';
+
+            const sessions = projects.map(p => p.scenario?.sessionsPerMonth || 0);
+            const avgSessions = sessions.length > 0
+                ? Math.round(sessions.reduce((a, b) => a + b) / sessions.length)
+                : 0;
+            document.getElementById('avg-sessions').textContent = avgSessions;
+
+            const opCosts = projects.map(p => p.operability?.opCost || 0);
+            const avgOpCost = opCosts.length > 0
+                ? Math.round(opCosts.reduce((a, b) => a + b) / opCosts.length)
+                : 0;
+            document.getElementById('avg-op-cost').textContent = '€' + avgOpCost.toLocaleString('es-ES');
+
+            const monthlyIncomes = projects.map(p => {
+                const sessions = p.scenario?.sessionsPerMonth || 0;
+                const price = p.chamber?.sessionPrice || 0;
+                return sessions * price;
+            });
+            const avgMonthlyIncome = monthlyIncomes.length > 0
+                ? Math.round(monthlyIncomes.reduce((a, b) => a + b) / monthlyIncomes.length)
+                : 0;
+            document.getElementById('avg-monthly-income').textContent =
+                '€' + avgMonthlyIncome.toLocaleString('es-ES');
+        }
+
+        // ===== RENDER TABLES =====
+        function renderTopProjects() {
+            const projects = getProjects()
+                .sort((a, b) => (b.scenario?.roi || 0) - (a.scenario?.roi || 0))
+                .slice(0, 5);
+
+            const tbody = document.getElementById('top-projects-tbody');
+            if (projects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Sin datos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = projects.map(p => `
+                <tr>
+                    <td class="table-name">${p.name}</td>
+                    <td><strong>${p.scenario?.roi || 0}%</strong></td>
+                    <td>€${(p.investment?.total || 0).toLocaleString('es-ES', { maximumFractionDigits: 0 })}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTopPartners() {
+            const projects = getProjects();
+            const partners = {};
+
+            projects.forEach(p => {
+                const partnerName = p.partner?.name || 'Sin socio';
+                if (!partners[partnerName]) {
+                    partners[partnerName] = { count: 0, roiSum: 0 };
+                }
+                partners[partnerName].count++;
+                partners[partnerName].roiSum += p.scenario?.roi || 0;
+            });
+
+            const topPartners = Object.entries(partners)
+                .map(([name, data]) => ({
+                    name,
+                    count: data.count,
+                    avgROI: Math.round(data.roiSum / data.count)
+                }))
+                .sort((a, b) => b.avgROI - a.avgROI)
+                .slice(0, 5);
+
+            const tbody = document.getElementById('top-partners-tbody');
+            if (topPartners.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="empty-state">Sin datos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = topPartners.map(p => `
+                <tr>
+                    <td class="table-name">${p.name}</td>
+                    <td>${p.count}</td>
+                    <td><strong>${p.avgROI}%</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderDetailedProjects() {
+            const projects = getProjects();
+            const tbody = document.getElementById('detailed-projects-tbody');
+
+            if (projects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No hay proyectos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = projects.map(p => `
+                <tr>
+                    <td class="table-name">${p.name}</td>
+                    <td>${p.partner?.name || '-'}</td>
+                    <td>${p.location?.address || '-'}</td>
+                    <td>${p.chamber?.modelName || '-'}</td>
+                    <td>€${(p.investment?.total || 0).toLocaleString('es-ES')}</td>
+                    <td><strong>${p.scenario?.roi || 0}%</strong></td>
+                    <td>${p.scenario?.amortMonth || 0} meses</td>
+                    <td><span class="table-badge badge-success">Activo</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderSensitivityAnalysis() {
+            const projects = getProjects();
+            if (projects.length === 0) {
+                document.getElementById('sensitivity-tbody').innerHTML =
+                    '<tr><td colspan="4" class="empty-state">Sin datos</td></tr>';
+                return;
+            }
+
+            const avgProject = projects[0];
+            if (!avgProject.scenario) {
+                document.getElementById('sensitivity-tbody').innerHTML =
+                    '<tr><td colspan="4" class="empty-state">Sin datos suficientes</td></tr>';
+                return;
+            }
+
+            const scenarios = [
+                { name: 'Pesimista (-20%)', occupancy: (avgProject.monthlyOccupancy?.[0] || 0) * 0.8, multiplier: 0.8 },
+                { name: 'Base', occupancy: avgProject.monthlyOccupancy?.[0] || 0, multiplier: 1 },
+                { name: 'Optimista (+20%)', occupancy: (avgProject.monthlyOccupancy?.[0] || 0) * 1.2, multiplier: 1.2 }
+            ];
+
+            const tbody = document.getElementById('sensitivity-tbody');
+            tbody.innerHTML = scenarios.map(s => {
+                const sessionPrice = avgProject.chamber?.sessionPrice || 0;
+                const sessionsPerMonth = avgProject.scenario?.sessionsPerMonth || 0;
+                const adjustedSessions = Math.round(sessionsPerMonth * (s.occupancy / (avgProject.monthlyOccupancy?.[0] || 1)));
+                const monthlyBenefit = adjustedSessions * sessionPrice;
+                const roi = Math.round((monthlyBenefit * 60 / (avgProject.investment?.total || 1) - 1) * 100);
+
+                return `
+                    <tr>
+                        <td>${s.name}</td>
+                        <td>${Math.round(s.occupancy)}%</td>
+                        <td><strong>${roi}%</strong></td>
+                        <td>€${(monthlyBenefit * 12).toLocaleString('es-ES')}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ===== CHARTS =====
+        let charts = {};
+
+        function updateAllCharts() {
+            updateROIChart();
+            updateInvestmentChart();
+            updatePartnerChart();
+            updateTrendChart();
+            updateHoursChart();
+            updateOccupancyChart();
+            updateProjectionChart();
+            updateROIAccumChart();
+        }
+
+        function updateROIChart() {
+            const projects = getProjects();
+            const roiData = { '0': 0, '0-50': 0, '50-100': 0, '100-200': 0, '200-300': 0, '300+': 0 };
+
+            projects.forEach(p => {
+                const roi = p.scenario?.roi || 0;
+                if (roi === 0) roiData['0']++;
+                else if (roi < 50) roiData['0-50']++;
+                else if (roi < 100) roiData['50-100']++;
+                else if (roi < 200) roiData['100-200']++;
+                else if (roi < 300) roiData['200-300']++;
+                else roiData['300+']++;
+            });
+
+            const ctx = document.getElementById('roiChart').getContext('2d');
+            if (charts.roiChart) charts.roiChart.destroy();
+
+            charts.roiChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(roiData),
+                    datasets: [{
+                        data: Object.values(roiData),
+                        backgroundColor: ['#e0e0e0', '#FFB6C1', '#87CEEB', '#90EE90', '#FFD700', '#FF6347'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function updateInvestmentChart() {
+            const projects = getProjects();
+            const investmentData = {};
+
+            projects.forEach(p => {
+                const model = p.chamber?.modelName || 'Sin modelo';
+                investmentData[model] = (investmentData[model] || 0) + (p.investment?.total || 0);
+            });
+
+            const ctx = document.getElementById('investmentChart').getContext('2d');
+            if (charts.investmentChart) charts.investmentChart.destroy();
+
+            charts.investmentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(investmentData),
+                    datasets: [{
+                        label: 'Inversión (€)',
+                        data: Object.values(investmentData),
+                        backgroundColor: 'rgba(200, 153, 104, 0.8)',
+                        borderColor: '#C89968',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: true } }
+                }
+            });
+        }
+
+        function updatePartnerChart() {
+            const projects = getProjects();
+            const partnerData = {};
+
+            projects.forEach(p => {
+                const partner = p.partner?.name || 'Sin socio';
+                partnerData[partner] = (partnerData[partner] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('partnerChart').getContext('2d');
+            if (charts.partnerChart) charts.partnerChart.destroy();
+
+            charts.partnerChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(partnerData),
+                    datasets: [{
+                        data: Object.values(partnerData),
+                        backgroundColor: [
+                            '#C89968', '#D4A574', '#FF6B6B', '#4ECDC4', '#45B7D1',
+                            '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function updateTrendChart() {
+            const projects = getProjects().sort((a, b) => a.id - b.id);
+            const labels = projects.map((_, i) => `P${i + 1}`);
+            const roiData = projects.map(p => p.scenario?.roi || 0);
+            const investmentData = projects.map(p => (p.investment?.total || 0) / 1000);
+
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (charts.trendChart) charts.trendChart.destroy();
+
+            charts.trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'ROI (%)',
+                            data: roiData,
+                            borderColor: '#C89968',
+                            backgroundColor: 'rgba(200, 153, 104, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Inversión (€000)',
+                            data: investmentData,
+                            borderColor: '#45B7D1',
+                            backgroundColor: 'rgba(69, 183, 209, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: { type: 'linear', position: 'left' },
+                        y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false } }
+                    }
+                }
+            });
+        }
+
+        function updateHoursChart() {
+            const projects = getProjects();
+            const hoursData = {};
+
+            projects.forEach(p => {
+                const hours = p.operability?.hoursPerDay || 8;
+                const range = Math.floor(hours / 4) * 4 + '-' + (Math.floor(hours / 4) * 4 + 4);
+                hoursData[range] = (hoursData[range] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('hoursChart').getContext('2d');
+            if (charts.hoursChart) charts.hoursChart.destroy();
+
+            charts.hoursChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(hoursData),
+                    datasets: [{
+                        label: 'Cantidad de Proyectos',
+                        data: Object.values(hoursData),
+                        backgroundColor: 'rgba(200, 153, 104, 0.8)',
+                        borderColor: '#C89968',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function updateOccupancyChart() {
+            const projects = getProjects();
+            const labels = projects.map(p => p.name.substring(0, 15));
+            const occupancies = projects.map(p => p.monthlyOccupancy?.[0] || 0);
+
+            const ctx = document.getElementById('occupancyChart').getContext('2d');
+            if (charts.occupancyChart) charts.occupancyChart.destroy();
+
+            charts.occupancyChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ocupancia (%)',
+                        data: occupancies,
+                        borderColor: '#C89968',
+                        backgroundColor: 'rgba(200, 153, 104, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { max: 100 } }
+                }
+            });
+        }
+
+        function updateProjectionChart() {
+            const projects = getProjects();
+            if (projects.length === 0) return;
+
+            const totalByYear = [0, 0, 0, 0, 0];
+
+            projects.forEach(p => {
+                if (p.scenario?.yearlyData) {
+                    p.scenario.yearlyData.forEach((year, idx) => {
+                        totalByYear[idx] += year.accumulated || 0;
+                    });
+                }
+            });
+
+            const ctx = document.getElementById('projectionChart').getContext('2d');
+            if (charts.projectionChart) charts.projectionChart.destroy();
+
+            charts.projectionChart = new Chart(ctx, {
+                type: 'area',
+                data: {
+                    labels: ['Año 1', 'Año 2', 'Año 3', 'Año 4', 'Año 5'],
+                    datasets: [{
+                        label: 'Beneficio Acumulado (€)',
+                        data: totalByYear,
+                        borderColor: '#C89968',
+                        backgroundColor: 'rgba(200, 153, 104, 0.2)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true } }
+                }
+            });
+        }
+
+        function updateROIAccumChart() {
+            const projects = getProjects();
+            const labels = projects.map(p => p.name.substring(0, 12));
+            const rois = projects.map(p => p.scenario?.roi || 0);
+
+            const ctx = document.getElementById('roiAccumChart').getContext('2d');
+            if (charts.roiAccumChart) charts.roiAccumChart.destroy();
+
+            charts.roiAccumChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'ROI (%)',
+                        data: rois,
+                        backgroundColor: rois.map(r => r > 200 ? '#90EE90' : r > 100 ? '#FFD700' : '#FFB6C1'),
+                        borderColor: '#333',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // ===== PDF REPORT =====
+        function generatePDFReport() {
+            const element = document.querySelector('.content');
+            const opt = {
+                margin: 10,
+                filename: `soulbaric_report_${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'landscape', unit: 'mm', format: 'a4' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // ===== NAVIGATION & DATA =====
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        function exportAllData() {
+            const allData = {
+                exportDate: new Date().toLocaleString('es-ES'),
+                projects: getProjects(),
+                proposals: getProposals(),
+                candidates: getCandidates()
+            };
+
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `soulbaric_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importAllData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (confirm('¿Confirma que desea importar y sobreescribir todos los datos?')) {
+                            if (data.projects) localStorage.setItem('soulbaric_projects', JSON.stringify(data.projects));
+                            if (data.proposals) localStorage.setItem('soulbaric_proposals', JSON.stringify(data.proposals));
+                            if (data.candidates) localStorage.setItem('soulbaric_candidates', JSON.stringify(data.candidates));
+                            location.reload();
+                        }
+                    } catch (err) {
+                        alert('Error al importar archivo');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // ===== TAB SYSTEM =====
+        // ══ RENDER SECTIONS ══
+        function openProjectInCalculator(idx) {
+            localStorage.setItem('soulbaric_open_project_idx', String(idx));
+            window.location.href = 'index.html';
+        }
+
+        function togglePreview(idx) {
+            const row = document.getElementById(`preview-${idx}`);
+            const arrow = document.getElementById(`arrow-${idx}`);
+            if (!row) return;
+            const isOpen = row.style.display !== 'none';
+            // Cerrar todos
+            document.querySelectorAll('[id^="preview-"]').forEach(r => r.style.display = 'none');
+            document.querySelectorAll('[id^="arrow-"]').forEach(a => a.textContent = '▶');
+            // Abrir el clickeado si estaba cerrado
+            if (!isOpen) {
+                row.style.display = 'table-row';
+                arrow.textContent = '▼';
+            }
+        }
+
+        function deleteProjectFromDashboard(idx) {
+            const projects = getProjects();
+            const nombre = projects[idx]?.name || 'este proyecto';
+            confirmDelete(nombre, () => {
+                const projects2 = getProjects();
+                projects2.splice(idx, 1);
+                localStorage.setItem('soulbaric_projects', JSON.stringify(projects2));
+                renderAllProjects();
+                calculateKPIs();
+            });
+        }
+
+        function renderAllProjects() {
+            const projects = getProjects();
+            const container = document.getElementById('all-projects-list');
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><h3>Sin proyectos</h3><p>Crea proyectos desde la Calculadora</p></div>';
+                return;
+            }
+            container.innerHTML = `
+                <table class="data-table">
+                    <thead><tr>
+                        <th>Proyecto</th><th>Socio</th><th>Ubicación</th>
+                        <th>Cámara</th><th>Inversión</th><th>ROI</th><th>Fecha</th>
+                        <th style="text-align:center;">Acciones</th>
+                    </tr></thead>
+                    <tbody>${projects.map((p, idx) => {
+                        const roi = Math.round(p.scenario?.roi || p.scenario?.roiPct || 0);
+                        const inv = (p.investment?.total || 0).toLocaleString('es-ES');
+                        const monthlyAmort = p.scenario?.monthlyAmort || 0;
+                        const grandTotal = p.scenario?.grandTotal || p.scenario?.totalAccumulated || 0;
+                        return `
+                        <tr style="cursor:pointer;" onclick="togglePreview(${idx})">
+                            <td class="table-name">
+                                <span style="color:#C89968;font-size:11px;margin-right:4px;" id="arrow-${idx}">▶</span>
+                                ${p.name}
+                            </td>
+                            <td>${p.partner?.name || '-'}</td>
+                            <td>${p.location?.address || p.location?.name || '-'}</td>
+                            <td>${p.chamber?.modelName || '-'} · ${p.chamber?.capacity || '?'}P</td>
+                            <td>€${inv}</td>
+                            <td><strong style="color:#4caf50;">${roi}%</strong></td>
+                            <td>${p.createdDate || '-'}</td>
+                            <td style="text-align:center;" onclick="event.stopPropagation()">
+                                <div style="display:flex;gap:6px;justify-content:center;">
+                                    <button onclick="openProjectInCalculator(${idx})"
+                                        style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap;">
+                                        ✏️ Editar
+                                    </button>
+                                    <button onclick="deleteProjectFromDashboard(${idx})"
+                                        style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:6px 10px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:700;">
+                                        🗑
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="preview-${idx}" style="display:none;background:#f9f7f4;">
+                            <td colspan="8" style="padding:0;">
+                                <div style="padding:20px;border-top:2px solid #C89968;animation:slideIn 0.2s ease;">
+                                    <!-- Mini cabecera -->
+                                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                                        <div>
+                                            <div style="font-size:16px;font-weight:700;color:#1a1a1a;">${p.name}</div>
+                                            <div style="font-size:12px;color:#888;">${p.location?.name || ''} ${p.location?.city ? '· ' + p.location.city : ''}</div>
+                                        </div>
+                                        <button onclick="openProjectInCalculator(${idx})"
+                                            style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;">
+                                            ✏️ Abrir en Calculadora
+                                        </button>
+                                    </div>
+
+                                    <!-- KPIs rápidos -->
+                                    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px;">
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #C89968;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">Inversión</div>
+                                            <div style="font-size:15px;font-weight:700;color:#C89968;">€${inv}</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #4caf50;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">ROI Total</div>
+                                            <div style="font-size:15px;font-weight:700;color:#4caf50;">${roi}%</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #2196F3;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">Cuota Mensual</div>
+                                            <div style="font-size:15px;font-weight:700;color:#2196F3;">€${monthlyAmort.toLocaleString('es-ES',{maximumFractionDigits:0})}</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #9c27b0;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">Retorno Total</div>
+                                            <div style="font-size:15px;font-weight:700;color:#9c27b0;">€${grandTotal.toLocaleString('es-ES',{maximumFractionDigits:0})}</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #ff9800;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">Sesiones/Mes</div>
+                                            <div style="font-size:15px;font-weight:700;color:#ff9800;">${Math.round(p.scenario?.sessionsPerMonth || 0)}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Datos del proyecto -->
+                                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                                        <div style="background:#fff;padding:12px;border-radius:8px;font-size:11px;line-height:1.9;">
+                                            <div style="font-weight:700;margin-bottom:6px;color:#1a1a1a;">🔧 Cámara</div>
+                                            <div><b>Modelo:</b> ${p.chamber?.modelName || '-'} · ${p.chamber?.capacity || '?'}P</div>
+                                            <div><b>Precio neto:</b> €${(p.chamber?.priceNet || 0).toLocaleString('es-ES')}</div>
+                                            <div><b>Precio sesión:</b> €${p.chamber?.sessionPrice || 0}</div>
+                                            <div><b>IVA:</b> ${p.chamber?.ivaRate || 21}%</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;font-size:11px;line-height:1.9;">
+                                            <div style="font-weight:700;margin-bottom:6px;color:#1a1a1a;">🤝 Socio & Ubicación</div>
+                                            <div><b>Socio:</b> ${p.partner?.name || '-'}</div>
+                                            <div><b>Email:</b> ${p.partner?.email || '-'}</div>
+                                            <div><b>Tel:</b> ${p.partner?.phone || '-'}</div>
+                                            <div><b>Dirección:</b> ${p.location?.address || '-'}</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;font-size:11px;line-height:1.9;">
+                                            <div style="font-weight:700;margin-bottom:6px;color:#1a1a1a;">💰 Inversión</div>
+                                            <div><b>Interés:</b> ${((p.investment?.interestRate || p.scenario?.interestRate || 0)*100).toFixed(1)}%</div>
+                                            <div><b>Plazo amort.:</b> ${p.investment?.amortYears || p.scenario?.amortYears || '-'} años</div>
+                                            <div><b>% Facturación:</b> ${((p.investment?.investorPct || 0))}%</div>
+                                            <div><b>Crecimiento:</b> ${p.investment?.growthRate || 0}%/año</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>`;
+                    }).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+        function togglePartnerPreview(partnerKey) {
+            const safeKey = CSS.escape(partnerKey);
+            const row = document.getElementById('ppreview-' + partnerKey);
+            const arrow = document.getElementById('parrow-' + partnerKey);
+            if (!row) return;
+            const isOpen = row.style.display !== 'none';
+            // Cerrar todos
+            document.querySelectorAll('[id^="ppreview-"]').forEach(r => r.style.display = 'none');
+            document.querySelectorAll('[id^="parrow-"]').forEach(a => a.textContent = '▶');
+            // Abrir si estaba cerrado
+            if (!isOpen) {
+                row.style.display = 'table-row';
+                arrow.textContent = '▼';
+            }
+        }
+
+        function openEditPartnerModal(partnerKey) {
+            const projects = getProjects();
+            const partnerProjects = projects.filter(p => p.partner?.name === partnerKey);
+            if (!partnerProjects.length) return;
+            const ref = partnerProjects[0].partner;
+            document.getElementById('edit-partner-key').value = partnerKey;
+            document.getElementById('edit-partner-name').value = ref.name || '';
+            document.getElementById('edit-partner-email').value = ref.email || '';
+            document.getElementById('edit-partner-phone').value = ref.phone || '';
+            const modal = document.getElementById('modal-edit-partner');
+            modal.style.display = 'flex';
+        }
+
+        function closeEditPartnerModal() {
+            document.getElementById('modal-edit-partner').style.display = 'none';
+        }
+
+        function savePartnerEdit() {
+            const oldKey = document.getElementById('edit-partner-key').value;
+            const newName = document.getElementById('edit-partner-name').value.trim();
+            const newEmail = document.getElementById('edit-partner-email').value.trim();
+            const newPhone = document.getElementById('edit-partner-phone').value.trim();
+            if (!newName) { alert('El nombre del socio no puede estar vacío'); return; }
+            const projects = getProjects();
+            let updated = 0;
+            projects.forEach(p => {
+                if (p.partner?.name === oldKey) {
+                    p.partner.name = newName;
+                    p.partner.email = newEmail;
+                    p.partner.phone = newPhone;
+                    updated++;
+                }
+            });
+            localStorage.setItem('soulbaric_projects', JSON.stringify(projects));
+            closeEditPartnerModal();
+            renderAllPartners();
+            if (updated > 0) {
+                const toast = document.createElement('div');
+                toast.textContent = `✅ Socio actualizado en ${updated} proyecto(s)`;
+                toast.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#C89968;padding:12px 20px;border-radius:8px;font-weight:600;font-size:13px;z-index:99999;box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+        }
+
+        function renderAllPartners() {
+            const projects = getProjects();
+            const partnersMap = {};
+            projects.forEach((p, globalIdx) => {
+                const name = p.partner?.name;
+                if (!name) return;
+                if (!partnersMap[name]) partnersMap[name] = { name, email: p.partner?.email || '-', phone: p.partner?.phone || '-', projects: [], indices: [] };
+                partnersMap[name].projects.push(p);
+                partnersMap[name].indices.push(globalIdx);
+            });
+            const partners = Object.values(partnersMap);
+            const container = document.getElementById('all-partners-list');
+            if (partners.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🤝</div><h3>Sin socios registrados</h3><p>Añade información de socios en tus proyectos</p></div>';
+                return;
+            }
+            container.innerHTML = `
+                <table class="data-table">
+                    <thead><tr>
+                        <th style="width:32px;"></th>
+                        <th>Empresa Socio</th><th>Email</th><th>Teléfono</th>
+                        <th>Proyectos</th><th>Inversión Total</th><th>ROI Promedio</th>
+                        <th style="text-align:center;">Acciones</th>
+                    </tr></thead>
+                    <tbody>${partners.map(p => {
+                        const totalInv = p.projects.reduce((s, pr) => s + (pr.investment?.total || 0), 0);
+                        const avgROI = p.projects.length > 0
+                            ? Math.round(p.projects.reduce((s, pr) => s + (pr.scenario?.roi || pr.scenario?.roiPct || 0), 0) / p.projects.length)
+                            : 0;
+                        const totalReturn = p.projects.reduce((s, pr) => s + (pr.scenario?.grandTotal || pr.scenario?.totalAccumulated || 0), 0);
+                        const partnerKey = p.name;
+                        const escapedKey = partnerKey.replace(/'/g, "\\'");
+
+                        // Mini tabla de proyectos para el preview
+                        const projectsRows = p.projects.map((pr, i) => {
+                            const prROI = Math.round(pr.scenario?.roi || pr.scenario?.roiPct || 0);
+                            const prInv = (pr.investment?.total || 0).toLocaleString('es-ES');
+                            const prGrandTotal = (pr.scenario?.grandTotal || pr.scenario?.totalAccumulated || 0).toLocaleString('es-ES', {maximumFractionDigits:0});
+                            const prIdx = p.indices[i];
+                            return `<tr style="border-bottom:1px solid #f0ece6;">
+                                <td style="padding:8px 12px;font-size:12px;font-weight:600;color:#1a1a1a;">${pr.name || '-'}</td>
+                                <td style="padding:8px 12px;font-size:12px;color:#666;">${pr.chamber?.modelName || '-'} · ${pr.chamber?.capacity || '?'}P</td>
+                                <td style="padding:8px 12px;font-size:12px;color:#666;">${pr.location?.address || pr.location?.name || '-'}</td>
+                                <td style="padding:8px 12px;font-size:12px;color:#C89968;font-weight:700;">€${prInv}</td>
+                                <td style="padding:8px 12px;font-size:12px;color:#4caf50;font-weight:700;">${prROI}%</td>
+                                <td style="padding:8px 12px;font-size:12px;color:#9c27b0;font-weight:700;">€${prGrandTotal}</td>
+                                <td style="padding:8px 12px;">
+                                    <button onclick="openProjectInCalculator(${prIdx})"
+                                        style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;">
+                                        ✏️ Editar
+                                    </button>
+                                </td>
+                            </tr>`;
+                        }).join('');
+
+                        return `
+                        <tr style="cursor:pointer;" onclick="togglePartnerPreview('${escapedKey}')">
+                            <td style="text-align:center;color:#C89968;font-size:11px;font-weight:700;" id="parrow-${partnerKey}">▶</td>
+                            <td class="table-name">${p.name}</td>
+                            <td>${p.email}</td>
+                            <td>${p.phone}</td>
+                            <td><span class="table-badge badge-info">${p.projects.length}</span></td>
+                            <td>€${totalInv.toLocaleString('es-ES')}</td>
+                            <td><strong style="color:#4caf50;">${avgROI}%</strong></td>
+                            <td style="text-align:center;" onclick="event.stopPropagation()">
+                                <button onclick="openEditPartnerModal('${escapedKey}')"
+                                    style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:700;">
+                                    ✏️ Editar
+                                </button>
+                            </td>
+                        </tr>
+                        <tr id="ppreview-${partnerKey}" style="display:none;background:#f9f7f4;">
+                            <td colspan="8" style="padding:0;">
+                                <div style="padding:20px;border-top:2px solid #C89968;animation:slideIn 0.2s ease;">
+
+                                    <!-- Cabecera del socio -->
+                                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+                                        <div>
+                                            <div style="font-size:17px;font-weight:700;color:#1a1a1a;">🤝 ${p.name}</div>
+                                            <div style="font-size:12px;color:#888;margin-top:3px;">
+                                                ${p.email !== '-' ? '📧 ' + p.email : ''}
+                                                ${p.phone !== '-' ? ' &nbsp; 📱 ' + p.phone : ''}
+                                            </div>
+                                        </div>
+                                        <button onclick="openEditPartnerModal('${escapedKey}')"
+                                            style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;">
+                                            ✏️ Editar Datos Socio
+                                        </button>
+                                    </div>
+
+                                    <!-- KPIs del socio -->
+                                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;">
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #C89968;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">Proyectos</div>
+                                            <div style="font-size:20px;font-weight:700;color:#C89968;">${p.projects.length}</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #2196F3;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">Inversión Total</div>
+                                            <div style="font-size:15px;font-weight:700;color:#2196F3;">€${totalInv.toLocaleString('es-ES')}</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #4caf50;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">ROI Promedio</div>
+                                            <div style="font-size:20px;font-weight:700;color:#4caf50;">${avgROI}%</div>
+                                        </div>
+                                        <div style="background:#fff;padding:12px;border-radius:8px;text-align:center;border-top:3px solid #9c27b0;">
+                                            <div style="font-size:9px;color:#999;text-transform:uppercase;margin-bottom:4px;">Retorno Total</div>
+                                            <div style="font-size:15px;font-weight:700;color:#9c27b0;">€${totalReturn.toLocaleString('es-ES', {maximumFractionDigits:0})}</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tabla de proyectos asociados -->
+                                    <div style="background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e8e0d5;">
+                                        <div style="padding:10px 14px;background:#f5f0ea;font-size:11px;font-weight:700;color:#1a1a1a;text-transform:uppercase;letter-spacing:1px;">
+                                            📋 Proyectos Asociados
+                                        </div>
+                                        <table style="width:100%;border-collapse:collapse;">
+                                            <thead>
+                                                <tr style="background:#faf7f3;">
+                                                    <th style="padding:8px 12px;font-size:10px;color:#999;text-align:left;text-transform:uppercase;">Proyecto</th>
+                                                    <th style="padding:8px 12px;font-size:10px;color:#999;text-align:left;text-transform:uppercase;">Cámara</th>
+                                                    <th style="padding:8px 12px;font-size:10px;color:#999;text-align:left;text-transform:uppercase;">Ubicación</th>
+                                                    <th style="padding:8px 12px;font-size:10px;color:#999;text-align:left;text-transform:uppercase;">Inversión</th>
+                                                    <th style="padding:8px 12px;font-size:10px;color:#999;text-align:left;text-transform:uppercase;">ROI</th>
+                                                    <th style="padding:8px 12px;font-size:10px;color:#999;text-align:left;text-transform:uppercase;">Retorno</th>
+                                                    <th style="padding:8px 12px;font-size:10px;color:#999;text-align:left;text-transform:uppercase;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>${projectsRows}</tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>`;
+                    }).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+        function renderAllCandidates() {
+            const candidates = getCandidates();
+            const container = document.getElementById('all-candidates-list');
+            if (candidates.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><h3>Sin candidatos registrados</h3><p>Añade candidatos desde el Gestor de Propuestas</p><br><button onclick="navigateTo(\'propuestas.html\')" style="background:linear-gradient(135deg,#C89968,#D4A574);color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:600;">Ir a Propuestas</button></div>';
+                return;
+            }
+            container.innerHTML = `
+                <table class="data-table">
+                    <thead><tr>
+                        <th>Nombre</th><th>Email</th><th>Teléfono</th>
+                        <th>Perfil</th><th>Presupuesto</th><th>Estado</th>
+                    </tr></thead>
+                    <tbody>${candidates.map(c => `
+                        <tr>
+                            <td class="table-name">${c.name || '-'}</td>
+                            <td>${c.email || '-'}</td>
+                            <td>${c.phone || '-'}</td>
+                            <td>${c.profile || '-'}</td>
+                            <td>${c.budget ? '€' + Number(c.budget).toLocaleString('es-ES') : '-'}</td>
+                            <td><span class="table-badge badge-success">${c.status || 'Activo'}</span></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+        // ══ NAVEGACIÓN SIDEBAR ══
+        function showSection(sectionId) {
+            // Ocultar tabs principales y secciones laterales
+            document.querySelector('.tabs').style.display = 'none';
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.querySelectorAll('.sidebar-section').forEach(s => s.style.display = 'none');
+
+            // Mostrar sección solicitada
+            const target = document.getElementById('section-' + sectionId);
+            if (target) target.style.display = 'block';
+
+            // Activar en sidebar
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
+
+            // Cargar datos según sección
+            if (sectionId === 'projects') renderAllProjects();
+            if (sectionId === 'partners') renderAllPartners();
+            if (sectionId === 'candidates') renderAllCandidates();
+        }
+
+        function showOverview() {
+            document.querySelector('.tabs').style.display = 'flex';
+            document.querySelectorAll('.sidebar-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            document.getElementById('overview').style.display = 'block';
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('[data-section="overview"]')?.classList.add('active');
+            updateAllCharts();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab navigation (tabs internos)
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => { c.style.display = 'none'; c.classList.remove('active'); });
+                    btn.classList.add('active');
+                    const target = document.getElementById(btn.getAttribute('data-tab'));
+                    if (target) { target.style.display = 'block'; target.classList.add('active'); }
+                });
+            });
+
+            // Sidebar nav links
+            document.querySelectorAll('.nav-link[data-section]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.getAttribute('data-section');
+                    if (section === 'overview') showOverview();
+                    else showSection(section);
+                });
+            });
+
+            // Cerrar modal de editar socio al hacer click fuera
+            document.getElementById('modal-edit-partner').addEventListener('click', function(e) {
+                if (e.target === this) closeEditPartnerModal();
+            });
+
+            // Initialize
+            calculateKPIs();
+            renderTopProjects();
+            renderTopPartners();
+            renderDetailedProjects();
+            renderSensitivityAnalysis();
+            updateAllCharts();
+
+            // Set default dates
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
+            document.getElementById('dateFrom').valueAsDate = thirtyDaysAgo;
+            document.getElementById('dateTo').valueAsDate = new Date();
+
+            // Auto-refresh every minute
+            setInterval(() => {
+                calculateKPIs();
+                renderTopProjects();
+                renderTopPartners();
+                renderDetailedProjects();
+                renderSensitivityAnalysis();
+                updateAllCharts();
+            }, 60000);
+        });
+    </script>
+<script src="asistente-chat.js"></script>
+</body>
+</html>

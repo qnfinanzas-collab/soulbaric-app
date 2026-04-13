@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HE5000 Diamond — Ficha Técnica · SoulBaric</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:     #C89968;
+      --gold-d:   #8B6F47;
+      --gold-l:   #D4A574;
+      --gold-xl:  #EDD9BC;
+      --bg:       #faf8f6;
+      --bg-warm:  #f0ebe5;
+      --bg-card:  #ffffff;
+      --border:   #e8e4df;
+      --text:     #3d3530;
+      --text-m:   #8b7d76;
+      --text-l:   #c5bdb8;
+      --black:    #1a1a1a;
+      --dark:     #2d2d2d;
+      /* Diamond accent — azul acero premium */
+      --diamond:  #1a3a5c;
+      --diamond-l:#2c5f8f;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ══ NAV ══ */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(250,248,246,0.96);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-left { display: flex; align-items: center; gap: 20px; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .nav-logo-text { display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo-name { font-size: 16px; font-weight: 900; color: var(--gold); letter-spacing: 2.5px; text-transform: uppercase; }
+    .nav-logo-sub  { font-size: 7.5px; font-weight: 700; color: var(--text-m); letter-spacing: 2px; text-transform: uppercase; margin-top: 1px; }
+    .nav-divider { width: 1px; height: 20px; background: var(--border); }
+    .nav-page { font-size: 12px; font-weight: 600; color: var(--text-m); letter-spacing: 0.5px; }
+    .nav-actions { display: flex; gap: 10px; }
+    .btn-nav { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+    .btn-outline { background: transparent; border: 1.5px solid var(--gold); color: var(--gold); }
+    .btn-outline:hover { background: rgba(200,153,104,0.10); }
+    .btn-solid { background: var(--gold); border: 1.5px solid var(--gold); color: white; }
+    .btn-solid:hover { background: var(--gold-d); border-color: var(--gold-d); }
+
+    /* ══ HERO ══ */
+    .hero {
+      min-height: 92vh;
+      background: linear-gradient(150deg, #ffffff 0%, #faf8f6 45%, #edf2f7 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 80px 48px 60px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -100px; right: -150px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(44,95,143,0.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -80px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,153,104,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 18px;
+      background: linear-gradient(135deg, var(--diamond) 0%, var(--diamond-l) 100%);
+      border-radius: 20px; color: white; font-size: 10px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;
+    }
+    .hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .hero-model {
+      font-size: clamp(60px, 10vw, 120px);
+      font-weight: 900; letter-spacing: -3px; line-height: 0.9; margin-bottom: 6px;
+      background: linear-gradient(135deg, var(--black) 30%, var(--diamond) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-model-sub {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 900; letter-spacing: -1px; color: var(--gold); display: block; margin-bottom: 16px;
+    }
+    .hero-subtitle { font-size: clamp(14px, 2vw, 18px); font-weight: 400; color: var(--text-m); letter-spacing: 1px; margin-bottom: 48px; }
+
+    .hero-stats {
+      display: inline-flex; gap: 0;
+      border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden;
+      background: var(--bg-card); box-shadow: 0 4px 24px rgba(0,0,0,0.06); margin-bottom: 48px;
+    }
+    .hero-stat { padding: 20px 32px; border-right: 1px solid var(--border); text-align: center; min-width: 110px; }
+    .hero-stat:last-child { border-right: none; }
+    .hs-value { font-size: 28px; font-weight: 900; color: var(--black); letter-spacing: -1px; display: block; line-height: 1; }
+    .hs-unit  { font-size: 12px; font-weight: 700; color: var(--gold); display: block; margin-top: 2px; }
+    .hs-label { font-size: 9px; color: var(--text-l); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; display: block; }
+    .hero-scroll { font-size: 10px; color: var(--text-l); letter-spacing: 2px; text-transform: uppercase; }
+
+    /* ══ IMAGE ══ */
+    .img-section { background: var(--black); padding: 64px 48px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .img-label { font-size: 10px; font-weight: 700; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; }
+    .image-slot {
+      width: 100%; max-width: 1000px; aspect-ratio: 16/9;
+      border: 2px dashed rgba(200,153,104,0.35); border-radius: 16px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; background: #111;
+    }
+    .image-slot:hover { border-color: var(--gold); background: #161616; }
+    .image-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+    .img-placeholder { display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1; }
+    .img-placeholder-icon { font-size: 44px; opacity: 0.35; }
+    .img-placeholder-text { font-size: 14px; color: rgba(255,255,255,0.35); font-weight: 500; }
+    .img-placeholder-sub { font-size: 11px; color: rgba(255,255,255,0.2); }
+    #imageInput { display: none; }
+
+    /* ══ SECTIONS ══ */
+    .sec { padding: 80px 48px; }
+    .sec-white { background: var(--bg-card); }
+    .sec-warm  { background: var(--bg-warm); }
+    .sec-bg    { background: var(--bg); }
+    .sec-inner { max-width: 1200px; margin: 0 auto; }
+    .sec-header { margin-bottom: 48px; }
+    .sec-label { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .sec-title { font-size: clamp(28px, 4vw, 48px); font-weight: 900; color: var(--black); line-height: 1.05; letter-spacing: -1.5px; }
+
+    /* ══ OVERVIEW ══ */
+    .overview-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--border); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+    .ov-col { background: var(--bg-card); padding: 36px 32px; }
+    .ov-col-head { display: flex; align-items: center; gap: 12px; padding-bottom: 20px; margin-bottom: 24px; border-bottom: 2px solid var(--gold); }
+    .ov-icon { width: 38px; height: 38px; background: rgba(200,153,104,0.12); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .ov-title { font-size: 14px; font-weight: 700; color: var(--black); line-height: 1.3; }
+    .ov-item { margin-bottom: 18px; }
+    .ov-item:last-child { margin-bottom: 0; }
+    .ov-key { font-size: 9px; font-weight: 800; color: var(--gold); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 4px; }
+    .ov-val { font-size: 13px; color: var(--text); line-height: 1.55; font-weight: 500; }
+    .ov-val strong { color: var(--black); font-weight: 700; }
+
+    /* ══ SPECS ══ */
+    .specs-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+    .specs-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    .sc-head { background: linear-gradient(135deg, var(--black) 0%, var(--diamond) 100%); padding: 16px 24px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--gold); }
+    .sc-title { font-size: 11px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 1.5px; }
+    .sc-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 24px; border-bottom: 1px solid var(--border); }
+    .sc-row:last-child { border-bottom: none; }
+    .sc-row:nth-child(even) { background: var(--bg); }
+    .sc-k { font-size: 12px; color: var(--text-m); font-weight: 500; }
+    .sc-v { font-size: 12px; color: var(--black); font-weight: 700; text-align: right; }
+    .sc-v.gold { color: var(--gold); }
+
+    /* ══ OPCIONES ══ */
+    .opts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .opt-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 20px; transition: border-color 0.2s, box-shadow 0.2s; }
+    .opt-card:hover { border-color: var(--gold); box-shadow: 0 4px 16px rgba(200,153,104,0.12); }
+    .opt-icon { font-size: 26px; margin-bottom: 10px; }
+    .opt-title { font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+    .opt-desc { font-size: 11px; color: var(--text-m); line-height: 1.6; }
+
+    /* ══ DIMENSIONES ══ */
+    .dims-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .dim-svg-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 36px; display: flex; align-items: center; justify-content: center; }
+    .dim-list { display: flex; flex-direction: column; }
+    .dim-row { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--border); gap: 16px; }
+    .dim-row:last-child { border-bottom: none; }
+    .dim-lbl { font-size: 14px; color: var(--text-m); font-weight: 500; }
+    .dim-val { font-size: 20px; font-weight: 800; color: var(--black); white-space: nowrap; }
+    .dim-unit { font-size: 12px; font-weight: 600; color: var(--gold); margin-left: 4px; }
+    .dim-val.gold { color: var(--gold); }
+
+    /* ══ HIGHLIGHTS ══ */
+    .hl-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .hl-card { background: var(--bg-card); border-radius: 14px; padding: 32px 28px; border: 1px solid var(--border); border-top: 3px solid var(--gold); transition: transform 0.25s, box-shadow 0.25s; }
+    .hl-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(200,153,104,0.15); }
+    .hl-icon { font-size: 30px; margin-bottom: 16px; }
+    .hl-title { font-size: 15px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
+    .hl-desc { font-size: 12px; color: var(--text-m); line-height: 1.7; }
+
+    /* ══ APLICACIONES ══ */
+    .apps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .app-card { background: var(--bg-card); border-radius: 14px; padding: 28px 24px; border: 1px solid var(--border); text-align: center; transition: all 0.25s; }
+    .app-card:hover { border-color: var(--diamond-l); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(26,58,92,0.10); }
+    .app-icon { font-size: 36px; margin-bottom: 14px; }
+    .app-title { font-size: 14px; font-weight: 700; color: var(--diamond); margin-bottom: 8px; }
+    .app-desc { font-size: 11px; color: var(--text-m); line-height: 1.65; }
+
+    /* ══ CERTS ══ */
+    .certs-wrap { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .cert { padding: 12px 24px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.5px; transition: all 0.2s; cursor: default; }
+    .cert:hover { border-color: var(--gold); color: var(--gold); box-shadow: 0 4px 16px rgba(200,153,104,0.2); }
+
+    /* ══ IN THE BOX ══ */
+    .box-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .box-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 16px; text-align: center; transition: border-color 0.2s; }
+    .box-item:hover { border-color: var(--gold); }
+    .box-icon { font-size: 26px; margin-bottom: 10px; }
+    .box-title { font-size: 11px; font-weight: 700; color: var(--black); line-height: 1.4; }
+    .box-sub { font-size: 10px; color: var(--text-m); margin-top: 4px; }
+
+    /* ══ AVISO ══ */
+    .aviso {
+      background: rgba(255,240,180,0.5);
+      border: 1.5px solid rgba(200,160,0,0.3);
+      border-radius: 12px;
+      padding: 20px 28px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .aviso-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .aviso-text { font-size: 12px; color: var(--text); line-height: 1.65; }
+    .aviso-text strong { color: #7a5c00; }
+
+    /* ══ PRICING ══ */
+    .price-card {
+      background: linear-gradient(140deg, var(--black) 0%, #0f1e2e 100%);
+      border-radius: 20px; padding: 56px 48px; max-width: 720px; margin: 0 auto;
+      text-align: center; position: relative; overflow: hidden;
+      border: 1px solid rgba(200,153,104,0.2);
+    }
+    .price-card::before {
+      content: ''; position: absolute; top: -40%; right: -20%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(44,95,143,0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .pc-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+    .pc-model { font-size: 44px; font-weight: 900; color: white; letter-spacing: -2px; margin-bottom: 4px; line-height: 1; }
+    .pc-model span { color: var(--gold); }
+    .pc-sub { font-size: 14px; color: rgba(255,255,255,0.4); margin-bottom: 44px; }
+    .pc-rule { width: 48px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); margin: 0 auto 40px; }
+    .pc-consultar { font-size: 42px; font-weight: 900; color: white; letter-spacing: -1px; margin-bottom: 10px; }
+    .pc-note-price { font-size: 13px; color: var(--gold); font-weight: 600; margin-bottom: 32px; }
+    .btn-print { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-d) 100%); color: white; border: none; border-radius: 9px; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.3px; transition: all 0.2s; margin-bottom: 24px; }
+    .btn-print:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,153,104,0.5); }
+    .pc-note { font-size: 11px; color: rgba(255,255,255,0.25); line-height: 1.7; }
+    .pc-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 32px; padding-top: 24px; border-top: 1px solid rgba(200,153,104,0.15); }
+
+    /* ══ FOOTER ══ */
+    footer { background: var(--black); color: rgba(255,255,255,0.35); padding: 36px 48px; text-align: center; font-size: 11px; border-top: 1px solid rgba(200,153,104,0.15); }
+    footer a { color: var(--gold); text-decoration: none; }
+    footer a:hover { color: var(--gold-l); }
+    .footer-links { margin-top: 10px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+    /* ══ ANIMATIONS ══ */
+    .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fade-up.d1 { transition-delay: 0.05s; }
+    .fade-up.d2 { transition-delay: 0.12s; }
+    .fade-up.d3 { transition-delay: 0.19s; }
+
+    @media print { nav, .img-section, .btn-print { display: none !important; } .hero { min-height: auto; padding: 40px; } .fade-up { opacity: 1 !important; transform: none !important; } }
+    @media (max-width: 900px) { nav { padding: 0 20px; } .sec { padding: 60px 24px; } .hero { padding: 60px 24px 40px; } .overview-grid, .specs-grid, .hl-grid, .opts-grid, .apps-grid { grid-template-columns: 1fr; } .box-grid { grid-template-columns: repeat(2,1fr); } .dims-layout { grid-template-columns: 1fr; } .hero-stats { flex-wrap: wrap; } }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-left">
+    <a href="home.html" class="nav-brand">
+      <svg class="nav-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+        <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+        <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+        <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+        <circle cx="50" cy="18" r="4.5" fill="#C89968"/><circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/><circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="50" cy="82" r="4.5" fill="#C89968"/><circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/><circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="18" cy="50" r="4.5" fill="#C89968"/><circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/><circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="82" cy="50" r="4.5" fill="#C89968"/><circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/><circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+      </svg>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">SoulBaric</span>
+        <span class="nav-logo-sub">CellPods</span>
+      </div>
+    </a>
+    <div class="nav-divider"></div>
+    <span class="nav-page">Ficha Técnica · HE5000 Diamond</span>
+  </div>
+  <div class="nav-actions">
+    <a href="catalogo.html" class="btn-nav btn-outline">← Catálogo</a>
+    <button class="btn-nav btn-solid" onclick="window.print()">🖨️ Imprimir PDF</button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-badge">💎 &nbsp; Diamond Edition</div>
+  <div class="hero-eyebrow">SoulBaric · CellPods · Cámara Hiperbárica Rígida Sentada</div>
+  <div class="hero-model">HE5000<span class="hero-model-sub">Diamond</span></div>
+  <div class="hero-subtitle">Rígida Monoplaza Sentada · 1–2 Personas · Experiencia Premium</div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hs-value">1.9</span>
+      <span class="hs-unit">ATA</span>
+      <span class="hs-label">Presión máx.</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">93%</span>
+      <span class="hs-unit">±3</span>
+      <span class="hs-label">Pureza O₂</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">1–2</span>
+      <span class="hs-unit">plazas</span>
+      <span class="hs-label">Capacidad</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">≤62</span>
+      <span class="hs-unit">dB</span>
+      <span class="hs-label">Nivel sonoro</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">360°</span>
+      <span class="hs-unit">visión</span>
+      <span class="hs-label">Ventanas panor.</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll">↓ &nbsp; especificaciones técnicas completas</div>
+</div>
+
+<!-- ═══ IMAGE SLOT ═══ -->
+<div class="img-section">
+  <div class="img-label">Fotografía del equipo</div>
+  <div class="image-slot"
+    onclick="document.getElementById('imageInput').click()"
+    ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+    <div class="img-placeholder" id="imgPlaceholder">
+      <div class="img-placeholder-icon">💎</div>
+      <div class="img-placeholder-text">Añadir fotografía del equipo</div>
+      <div class="img-placeholder-sub">Arrastra una imagen o haz clic · JPG, PNG, WEBP</div>
+    </div>
+  </div>
+  <input type="file" id="imageInput" accept="image/*" onchange="loadImage(this)">
+</div>
+
+<!-- ═══ OVERVIEW 3-COL ═══ -->
+<div class="sec sec-bg">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Descripción técnica</div>
+      <div class="sec-title">Hiperoxigenación<br>en entorno abierto.</div>
+    </div>
+    <div class="overview-grid fade-up d1">
+
+      <div class="ov-col">
+        <div class="ov-col-head">
+          <div class="ov-icon">🏗️</div>
+          <div class="ov-title">Estructura y configuración</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Tipo de cámara</div>
+          <div class="ov-val">Cápsula rígida <strong>monoplaza sentada</strong><br>(bi-plaza opcional)</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Ventanas panorámicas</div>
+          <div class="ov-val"><strong>Grandes ventanas laterales</strong><br>Apertura visual 360° hacia el exterior</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Revestimiento interior</div>
+          <div class="ov-val"><strong>Diamond en símil cuero</strong><br>Acabado premium ultra-confortable</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Movilidad</div>
+          <div class="ov-val">Ruedas con freno integradas<br>Fácil reposicionamiento</div>
+        </div>
+      </div>
+
+      <div class="ov-col">
+        <div class="ov-col-head">
+          <div class="ov-icon">📐</div>
+          <div class="ov-title">Dimensiones y acústica</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Dimensiones cabina (A × F × H)</div>
+          <div class="ov-val"><strong>148 × 170 × 174 cm</strong></div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Nivel sonoro</div>
+          <div class="ov-val"><strong>≤ 62 dB</strong><br>Entorno acústicamente controlado</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Entorno interior</div>
+          <div class="ov-val">Asiento ergonómico integrado<br>Iluminación ambiente ajustable</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Climatización</div>
+          <div class="ov-val"><strong>Aire acondicionado integrado</strong><br>Temperatura interior controlada</div>
+        </div>
+      </div>
+
+      <div class="ov-col">
+        <div class="ov-col-head">
+          <div class="ov-icon">🖥️</div>
+          <div class="ov-title">Sistema y control</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Pantallas de control</div>
+          <div class="ov-val">Pantallas <strong>LCD interior y exterior</strong><br>Sistema de interfono int./ext.</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Iluminación interior</div>
+          <div class="ov-val">Luces LED <strong>ambiente RGB + lectura</strong><br>Luz inferior regulable</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Inhalación de O₂</div>
+          <div class="ov-val"><strong>3 dispositivos</strong> de inhalación<br>Concentrador 10L integrado</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Entretenimiento</div>
+          <div class="ov-val">Soporte TV interior incluido<br>Sensores y manómetros int./ext.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SPECS ═══ -->
+<div class="sec sec-white">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Especificaciones completas</div>
+      <div class="sec-title">Cada detalle importa.</div>
+    </div>
+    <div class="specs-grid">
+
+      <div class="specs-card fade-up d1">
+        <div class="sc-head"><span>🫧</span><span class="sc-title">Cápsula hiperbárica</span></div>
+        <div class="sc-row"><span class="sc-k">Presión máxima</span><span class="sc-v">1.9 ATA</span></div>
+        <div class="sc-row"><span class="sc-k">Tipo</span><span class="sc-v">Rígida monoplaza sentada</span></div>
+        <div class="sc-row"><span class="sc-k">Capacidad</span><span class="sc-v">1 plaza (2 opcional)</span></div>
+        <div class="sc-row"><span class="sc-k">Dimensiones cabina</span><span class="sc-v">148 × 170 × 174 cm</span></div>
+        <div class="sc-row"><span class="sc-k">Nivel sonoro</span><span class="sc-v gold">≤ 62 dB</span></div>
+        <div class="sc-row"><span class="sc-k">Ventanas</span><span class="sc-v">Panorámicas laterales 360°</span></div>
+        <div class="sc-row"><span class="sc-k">Revestimiento interior</span><span class="sc-v">Diamond símil cuero</span></div>
+        <div class="sc-row"><span class="sc-k">Asiento</span><span class="sc-v">Ergonómico integrado</span></div>
+        <div class="sc-row"><span class="sc-k">Movilidad</span><span class="sc-v">Ruedas con freno</span></div>
+      </div>
+
+      <div class="specs-card fade-up d2">
+        <div class="sc-head"><span>⚙️</span><span class="sc-title">Sistema todo-en-uno</span></div>
+        <div class="sc-row"><span class="sc-k">Pureza O₂</span><span class="sc-v gold">93% ±3</span></div>
+        <div class="sc-row"><span class="sc-k">Concentrador</span><span class="sc-v">10 L/min integrado</span></div>
+        <div class="sc-row"><span class="sc-k">Dispositivos inhalación</span><span class="sc-v">3 ud. incluidas</span></div>
+        <div class="sc-row"><span class="sc-k">Climatización</span><span class="sc-v">Aire acondicionado integrado</span></div>
+        <div class="sc-row"><span class="sc-k">Iluminación</span><span class="sc-v">LED RGB + lectura + inf. regulable</span></div>
+        <div class="sc-row"><span class="sc-k">Pantallas</span><span class="sc-v">LCD interior + exterior</span></div>
+        <div class="sc-row"><span class="sc-k">Interfono</span><span class="sc-v">Interior / Exterior</span></div>
+        <div class="sc-row"><span class="sc-k">Soporte TV</span><span class="sc-v">✓ Incluido</span></div>
+        <div class="sc-row"><span class="sc-k">Sensores y manómetros</span><span class="sc-v">Interior + Exterior</span></div>
+      </div>
+
+      <div class="specs-card fade-up d1">
+        <div class="sc-head"><span>🎨</span><span class="sc-title">Personalización</span></div>
+        <div class="sc-row"><span class="sc-k">Color exterior</span><span class="sc-v">Personalizable / colores RAL</span></div>
+        <div class="sc-row"><span class="sc-k">Logotipo</span><span class="sc-v">Inserción en cápsula (opcional)</span></div>
+        <div class="sc-row"><span class="sc-k">Iluminación Starlight</span><span class="sc-v">Cielo estrellado (opcional)</span></div>
+        <div class="sc-row"><span class="sc-k">Config. doble asiento</span><span class="sc-v">Bi-plaza (opcional)</span></div>
+        <div class="sc-row"><span class="sc-k">Config. oficina</span><span class="sc-v">Mesa + asiento giratorio (opc.)</span></div>
+        <div class="sc-row"><span class="sc-k">Paquete audiovisual</span><span class="sc-v">Interior (opcional)</span></div>
+      </div>
+
+      <div class="specs-card fade-up d2">
+        <div class="sc-head"><span>🔬</span><span class="sc-title">Opciones avanzadas</span></div>
+        <div class="sc-row"><span class="sc-k">Sistema BIBS</span><span class="sc-v">Inhalación O₂ (opcional)</span></div>
+        <div class="sc-row"><span class="sc-k">Luz roja / infrarrojo</span><span class="sc-v">Dispositivo (opcional)</span></div>
+        <div class="sc-row"><span class="sc-k">Programas de protocolos</span><span class="sc-v">Disponibles</span></div>
+        <div class="sc-row"><span class="sc-k">Formación profesional</span><span class="sc-v">Incluida en el proyecto</span></div>
+        <div class="sc-row"><span class="sc-k">Instalación</span><span class="sc-v">Logística + puesta en marcha</span></div>
+        <div class="sc-row"><span class="sc-k">Soporte técnico</span><span class="sc-v">Integración profesional</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DIMENSIONES ═══ -->
+<div class="sec sec-warm">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Dimensiones &amp; Geometría</div>
+      <div class="sec-title">Compacta. Abierta.<br>Sin sensación de confinamiento.</div>
+    </div>
+    <div class="dims-layout fade-up d1">
+
+      <div class="dim-svg-wrap">
+        <svg viewBox="0 0 420 340" width="100%" style="max-width:420px;">
+
+          <!-- ── VISTA FRONTAL (cápsula circular) ── -->
+          <g transform="translate(30,30)">
+            <text x="95" y="-12" text-anchor="middle" font-size="8" fill="#C89968"
+              font-family="Inter,sans-serif" font-weight="700" letter-spacing="1.5">VISTA FRONTAL</text>
+
+            <!-- Cuerpo exterior circular -->
+            <circle cx="95" cy="110" r="90"
+              fill="rgba(200,153,104,0.05)" stroke="#C89968" stroke-width="2.2"/>
+
+            <!-- Ventana panorámica grande (característica Diamond) -->
+            <circle cx="95" cy="110" r="72"
+              fill="rgba(44,95,143,0.06)" stroke="#C89968" stroke-width="1.5" stroke-dasharray="0"/>
+
+            <!-- Interior -->
+            <circle cx="95" cy="110" r="55"
+              fill="rgba(200,153,104,0.04)" stroke="#C89968" stroke-width="1" stroke-dasharray="4,3" opacity="0.6"/>
+
+            <!-- Asiento interior (representación esquemática) -->
+            <rect x="72" y="100" width="46" height="28" rx="6"
+              fill="rgba(200,153,104,0.15)" stroke="#C89968" stroke-width="1.2"/>
+            <rect x="72" y="86" width="46" height="16" rx="4"
+              fill="rgba(200,153,104,0.1)" stroke="#C89968" stroke-width="1"/>
+
+            <!-- Ruedas -->
+            <circle cx="35" cy="208" r="8" fill="rgba(26,58,92,0.2)" stroke="#1a3a5c" stroke-width="1.5"/>
+            <circle cx="155" cy="208" r="8" fill="rgba(26,58,92,0.2)" stroke="#1a3a5c" stroke-width="1.5"/>
+
+            <!-- Base -->
+            <rect x="15" y="196" width="160" height="12" rx="4"
+              fill="rgba(26,58,92,0.08)" stroke="#1a3a5c" stroke-width="1"/>
+
+            <!-- Flecha ancho -->
+            <line x1="5" y1="110" x2="185" y2="110" stroke="#8b7d76" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.4"/>
+            <line x1="5" y1="230" x2="185" y2="230" stroke="#8b7d76" stroke-width="1.3"/>
+            <polygon points="5,227.5 5,232.5 -3,230" fill="#8b7d76"/>
+            <polygon points="185,227.5 185,232.5 193,230" fill="#8b7d76"/>
+            <text x="95" y="244" text-anchor="middle" font-size="9.5" fill="#8b7d76" font-family="Inter,sans-serif">148 cm</text>
+
+            <!-- Flecha alto -->
+            <line x1="-20" y1="20" x2="-20" y2="208" stroke="#8b7d76" stroke-width="1.3"/>
+            <polygon points="-22.5,20 -17.5,20 -20,12" fill="#8b7d76"/>
+            <polygon points="-22.5,208 -17.5,208 -20,216" fill="#8b7d76"/>
+            <text x="-30" y="118" text-anchor="middle" font-size="9.5" fill="#8b7d76"
+              font-family="Inter,sans-serif" transform="rotate(-90,-30,118)">174 cm</text>
+
+            <!-- Label ventana -->
+            <line x1="95" y1="42" x2="140" y2="10" stroke="#C89968" stroke-width="0.9" stroke-dasharray="3,3"/>
+            <text x="145" y="7" font-size="7.5" fill="#C89968" font-family="Inter,sans-serif" font-weight="600">Ventana panorámica</text>
+          </g>
+
+          <!-- ── VISTA LATERAL ── -->
+          <g transform="translate(255,50)">
+            <text x="75" y="-12" text-anchor="middle" font-size="8" fill="#C89968"
+              font-family="Inter,sans-serif" font-weight="700" letter-spacing="1.5">VISTA LATERAL</text>
+
+            <!-- Cuerpo lateral (rectángulo con esquinas redondeadas) -->
+            <rect x="5" y="20" width="140" height="160" rx="30"
+              fill="rgba(200,153,104,0.05)" stroke="#C89968" stroke-width="2"/>
+
+            <!-- Pantalla exterior -->
+            <rect x="125" y="50" width="20" height="30" rx="3"
+              fill="rgba(44,95,143,0.15)" stroke="#1a3a5c" stroke-width="1.5"/>
+
+            <!-- Base + ruedas -->
+            <rect x="5" y="178" width="140" height="10" rx="3"
+              fill="rgba(26,58,92,0.08)" stroke="#1a3a5c" stroke-width="1"/>
+            <circle cx="30" cy="194" r="7" fill="rgba(26,58,92,0.2)" stroke="#1a3a5c" stroke-width="1.5"/>
+            <circle cx="120" cy="194" r="7" fill="rgba(26,58,92,0.2)" stroke="#1a3a5c" stroke-width="1.5"/>
+
+            <!-- Flecha profundidad -->
+            <line x1="5" y1="212" x2="145" y2="212" stroke="#8b7d76" stroke-width="1.3"/>
+            <polygon points="5,209.5 5,214.5 -2,212" fill="#8b7d76"/>
+            <polygon points="145,209.5 145,214.5 152,212" fill="#8b7d76"/>
+            <text x="75" y="225" text-anchor="middle" font-size="9.5" fill="#8b7d76" font-family="Inter,sans-serif">170 cm</text>
+          </g>
+
+          <!-- Título general -->
+          <text x="210" y="330" text-anchor="middle" font-size="8.5" fill="#8b7d76"
+            font-family="Inter,sans-serif" letter-spacing="0.5">
+            HE5000 Diamond · Diagrama de dimensiones (escala orientativa)
+          </text>
+        </svg>
+      </div>
+
+      <div class="dim-list">
+        <div class="dim-row">
+          <span class="dim-lbl">Ancho de cabina</span>
+          <span class="dim-val">148 cm <span class="dim-unit">1480 mm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Profundidad de cabina</span>
+          <span class="dim-val">170 cm <span class="dim-unit">1700 mm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Altura total</span>
+          <span class="dim-val">174 cm <span class="dim-unit">1740 mm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Presión máxima</span>
+          <span class="dim-val">1.9 <span class="dim-unit">ATA</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Nivel sonoro</span>
+          <span class="dim-val gold">≤ 62 <span class="dim-unit" style="color:var(--gold)">dB</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Pureza de oxígeno</span>
+          <span class="dim-val gold">93% <span class="dim-unit" style="color:var(--gold)">±3</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Capacidad</span>
+          <span class="dim-val">1 <span class="dim-unit">plaza (2 opc.)</span></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HIGHLIGHTS ═══ -->
+<div class="sec sec-white">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Características Diamond</div>
+      <div class="sec-title">Visibilidad, confort<br>y seguridad premium.</div>
+    </div>
+    <div class="hl-grid">
+      <div class="hl-card fade-up d1">
+        <div class="hl-icon">🪟</div>
+        <div class="hl-title">Ventanas panorámicas 360°</div>
+        <div class="hl-desc">Grandes ventanas laterales que abren la cabina hacia el exterior, transformando la sesión en una experiencia luminosa y completamente libre de sensación de confinamiento.</div>
+      </div>
+      <div class="hl-card fade-up d2">
+        <div class="hl-icon">💎</div>
+        <div class="hl-title">Revestimiento Diamond</div>
+        <div class="hl-desc">Interior en símil cuero con acabado Diamond. Asiento ergonómico diseñado para sesiones prolongadas con máximo confort y soporte postural.</div>
+      </div>
+      <div class="hl-card fade-up d3">
+        <div class="hl-icon">🌈</div>
+        <div class="hl-title">Iluminación RGB ambiente</div>
+        <div class="hl-desc">Sistema LED triple: luz ambiente RGB regulable, luz de lectura y luz inferior ajustable. Transforma el interior en un espacio de bienestar personalizado.</div>
+      </div>
+      <div class="hl-card fade-up d1">
+        <div class="hl-icon">❄️</div>
+        <div class="hl-title">Climatización integrada</div>
+        <div class="hl-desc">Unidad de aire acondicionado incorporada para mantener una temperatura interior óptima durante toda la sesión, garantizando el máximo confort.</div>
+      </div>
+      <div class="hl-card fade-up d2">
+        <div class="hl-icon">🫁</div>
+        <div class="hl-title">Triple inhalación O₂</div>
+        <div class="hl-desc">3 dispositivos de inhalación de oxígeno al 93% de pureza con concentrador de 10L integrado en el sistema todo-en-uno.</div>
+      </div>
+      <div class="hl-card fade-up d3">
+        <div class="hl-icon">🔇</div>
+        <div class="hl-title">Silencio certificado ≤62 dB</div>
+        <div class="hl-desc">Entorno acústicamente controlado con nivel sonoro ≤ 62 dB. Una sesión que se vive en calma total, sin ruidos que interrumpan la experiencia.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OPCIONES ═══ -->
+<div class="sec sec-warm">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Configuración a medida</div>
+      <div class="sec-title">Tu proyecto, tu equipo.</div>
+    </div>
+    <div class="opts-grid fade-up d1">
+      <div class="opt-card">
+        <div class="opt-icon">🎨</div>
+        <div class="opt-title">Pintura personalizada</div>
+        <div class="opt-desc">Cualquier color RAL, incluyendo acabados metalizados y personalizados según identidad de marca.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">🏷️</div>
+        <div class="opt-title">Inserción de logotipo</div>
+        <div class="opt-desc">Grabado o impresión del logotipo corporativo en la cápsula. Integración perfecta de la marca.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">✨</div>
+        <div class="opt-title">Starlight — Cielo estrellado</div>
+        <div class="opt-desc">Iluminación interior estilo cielo estrellado para una experiencia inmersiva y relajante única.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">👥</div>
+        <div class="opt-title">Configuración doble asiento</div>
+        <div class="opt-desc">Adaptación para bi-plaza: dos personas simultáneamente con el mismo nivel de confort.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">💼</div>
+        <div class="opt-title">Configuración oficina</div>
+        <div class="opt-desc">Mesa plegable y asiento giratorio para trabajar durante la sesión. Productividad sin límites.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">🎬</div>
+        <div class="opt-title">Paquete audiovisual</div>
+        <div class="opt-desc">Sistema audiovisual interior completo. Entretenimiento premium durante la sesión hiperbárica.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">💨</div>
+        <div class="opt-title">Sistema BIBS</div>
+        <div class="opt-desc">Inhalación directa de oxígeno mediante mascarilla BIBS para una oxigenación más intensa.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">🔴</div>
+        <div class="opt-title">Luz roja / Infrarrojo</div>
+        <div class="opt-desc">Dispositivo de fotobiomodulación integrado. Combina hiperoxigenación con terapia de luz roja.</div>
+      </div>
+      <div class="opt-card">
+        <div class="opt-icon">📋</div>
+        <div class="opt-title">Protocolos + Formación</div>
+        <div class="opt-desc">Programas de protocolos profesionales y formación certificada para el uso seguro del equipo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APLICACIONES ═══ -->
+<div class="sec sec-white">
+  <div class="sec-inner">
+    <div class="sec-header fade-up" style="text-align:center;">
+      <div class="sec-label">Aplicaciones</div>
+      <div class="sec-title">Una tecnología adaptable<br>a múltiples entornos de bienestar.</div>
+    </div>
+    <div class="apps-grid fade-up d1">
+      <div class="app-card">
+        <div class="app-icon">🏋️</div>
+        <div class="app-title">Centros deportivos</div>
+        <div class="app-desc">Optimización de la recuperación tras el esfuerzo, mejora del confort muscular y apoyo a los procesos naturales de regeneración del organismo.</div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🏨</div>
+        <div class="app-title">Hoteles y spas premium</div>
+        <div class="app-desc">Experiencia de bienestar diferenciadora que complementa programas de spa, longevidad y recuperación del viajero.</div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🌿</div>
+        <div class="app-title">Centros holísticos</div>
+        <div class="app-desc">Integración con programas de respiración, nutrición, fotobiomodulación y optimización integral del estilo de vida.</div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">👴</div>
+        <div class="app-title">Bienestar mayores</div>
+        <div class="app-desc">Apoyo al confort fisiológico, la vitalidad y la calidad de vida en programas de bienestar y envejecimiento saludable.</div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🏠</div>
+        <div class="app-title">Uso residencial</div>
+        <div class="app-desc">Instalación en viviendas privadas para quienes desean integrar tecnologías avanzadas de bienestar en su estilo de vida cotidiano.</div>
+      </div>
+      <div class="app-card">
+        <div class="app-icon">🏥</div>
+        <div class="app-title">Clínicas wellness</div>
+        <div class="app-desc">División wellness no sanitaria. Integración en clínicas de estética, recuperación y bienestar con enfoque fisiológico.</div>
+      </div>
+    </div>
+
+    <!-- Aviso legal -->
+    <div class="aviso fade-up d2" style="margin-top:40px;">
+      <div class="aviso-icon">⚠️</div>
+      <div class="aviso-text">
+        La HE5000 Diamond es un equipo destinado a aplicaciones de bienestar y optimización fisiológica.
+        <strong>No es un dispositivo médico</strong> ni sustituye tratamientos médicos prescritos por profesionales sanitarios.
+        Su utilización debe realizarse exclusivamente dentro de programas de bienestar o recuperación no médica.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ IN THE BOX ═══ -->
+<div class="sec sec-bg">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Contenido del suministro</div>
+      <div class="sec-title">Todo incluido<br>para empezar desde el día uno.</div>
+    </div>
+    <div class="box-grid fade-up d1">
+      <div class="box-item"><div class="box-icon">💎</div><div class="box-title">Cápsula HE5000 Diamond</div><div class="box-sub">Revestimiento símil cuero</div></div>
+      <div class="box-item"><div class="box-icon">⚙️</div><div class="box-title">Unidad de control</div><div class="box-sub">Compresor + concentrador 10L</div></div>
+      <div class="box-item"><div class="box-icon">❄️</div><div class="box-title">Aire acondicionado</div><div class="box-sub">Unidad integrada</div></div>
+      <div class="box-item"><div class="box-icon">💡</div><div class="box-title">LED RGB + lectura</div><div class="box-sub">+ luz inferior regulable</div></div>
+      <div class="box-item"><div class="box-icon">🖥️</div><div class="box-title">Pantallas LCD ×2</div><div class="box-sub">Interior + exterior</div></div>
+      <div class="box-item"><div class="box-icon">🎙️</div><div class="box-title">Interfono int./ext.</div><div class="box-sub">Comunicación bidireccional</div></div>
+      <div class="box-item"><div class="box-icon">🫁</div><div class="box-title">3 dispositivos O₂</div><div class="box-sub">Inhalación de oxígeno</div></div>
+      <div class="box-item"><div class="box-icon">📺</div><div class="box-title">Soporte TV interior</div><div class="box-sub">+ sensores y manómetros</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CERTIFICACIONES ═══ -->
+<div class="sec sec-white" style="text-align:center;">
+  <div class="sec-inner">
+    <div class="sec-header fade-up" style="text-align:center;">
+      <div class="sec-label">Homologaciones y certificaciones</div>
+      <div class="sec-title">Nuestro compromiso con<br>la excelencia y la seguridad.</div>
+    </div>
+    <div class="certs-wrap fade-up d1">
+      <div class="cert">PED</div>
+      <div class="cert">🇪🇺 CE &nbsp;2014/68/EU</div>
+      <div class="cert">ISO 9001</div>
+      <div class="cert">ISO 13485</div>
+      <div class="cert">ASME</div>
+      <div class="cert">NFPA 99</div>
+      <div class="cert">PICC</div>
+      <div class="cert">RoHS3</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRICING ═══ -->
+<div class="sec sec-bg">
+  <div class="sec-inner">
+    <div class="price-card fade-up">
+      <div class="pc-eyebrow">Precio de referencia</div>
+      <div class="pc-model">HE5000 <span>Diamond</span></div>
+      <div class="pc-sub">Cámara Hiperbárica Rígida Sentada · SoulBaric CellPods</div>
+      <div class="pc-rule"></div>
+      <div class="pc-consultar">A consultar</div>
+      <div class="pc-note-price">Precio personalizado según configuración</div>
+      <button class="btn-print" onclick="window.print()">🖨️ &nbsp;Imprimir / Guardar PDF</button>
+      <div class="pc-note">
+        El precio final varía según las opciones seleccionadas: color RAL, Starlight, doble plaza,<br>
+        sistema BIBS, luz roja, audiovisual, protocolos y formación.<br>
+        Solicite presupuesto personalizado a su asesor SoulBaric.
+      </div>
+      <div class="pc-brand">
+        <svg width="24" height="24" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.5"/>
+          <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+          <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+          <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+          <circle cx="50" cy="18" r="4.5" fill="#C89968"/><circle cx="37" cy="27" r="3" fill="#C89968" opacity="0.8"/><circle cx="63" cy="27" r="3" fill="#C89968" opacity="0.8"/>
+          <circle cx="50" cy="82" r="4.5" fill="#C89968"/><circle cx="37" cy="73" r="3" fill="#C89968" opacity="0.8"/><circle cx="63" cy="73" r="3" fill="#C89968" opacity="0.8"/>
+          <circle cx="18" cy="50" r="4.5" fill="#C89968"/><circle cx="27" cy="37" r="3" fill="#C89968" opacity="0.8"/><circle cx="27" cy="63" r="3" fill="#C89968" opacity="0.8"/>
+          <circle cx="82" cy="50" r="4.5" fill="#C89968"/><circle cx="73" cy="37" r="3" fill="#C89968" opacity="0.8"/><circle cx="73" cy="63" r="3" fill="#C89968" opacity="0.8"/>
+        </svg>
+        <div style="text-align:left;">
+          <div style="font-size:12px;font-weight:900;color:var(--gold);letter-spacing:2px;text-transform:uppercase;line-height:1;">SoulBaric</div>
+          <div style="font-size:7px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-top:2px;">CellPods</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div>© 2025 SoulBaric · CellPods · Plataforma Profesional de Inversión Hiperbárica</div>
+  <div class="footer-links">
+    <a href="home.html">Inicio</a>
+    <a href="catalogo.html">Catálogo</a>
+    <a href="index.html">Calculadora</a>
+    <a href="propuestas.html">Propuestas</a>
+    <a href="ficha-hp750.html">Ficha HP750</a>
+  </div>
+</footer>
+
+<script src="asistente-chat.js"></script>
+<script>
+function loadImage(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => showImage(e.target.result);
+  reader.readAsDataURL(input.files[0]);
+}
+function handleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = ev => showImage(ev.target.result);
+  reader.readAsDataURL(file);
+}
+function showImage(src) {
+  document.getElementById('imgPlaceholder').style.display = 'none';
+  const slot = document.querySelector('.image-slot');
+  let img = slot.querySelector('img');
+  if (!img) { img = document.createElement('img'); slot.appendChild(img); }
+  img.src = src;
+}
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoulBaric × Marbella Club — Propuesta Exclusiva 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS — MARBELLA CLUB AESTHETIC
+══════════════════════════════════════════════ */
+:root {
+  --white:      #FFFFFF;
+  --cream:      #FAF8F4;
+  --cream2:     #F4EFE8;
+  --black:      #111111;
+  --charcoal:   #2D2D2D;
+  --body:       #444444;
+  --aqua:       #5BAFA6;
+  --aqua-dark:  #3D8E86;
+  --aqua-light: #EAF5F4;
+  --terra:      #C4795A;
+  --terra-light:#F5E8E3;
+  --sand:       #D4C4AE;
+  --sand-light: #F0EAE0;
+  --gold:       #B8966A;
+  --font-serif: 'Cormorant Garamond', Garamond, Georgia, serif;
+  --font-sans:  'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--body);
+  background: var(--white);
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* ══ SLIDES ══ */
+.slide {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.slide-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 60px;
+}
+
+/* ══ TYPOGRAPHY ══ */
+.label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  display: block;
+  margin-bottom: 18px;
+}
+.label-terra { color: var(--terra); }
+.label-sand  { color: var(--sand); }
+.label-white { color: rgba(255,255,255,0.65); }
+
+h1.serif {
+  font-family: var(--font-serif);
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  color: var(--black);
+}
+h2.serif {
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--black);
+}
+h3.serif {
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--black);
+}
+.serif-light {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--body);
+}
+p.lead {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.8;
+  max-width: 560px;
+}
+.number-big {
+  font-family: var(--font-serif);
+  font-size: clamp(44px, 6vw, 80px);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--aqua);
+  letter-spacing: -0.01em;
+}
+.number-big.terra { color: var(--terra); }
+.number-big.black { color: var(--black); }
+
+/* ══ DIVIDER ══ */
+.divider {
+  width: 48px;
+  height: 1px;
+  background: var(--aqua);
+  margin: 24px 0;
+}
+.divider.terra { background: var(--terra); }
+.divider.sand  { background: var(--sand); }
+.divider.white { background: rgba(255,255,255,0.4); }
+.divider.center { margin: 24px auto; }
+
+/* ══ BUTTONS ══ */
+.btn {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  border: 1px solid var(--black);
+  color: var(--black);
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn:hover, .btn.active { background: var(--aqua); border-color: var(--aqua); color: #fff; }
+.btn-filled { background: var(--black); color: #fff; border-color: var(--black); }
+.btn-filled:hover { background: var(--aqua); border-color: var(--aqua); }
+.btn-aqua { background: var(--aqua); color: #fff; border-color: var(--aqua); }
+.btn-aqua:hover { background: var(--aqua-dark); border-color: var(--aqua-dark); }
+
+/* ══ NAV DOTS (lateral) ══ */
+#nav-dots {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nav-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  position: relative;
+}
+.nav-dot::before {
+  content: attr(data-label);
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.nav-dot:hover::before { opacity: 1; }
+.nav-dot.active { background: var(--aqua); transform: scale(1.4); }
+.nav-dot.light { background: rgba(255,255,255,0.4); }
+.nav-dot.light.active { background: #fff; }
+
+/* ══ TOP HEADER ══ */
+#top-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 999;
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.4s, border 0.4s;
+}
+#top-header.dark-bg { background: rgba(250,248,244,0.96); border-bottom: 1px solid rgba(180,160,130,0.15); backdrop-filter: blur(8px); }
+#top-header { background: transparent; }
+.header-logo {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+.header-logo span { color: var(--aqua); }
+.header-collab {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--body);
+}
+.header-date {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: rgba(0,0,0,0.4);
+  text-transform: uppercase;
+}
+
+/* ══ SLIDE 1: PORTADA — LUJO SILENCIOSO ══ */
+#slide-1 {
+  background: var(--cream);
+  color: var(--black);
+}
+
+/* Textura botánica sutil — líneas finas como papel de lujo */
+.portada-texture {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 120px,
+      rgba(180,160,130,0.04) 120px,
+      rgba(180,160,130,0.04) 121px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 120px,
+      rgba(180,160,130,0.03) 120px,
+      rgba(180,160,130,0.03) 121px
+    );
+  pointer-events: none;
+}
+
+/* Franja de color lateral izquierda — acento editorial */
+.portada-accent-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--aqua) 0%, var(--terra) 60%, var(--sand) 100%);
+}
+
+/* Círculo decorativo fondo — referencia mediterránea */
+.portada-orb {
+  position: absolute;
+  right: -80px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center,
+    rgba(91,175,166,0.07) 0%,
+    rgba(212,196,174,0.12) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Anillo exterior sutil */
+.portada-orb::after {
+  content: '';
+  position: absolute;
+  inset: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(91,175,166,0.12);
+}
+
+.portada-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.portada-eyebrow::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--aqua);
+  flex-shrink: 0;
+}
+
+.portada-title {
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 4.4vw, 62px);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  color: var(--black);
+  margin-bottom: 0;
+}
+.portada-title em {
+  font-style: italic;
+  color: var(--aqua);
+  display: block;
+}
+.portada-attribution {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--body);
+  opacity: 0.45;
+  margin-top: 18px;
+  padding-left: 2px;
+}
+
+.portada-brand-line {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+.portada-brand-name {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--body);
+  opacity: 0.5;
+}
+.portada-brand-sep {
+  width: 1px;
+  height: 12px;
+  background: var(--sand);
+}
+
+.portada-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.portada-pill {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: 1px solid var(--sand);
+  color: var(--body);
+  opacity: 0.5;
+}
+.portada-pill.active {
+  border-color: var(--aqua);
+  color: var(--aqua);
+  opacity: 1;
+}
+
+/* Selector de modo — refinado para fondo claro */
+.mode-selector {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 20px 28px;
+  border: 1px solid rgba(180,160,130,0.3);
+  background: rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.3s;
+  text-align: left;
+  min-width: 220px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+}
+.mode-btn::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+.mode-btn:hover::before, .mode-btn.active::before { transform: scaleX(1); }
+.mode-btn.vision::before { background: var(--aqua); }
+.mode-btn.business::before { background: var(--terra); }
+.mode-btn:hover { background: rgba(255,255,255,0.9); border-color: rgba(91,175,166,0.4); }
+.mode-btn.active { background: #fff; border-color: rgba(91,175,166,0.5); box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+.mode-btn-tag {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.mode-btn.vision .mode-btn-tag { color: var(--aqua); }
+.mode-btn.business .mode-btn-tag { color: var(--terra); }
+.mode-btn-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.mode-btn-desc {
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--body);
+  opacity: 0.5;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.portada-scroll {
+  position: absolute;
+  bottom: 36px;
+  left: 60px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.3;
+  animation: fadeFloat 3s ease-in-out infinite;
+}
+.portada-scroll span {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+@keyframes fadeFloat {
+  0%,100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 0.5; transform: translateY(4px); }
+}
+
+/* Año flotante — detalle editorial */
+.portada-year {
+  position: absolute;
+  right: 60px;
+  bottom: 36px;
+  font-family: var(--font-serif);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: var(--body);
+  opacity: 0.25;
+  text-transform: uppercase;
+}
+
+@keyframes bounce {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+/* ══ SLIDE 2: LA OPORTUNIDAD ══ */
+#slide-2 { background: var(--cream); }
+
+.oport-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.oport-visual {
+  position: relative;
+}
+.oport-map {
+  background: linear-gradient(135deg, var(--aqua-light), var(--sand-light));
+  border-radius: 2px;
+  padding: 40px;
+  position: relative;
+}
+.competitor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.comp-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.07);
+  padding: 18px 16px;
+  text-align: center;
+  position: relative;
+}
+.comp-card.winner {
+  background: var(--aqua);
+  border-color: var(--aqua);
+  color: #fff;
+}
+.comp-name {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--black);
+  margin-bottom: 5px;
+}
+.comp-card.winner .comp-name { color: #fff; }
+.comp-status {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--body);
+}
+.comp-status.bad { color: #C4442A; font-style: normal; font-weight: 400; }
+.comp-status.good { color: #fff; font-weight: 500; font-style: normal; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.comp-icon { font-size: 22px; margin-bottom: 8px; }
+.oport-stat-row {
+  display: flex;
+  gap: 30px;
+  margin-top: 40px;
+}
+.oport-stat {
+  flex: 1;
+  padding: 20px;
+  background: #fff;
+  border-top: 3px solid var(--aqua);
+  text-align: center;
+}
+.oport-stat.terra { border-top-color: var(--terra); }
+
+/* ══ SLIDE 3: LA SOLUCIÓN ══ */
+#slide-3 { background: var(--white); }
+
+.solucion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.product-visual {
+  background: linear-gradient(160deg, #F8F4EE 0%, #EDE5D8 60%, #F2EDE4 100%);
+  border: 1px solid rgba(180,160,130,0.2);
+  border-radius: 2px;
+  padding: 50px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.product-visual::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse at top right, rgba(91,175,166,0.12), transparent);
+}
+.product-icon-big { font-size: 54px; margin-bottom: 16px; }
+.product-name-big {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.product-name-sub {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--aqua);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.product-desc {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--body);
+  opacity: 0.5;
+}
+.product-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(180,160,130,0.15);
+  margin-top: 24px;
+  border-radius: 1px;
+}
+.spec-item {
+  background: rgba(255,255,255,0.7);
+  padding: 16px;
+  text-align: center;
+}
+.spec-val {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--aqua);
+  line-height: 1;
+}
+.spec-lbl {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--body);
+  opacity: 0.45;
+  margin-top: 4px;
+}
+
+/* ══ SLIDE 5: MODELOS DE COLABORACIÓN ══ */
+#slide-5 { background: var(--white); }
+
+.modelos-intro {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 80px;
+  align-items: center;
+  margin-bottom: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.modelos-intro-note {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--body);
+  line-height: 1.7;
+  padding-left: 28px;
+  border-left: 2px solid var(--sand);
+}
+
+.modelos-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 24px;
+  margin-top: 0;
+}
+.modelo-card {
+  background: var(--cream);
+  border: 1px solid rgba(180,160,130,0.18);
+  padding: 36px 30px;
+  position: relative;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.modelo-card:hover {
+  background: #fff;
+  border-color: rgba(91,175,166,0.3);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+.modelo-card.destacado {
+  background: #fff;
+  border: 1.5px solid var(--aqua);
+  box-shadow: 0 8px 32px rgba(91,175,166,0.12);
+}
+.modelo-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.modelo-card:nth-child(1)::before { background: var(--sand); }
+.modelo-card:nth-child(2)::before { background: linear-gradient(90deg, var(--aqua), var(--terra)); }
+.modelo-card:nth-child(3)::before { background: var(--gold); }
+
+.modelo-num {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  font-weight: 300;
+  color: var(--sand);
+  line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+.modelo-card.destacado .modelo-num { color: var(--aqua); opacity: 0.4; }
+
+.modelo-tag {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.modelo-tag.aqua { color: var(--aqua); }
+.modelo-tag.terra { color: var(--terra); }
+.modelo-tag.gold { color: var(--gold); }
+
+.modelo-badge-rec {
+  font-family: var(--font-sans);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: var(--aqua);
+  color: #fff;
+  padding: 3px 8px;
+}
+
+.modelo-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--black);
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+.modelo-subtitle {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--body);
+  opacity: 0.5;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+.modelo-divider { width: 32px; height: 1px; background: var(--sand); margin-bottom: 22px; }
+
+.modelo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  flex: 1;
+}
+.modelo-list li {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.65;
+  padding-left: 18px;
+  position: relative;
+}
+.modelo-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 1px;
+  background: var(--aqua);
+  opacity: 0.5;
+}
+.modelo-list li strong {
+  color: var(--black);
+  font-weight: 500;
+}
+
+.modelo-footer {
+  margin-top: 28px;
+  padding: 18px 20px;
+  background: rgba(180,160,130,0.08);
+  border-top: 1px solid rgba(180,160,130,0.2);
+}
+.modelo-card.destacado .modelo-footer {
+  background: rgba(91,175,166,0.07);
+  border-top-color: rgba(91,175,166,0.2);
+}
+.modelo-footer-val {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  line-height: 1.2;
+}
+.modelo-footer-lbl {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--body);
+  opacity: 0.5;
+  margin-top: 5px;
+  text-transform: uppercase;
+}
+.specs-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 32px;
+}
+.specs-list li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.6;
+}
+.spec-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--aqua);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.spec-dot.terra { background: var(--terra); }
+
+/* ══ SLIDE 4: REFERENTES ══ */
+#slide-4 { background: var(--white); }
+
+.ref-region-label {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  margin: 32px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(91,175,166,0.2);
+}
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(0,0,0,0.05);
+}
+.ref-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(0,0,0,0.05);
+}
+.ref-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: rgba(0,0,0,0.05);
+}
+.ref-card {
+  background: var(--cream);
+  padding: 24px 22px;
+  position: relative;
+  transition: background 0.2s;
+}
+.ref-card:hover { background: var(--aqua-light); }
+.ref-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: transparent;
+}
+.ref-card:nth-child(1)::before { background: var(--aqua); }
+.ref-card:nth-child(2)::before { background: var(--terra); }
+.ref-card:nth-child(3)::before { background: var(--sand); }
+.ref-card:nth-child(4)::before { background: var(--gold); }
+.ref-flag {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  color: var(--body);
+  opacity: 0.6;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.ref-name {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.ref-desc {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+.ref-price {
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--aqua);
+}
+.ref-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 2px;
+  background: rgba(0,0,0,0.05);
+  margin-bottom: 24px;
+}
+.ref-stat {
+  background: var(--cream);
+  padding: 18px 16px;
+  text-align: center;
+}
+.ref-stat-val {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--aqua);
+  line-height: 1;
+}
+.ref-stat-val.terra { color: var(--terra); }
+.ref-stat-val.black { color: var(--black); }
+.ref-stat-lbl {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--body);
+  opacity: 0.6;
+  margin-top: 5px;
+}
+
+/* ══ SLIDE 5: ROI ══ */
+#slide-5 { background: var(--cream); }
+
+.roi-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  align-items: center;
+}
+.roi-numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: rgba(0,0,0,0.06);
+}
+.roi-box {
+  background: #fff;
+  padding: 32px 24px;
+  text-align: center;
+}
+.roi-box.highlight {
+  background: var(--aqua);
+  grid-column: 1/-1;
+  padding: 28px;
+}
+.roi-val {
+  font-family: var(--font-serif);
+  font-size: 42px;
+  font-weight: 300;
+  color: var(--black);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.roi-box.highlight .roi-val { color: #fff; font-size: 52px; }
+.roi-lbl {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--body);
+  margin-top: 8px;
+  opacity: 0.7;
+}
+.roi-box.highlight .roi-lbl { color: rgba(255,255,255,0.7); }
+
+.roi-calc-section {
+  padding: 36px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.07);
+}
+.roi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+.roi-table tr {
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.roi-table td {
+  padding: 11px 0;
+  color: var(--body);
+  vertical-align: middle;
+}
+.roi-table td:last-child {
+  text-align: right;
+  font-weight: 500;
+  color: var(--black);
+}
+.roi-table tr.total td {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--aqua);
+  border-bottom: none;
+  padding-top: 16px;
+}
+.roi-table .muted { color: rgba(0,0,0,0.35); font-size: 10px; }
+
+/* ══ SLIDE 6: BENEFICIOS PARA HUÉSPEDES ══ */
+#slide-6 { background: var(--white); }
+
+.beneficios-intro {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 80px;
+  align-items: start;
+  margin-bottom: 56px;
+}
+.beneficios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: rgba(0,0,0,0.05);
+}
+.benef-item {
+  background: var(--cream);
+  padding: 32px 28px;
+  transition: background 0.2s;
+}
+.benef-item:hover { background: var(--aqua-light); }
+.benef-icon { font-size: 28px; margin-bottom: 16px; }
+.benef-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.benef-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.7;
+}
+
+/* ══ SLIDE 7: MODELO DE SERVICIO ══ */
+#slide-7 { background: var(--cream2); }
+
+.servicio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 80px;
+  align-items: start;
+}
+.servicio-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.step {
+  display: flex;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
+  position: relative;
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--sand);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 40px;
+}
+.step-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 5px;
+}
+.step-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.7;
+}
+
+.soulbaric-pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: rgba(0,0,0,0.06);
+}
+.pillar {
+  background: #fff;
+  padding: 28px 24px;
+  border-top: 3px solid transparent;
+}
+.pillar:nth-child(1) { border-top-color: var(--aqua); }
+.pillar:nth-child(2) { border-top-color: var(--terra); }
+.pillar:nth-child(3) { border-top-color: var(--sand); }
+.pillar:nth-child(4) { border-top-color: var(--gold); }
+.pillar:nth-child(5) { border-top-color: var(--aqua-dark); }
+.pillar:nth-child(6) { border-top-color: #8B5CF6; }
+.pillar-icon { font-size: 22px; margin-bottom: 12px; }
+.pillar-title {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+.pillar-text {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.65;
+}
+
+/* ══ SLIDE 8: PREGUNTAS PROBABLES ══ */
+#slide-8 { background: var(--white); }
+
+.qa-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: rgba(0,0,0,0.05);
+  margin-top: 48px;
+}
+.qa-item {
+  background: var(--white);
+  padding: 32px 30px;
+  border-top: 2px solid transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+.qa-item:hover {
+  background: var(--cream);
+  border-top-color: var(--aqua);
+}
+.qa-question {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--black);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.qa-answer {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--body);
+  line-height: 1.75;
+}
+.qa-answer strong {
+  color: var(--aqua);
+  font-weight: 500;
+}
+.qa-label {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  margin-bottom: 8px;
+  display: block;
+}
+.qa-label.terra { color: var(--terra); }
+
+/* ══ SLIDE 9: CIERRE ══ */
+#slide-9 {
+  background: var(--black);
+  color: #fff;
+}
+.cierre-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 70% at 75% 25%, rgba(91,175,166,0.22), transparent),
+    radial-gradient(ellipse 50% 60% at 10% 80%, rgba(196,121,90,0.14), transparent),
+    linear-gradient(160deg, #0C1817 0%, #111E1C 50%, #0A0F0E 100%);
+}
+.cierre-steps {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+  background: rgba(255,255,255,0.04);
+  margin-top: 52px;
+  margin-bottom: 52px;
+}
+.cierre-step {
+  background: rgba(0,0,0,0.6);
+  padding: 36px 28px;
+  text-align: center;
+}
+.cierre-step-num {
+  font-family: var(--font-serif);
+  font-size: 48px;
+  font-weight: 300;
+  color: var(--aqua);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.cierre-step-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.cierre-step-text {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.7;
+}
+.cierre-contact {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  padding: 28px 36px;
+  background: rgba(91,175,166,0.08);
+  border: 1px solid rgba(91,175,166,0.2);
+}
+.contact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.contact-label {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+.contact-value {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 400;
+  color: #fff;
+}
+.cierre-tagline {
+  font-family: var(--font-serif);
+  font-size: clamp(22px,3vw,36px);
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  margin-top: 48px;
+  letter-spacing: 0.02em;
+}
+
+/* ══ PROGRESS BAR ══ */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--aqua), var(--terra));
+  z-index: 1001;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* ══ SLIDE COUNTER ══ */
+#slide-counter {
+  position: fixed;
+  bottom: 24px;
+  left: 40px;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+#slide-counter.on-dark { color: rgba(255,255,255,0.3); }
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { opacity: 0; }
+.fade-up.visible { animation: fadeUp 0.7s ease forwards; }
+.fade-up:nth-child(2) { animation-delay: 0.1s; }
+.fade-up:nth-child(3) { animation-delay: 0.2s; }
+.fade-up:nth-child(4) { animation-delay: 0.3s; }
+
+/* ══ PRINT / PRESENT MODE ══ */
+.present-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 60px;
+  z-index: 1000;
+  font-family: var(--font-sans);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.12);
+  cursor: pointer;
+  color: var(--body);
+  transition: all 0.2s;
+}
+.present-btn:hover { background: var(--aqua); color: #fff; border-color: var(--aqua); }
+
+/* ══ MODE SELECTOR ══ */
+.mode-selector {
+  display: flex;
+  gap: 14px;
+  margin-top: 44px;
+  flex-wrap: wrap;
+}
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 18px 28px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.3s;
+  text-align: left;
+  min-width: 220px;
+  position: relative;
+  overflow: hidden;
+}
+.mode-btn::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+.mode-btn:hover::before, .mode-btn.active::before { transform: scaleX(1); }
+.mode-btn.vision::before { background: var(--aqua); }
+.mode-btn.business::before { background: var(--terra); }
+.mode-btn:hover, .mode-btn.active { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.3); }
+.mode-btn-tag {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+/* ══ MODE BADGE ══ */
+#mode-badge {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1002;
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 2px;
+  display: none;
+  transition: all 0.3s;
+}
+#mode-badge.vision { background: rgba(91,175,166,0.15); color: var(--aqua); border: 1px solid rgba(91,175,166,0.3); }
+#mode-badge.business { background: rgba(196,121,90,0.15); color: var(--terra); border: 1px solid rgba(196,121,90,0.3); }
+
+/* hidden slides */
+.slide.hidden-mode { display: none !important; }
+
+@media print {
+  html { scroll-snap-type: none; }
+  .slide { page-break-after: always; min-height: 100vh; scroll-snap-align: none; }
+  #nav-dots, #top-header, #progress-bar, #slide-counter, .present-btn, #mode-badge { display: none; }
+  .slide.hidden-mode { display: flex !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"></div>
+
+<!-- MODE BADGE -->
+<div id="mode-badge"></div>
+
+<!-- HEADER -->
+<div id="top-header">
+  <div class="header-logo">Marbella Club <span>×</span> SoulBaric</div>
+  <div class="header-collab">Propuesta de colaboración exclusiva</div>
+  <div class="header-date">Abril 2026</div>
+</div>
+
+<!-- NAV DOTS -->
+<div id="nav-dots">
+  <button class="nav-dot active" data-slide="1" data-label="Portada" onclick="goToSlide(1)"></button>
+  <button class="nav-dot" data-slide="2" data-label="La Oportunidad" onclick="goToSlide(2)"></button>
+  <button class="nav-dot" data-slide="3" data-label="La Solución" onclick="goToSlide(3)"></button>
+  <button class="nav-dot" data-slide="4" data-label="Referentes" onclick="goToSlide(4)"></button>
+  <button class="nav-dot" data-slide="5" data-label="Modelos" onclick="goToSlide(5)"></button>
+  <button class="nav-dot" data-slide="6" data-label="Retorno" onclick="goToSlide(6)"></button>
+  <button class="nav-dot" data-slide="7" data-label="Beneficios" onclick="goToSlide(7)"></button>
+  <button class="nav-dot" data-slide="8" data-label="Nuestro Servicio" onclick="goToSlide(8)"></button>
+  <button class="nav-dot" data-slide="9" data-label="Preguntas" onclick="goToSlide(9)"></button>
+  <button class="nav-dot" data-slide="10" data-label="Próximos Pasos" onclick="goToSlide(10)"></button>
+</div>
+
+<!-- SLIDE COUNTER -->
+<div id="slide-counter">01 / 10</div>
+
+<!-- PRESENT BUTTON -->
+<button class="present-btn" onclick="document.documentElement.requestFullscreen()">⛶ Pantalla completa</button>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 1 — PORTADA LUJO SILENCIOSO
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-1">
+  <div class="portada-texture"></div>
+  <div class="portada-accent-bar"></div>
+  <div class="portada-orb"></div>
+
+  <div class="slide-inner" style="position:relative;z-index:1;padding-left:80px;">
+
+    <div class="portada-eyebrow">Una propuesta para Marbella Club · Abril 2026</div>
+
+    <h1 class="portada-title">
+      Quien lidera el wellness<br>
+      de longevidad en un destino,<br>
+      <em>define el estándar<br>durante años.</em>
+    </h1>
+
+    <p class="portada-attribution">SoulBaric · Hiperbaric Wellness · Costa del Sol</p>
+
+    <div class="portada-brand-line">
+      <span class="portada-brand-name">Marbella Club</span>
+      <span class="portada-brand-sep"></span>
+      <span class="portada-brand-name">Hotel · Golf Resort · Spa</span>
+      <span class="portada-brand-sep"></span>
+      <span class="portada-brand-name">SoulBaric</span>
+    </div>
+
+    <div class="portada-pills">
+      <div class="portada-pill active">Wellness de longevidad</div>
+      <div class="portada-pill active">Bentley Lux Hiperbaric</div>
+      <div class="portada-pill">Instalación llave en mano</div>
+    </div>
+
+    <div class="mode-selector">
+      <button class="mode-btn vision active" onclick="setMode('vision')">
+        <span class="mode-btn-tag">✦ Lujo Silencioso</span>
+        <span class="mode-btn-title">La Experiencia</span>
+        <span class="mode-btn-desc">Posicionamiento · Referentes · Beneficios</span>
+      </button>
+      <button class="mode-btn business" onclick="setMode('business')">
+        <span class="mode-btn-tag">◈ Propuesta Completa</span>
+        <span class="mode-btn-title">Los Números</span>
+        <span class="mode-btn-desc">Producto · ROI · Inversión · Q&A</span>
+      </button>
+    </div>
+
+  </div>
+
+  <div class="portada-scroll">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M2 9l6 6 6-6" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.5"/></svg>
+    <span>Continuar</span>
+  </div>
+
+  <div class="portada-year">Abril · 2026</div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 2 — LA OPORTUNIDAD
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="oport-grid">
+      <div>
+        <span class="label">El momento</span>
+        <h2 class="serif">Sus huéspedes<br>ya la buscan.<br><em style="font-style:italic;color:var(--aqua);">La Costa del Sol<br>aún no la ofrece.</em></h2>
+        <div class="divider"></div>
+        <p class="lead">La terapia hiperbárica es hoy el servicio más solicitado por la clientela UHNW internacional en sus estancias de ultra lujo. Sus huéspedes la conocen de Bvlgari en Londres, de SHA en Alicante, de RAKxa en Bangkok. Al llegar a Marbella Club, la esperan.</p>
+        <p class="lead" style="margin-top:16px;">La Costa del Sol es el único destino de primera línea del Mediterráneo que aún no responde a esta demanda. <strong style="color:var(--black);font-weight:500;">Marbella Club tiene la posición, la clientela y el entorno para ser quien lo haga.</strong></p>
+
+        <div class="oport-stat-row" style="margin-top:36px;">
+          <div class="oport-stat">
+            <div class="number-big">+30%</div>
+            <div class="label" style="margin:6px 0 0;">Crecimiento anual<br>del wellness de lujo</div>
+          </div>
+          <div class="oport-stat terra">
+            <div class="number-big terra">&gt;90%</div>
+            <div class="label label-terra" style="margin:6px 0 0;">Viajeros UHNW<br>buscan wellness activo</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="oport-visual">
+        <div class="oport-map">
+          <p style="font-family:var(--font-sans);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--body);opacity:0.6;margin-bottom:20px;">La oportunidad — Costa del Sol · Destinos 5★</p>
+          <div class="competitor-grid">
+            <div class="comp-card">
+              <div class="comp-icon">🏨</div>
+              <div class="comp-name">Puente Romano</div>
+              <div class="comp-status">Six Senses Spa</div>
+              <div class="comp-status bad" style="font-size:10px;margin-top:4px;">✗ Sin HBOT</div>
+            </div>
+            <div class="comp-card">
+              <div class="comp-icon">🏨</div>
+              <div class="comp-name">Gran Meliá</div>
+              <div class="comp-status">Spa Premium</div>
+              <div class="comp-status bad" style="font-size:10px;margin-top:4px;">✗ Sin HBOT</div>
+            </div>
+            <div class="comp-card">
+              <div class="comp-icon">🏨</div>
+              <div class="comp-name">Finca Cortesin</div>
+              <div class="comp-status">Spa 5★</div>
+              <div class="comp-status bad" style="font-size:10px;margin-top:4px;">✗ Sin HBOT</div>
+            </div>
+            <div class="comp-card winner">
+              <div class="comp-icon">🏌️</div>
+              <div class="comp-name">Marbella Club</div>
+              <div class="comp-status good">✓ PRIMERO · ÚNICO</div>
+              <div style="font-family:var(--font-sans);font-size:9px;color:rgba(255,255,255,0.6);margin-top:4px;">Con Bentley Lux Hiperbaric</div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px;padding:16px;background:rgba(91,175,166,0.08);border-left:3px solid var(--aqua);">
+            <p style="font-family:var(--font-serif);font-size:14px;font-style:italic;color:var(--charcoal);line-height:1.6;">"Quien lidera el wellness de longevidad en un destino, define el estándar durante años. Marbella Club tiene todo para serlo en la Costa del Sol."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 3 — LA SOLUCIÓN: BENTLEY LUX
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="solucion-grid">
+      <div>
+        <span class="label">La solución</span>
+        <h2 class="serif">Bentley Lux<br><em style="font-style:italic;color:var(--aqua);font-size:0.85em;">Hiperbaric</em><br>4 Plazas</h2>
+        <div class="divider"></div>
+
+        <div class="product-visual">
+          <div class="product-icon-big">🫁</div>
+          <div class="product-name-big">Bentley Lux</div>
+          <div class="product-name-sub">Hiperbaric · 4 Plazas Simultáneas</div>
+          <div class="product-desc">La cámara hiperbárica más exclusiva del mercado</div>
+          <div class="product-specs">
+            <div class="spec-item">
+              <div class="spec-val">4</div>
+              <div class="spec-lbl">Plazas</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-val">1.9 ATA</div>
+              <div class="spec-lbl">Presión máx.</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-val">CE</div>
+              <div class="spec-lbl">Certificación</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-val">60 min</div>
+              <div class="spec-lbl">Por sesión</div>
+            </div>
+          </div>
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid rgba(180,160,130,0.2);">
+            <p style="font-family:var(--font-serif);font-size:13px;font-style:italic;color:var(--body);opacity:0.6;line-height:1.6;">"Diseñada para entornos donde la excelencia no es una opción — es el estándar."</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <span class="label label-terra" style="margin-top:60px;display:block;">Por qué la Bentley Lux para Marbella Club</span>
+        <ul class="specs-list" style="margin-top:20px;">
+          <li>
+            <div class="spec-dot"></div>
+            <div><strong style="color:var(--black);">Diseño de ultra lujo.</strong> Acabados y estética concebidos para entornos hoteleros de cinco estrellas. Compatible visualmente con el lenguaje del Thalasso Spa de Marbella Club. No es un equipo médico — es una pieza de diseño.</div>
+          </li>
+          <li>
+            <div class="spec-dot"></div>
+            <div><strong style="color:var(--black);">4 plazas simultáneas.</strong> Parejas, familias, grupos reducidos. Hasta 12 huéspedes por día en 3 turnos. La experiencia puede venderse como ritual privado o sesión colectiva con flexibilidad total de tarificación.</div>
+          </li>
+          <li>
+            <div class="spec-dot"></div>
+            <div><strong style="color:var(--black);">Instalación sin obras.</strong> Sala mínima de 4×4m. Sin modificaciones estructurales. Compatible con cualquier espacio de spa existente. Técnicos SoulBaric en 2–4 semanas desde la firma.</div>
+          </li>
+          <li>
+            <div class="spec-dot terra"></div>
+            <div><strong style="color:var(--black);">Cero fricción regulatoria.</strong> No requiere clasificación sanitaria clínica. Marcado CE e ISO 13485. El mismo estándar que los centros médicos de élite de Dubai, Mónaco y Ginebra — en formato spa de hotel.</div>
+          </li>
+          <li>
+            <div class="spec-dot terra"></div>
+            <div><strong style="color:var(--black);">Complemento natural al Thalasso.</strong> El oxígeno hiperbárico potencia los efectos de los tratamientos de talasoterapia ya existentes. No compite — amplifica cada terapia marina.</div>
+          </li>
+          <li>
+            <div class="spec-dot terra"></div>
+            <div><strong style="color:var(--black);">Servicio técnico SoulBaric 365 días.</strong> Asistencia técnica garantizada en menos de 24h. Piezas en stock. Mantenimiento preventivo anual incluido. La cámara nunca para.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 5 — MODELOS DE COLABORACIÓN
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-5">
+  <div class="slide-inner">
+
+    <div class="modelos-intro">
+      <div>
+        <span class="label">Modelos de colaboración</span>
+        <h2 class="serif" style="max-width:420px;">Tres formas de hacer realidad este servicio.</h2>
+      </div>
+      <p class="modelos-intro-note">Diseñamos el modelo que mejor encaja con la estrategia de Marbella Club — con o sin inversión inicial, siempre con SoulBaric como partner responsable de la operativa, los protocolos y la experiencia al huésped.</p>
+    </div>
+
+    <div class="modelos-grid">
+
+      <!-- MODELO 1 -->
+      <div class="modelo-card">
+        <div class="modelo-num">01</div>
+        <div class="modelo-tag aqua">Modelo A</div>
+        <div class="modelo-title">Marbella Club<br>Invierte</div>
+        <div class="modelo-subtitle">Compra directa + gestión SoulBaric</div>
+        <div class="modelo-divider"></div>
+        <ul class="modelo-list">
+          <li>Marbella Club adquiere la <strong>Bentley Lux Hiperbaric</strong> (activo propio del hotel)</li>
+          <li>SoulBaric gestiona el servicio completo: operativa, protocolos, formación, mantenimiento</li>
+          <li>El hotel factura y retiene el <strong>100% de los ingresos</strong> al huésped</li>
+          <li>SoulBaric cobra una cuota de gestión mensual fija</li>
+          <li>Mayor rentabilidad neta a largo plazo</li>
+        </ul>
+        <div class="modelo-footer">
+          <div class="modelo-footer-val">100% de los ingresos</div>
+          <div class="modelo-footer-lbl">Para Marbella Club · Cuota gestión mensual</div>
+        </div>
+      </div>
+
+      <!-- MODELO 2 — RECOMENDADO -->
+      <div class="modelo-card destacado">
+        <div class="modelo-num">02</div>
+        <div class="modelo-tag terra" style="display:flex;align-items:center;gap:8px;">
+          Modelo B
+          <span class="modelo-badge-rec">Recomendado</span>
+        </div>
+        <div class="modelo-title">SoulBaric<br>Invierte &amp; Gestiona</div>
+        <div class="modelo-subtitle">Revenue share · Sin inversión inicial</div>
+        <div class="modelo-divider"></div>
+        <ul class="modelo-list">
+          <li>SoulBaric aporta la <strong>Bentley Lux Hiperbaric</strong> sin coste inicial para el hotel</li>
+          <li>SoulBaric gestiona todo: operativa, protocolos, personal, mantenimiento técnico</li>
+          <li>Marbella Club recibe un <strong>porcentaje acordado</strong> de los ingresos de explotación mensualmente</li>
+          <li>Riesgo cero para el hotel — ingreso pasivo desde el primer día</li>
+          <li>El servicio queda integrado en la oferta del spa con imagen Marbella Club</li>
+        </ul>
+        <div class="modelo-footer">
+          <div class="modelo-footer-val">Beneficio garantizado</div>
+          <div class="modelo-footer-lbl">% ingresos explotación · Sin inversión · Sin riesgo</div>
+        </div>
+      </div>
+
+      <!-- MODELO 3 -->
+      <div class="modelo-card">
+        <div class="modelo-num">03</div>
+        <div class="modelo-tag gold">Modelo C</div>
+        <div class="modelo-title">Inversión<br>Compartida</div>
+        <div class="modelo-subtitle">Co-inversión + reparto proporcional</div>
+        <div class="modelo-divider"></div>
+        <ul class="modelo-list">
+          <li>Marbella Club y SoulBaric <strong>co-invierten</strong> en la adquisición de la Bentley Lux Hiperbaric</li>
+          <li>SoulBaric gestiona el servicio completo</li>
+          <li>Los ingresos se reparten <strong>proporcionalmente</strong> según el porcentaje de inversión aportado</li>
+          <li>Modelo ideal para escalar a una segunda cámara en temporada alta</li>
+          <li>Máxima alineación de intereses entre ambas partes</li>
+        </ul>
+        <div class="modelo-footer">
+          <div class="modelo-footer-val">Reparto proporcional</div>
+          <div class="modelo-footer-lbl">Según % inversión · Intereses alineados</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 4 — REFERENTES MUNDIALES
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-4">
+  <div class="slide-inner" style="padding-top:100px;padding-bottom:60px;">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:60px;align-items:start;margin-bottom:24px;">
+      <div>
+        <span class="label">Referentes que ya lo tienen</span>
+        <h2 class="serif">Los mejores<br>hoteles del mundo<br>lo adoptaron<br>primero.</h2>
+        <div class="divider"></div>
+        <p class="lead" style="font-size:13px;">La HBOT ha pasado de ser tratamiento médico de élite a convertirse en el diferencial más codiciado del wellness de ultra lujo. Marbella Club ya tiene el público. Solo falta la cámara.</p>
+      </div>
+      <div>
+        <div class="ref-stats-bar">
+          <div class="ref-stat">
+            <div class="ref-stat-val">$6T</div>
+            <div class="ref-stat-lbl">Economía wellness global</div>
+          </div>
+          <div class="ref-stat">
+            <div class="ref-stat-val terra">+30%</div>
+            <div class="ref-stat-lbl">Crecimiento 2022–23</div>
+          </div>
+          <div class="ref-stat">
+            <div class="ref-stat-val">&gt;90%</div>
+            <div class="ref-stat-lbl">Viajeros lujo buscan wellness</div>
+          </div>
+          <div class="ref-stat">
+            <div class="ref-stat-val black">8+</div>
+            <div class="ref-stat-lbl">Hoteles ultra lujo con HBOT</div>
+          </div>
+        </div>
+
+        <!-- EUROPA -->
+        <div class="ref-region-label">🌍 Europa</div>
+        <div class="ref-grid">
+          <div class="ref-card">
+            <div class="ref-flag">Londres · UK</div>
+            <div class="ref-name">Bvlgari Hotel<br>London Spa</div>
+            <div class="ref-desc">Cápsula hiperbárica Henshaw en su "Longevity Journey". Membresía Premium incluye 3 sesiones HBOT. Forbes 5★ 2026.</div>
+            <div class="ref-price">Referente mundial</div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-flag">Alicante · España</div>
+            <div class="ref-name">SHA Wellness<br>Clinic</div>
+            <div class="ref-desc">HBOT incluido en crédito diario de €100/persona. Programas 4–21 noches. Longevidad, Detox, Recuperación, Estrés.</div>
+            <div class="ref-price">Desde €7.500 / semana</div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-flag">Bad Ragaz · Suiza</div>
+            <div class="ref-name">Grand Resort<br>Bad Ragaz</div>
+            <div class="ref-desc">Centro médico-termal alpino. Aguas termales Tamina + HBOT + protocolos de longevidad y recuperación atlética.</div>
+            <div class="ref-price">Medicina basada en evidencia</div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-flag">Londres · UK · 2026</div>
+            <div class="ref-name">Six Senses London<br>The Whiteley</div>
+            <div class="ref-desc">Abierto en 2026. HBOT como pieza central. Membresías de £3.000 a £37.000 anuales. El modelo del futuro.</div>
+            <div class="ref-price">£3.000 – £37.000 / año</div>
+          </div>
+        </div>
+
+        <!-- ASIA -->
+        <div class="ref-region-label">🌏 Asia · Oriente</div>
+        <div class="ref-grid-3" style="margin-top:0;">
+          <div class="ref-card">
+            <div class="ref-flag">Bangkok · Tailandia</div>
+            <div class="ref-name">RAKxa Wellness<br>VitalLife Clinic</div>
+            <div class="ref-desc">Mejor retiro médico de Asia. HBOT junto a test genéticos, diagnósticos Bumrungrad. 85 acres de naturaleza protegida.</div>
+            <div class="ref-price">Longevidad integrativa</div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-flag">Osaka · Japón · 2025</div>
+            <div class="ref-name">Patina Osaka<br>Capella Group</div>
+            <div class="ref-desc">Primer hotel de Japón con HBOT + hidrógeno integrado. 1.400 m² Patina Wellness. "El único lugar en Japón que ofrece todos estos servicios."</div>
+            <div class="ref-price">Stack completo biohacking</div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-flag">Hong Kong · Kowloon</div>
+            <div class="ref-name">Rosewood HK<br>Asaya</div>
+            <div class="ref-desc">Biohacking labs, IV therapy, crioterapia e HBOT con vistas al puerto. Medicina oriental + tecnología occidental.</div>
+            <div class="ref-price">Innovación clínica de lujo</div>
+          </div>
+        </div>
+
+        <!-- AMÉRICAS -->
+        <div class="ref-region-label">🌎 Américas · África</div>
+        <div class="ref-grid-2" style="margin-top:0;">
+          <div class="ref-card">
+            <div class="ref-flag">Riviera Maya · México</div>
+            <div class="ref-name">SHA Mexico<br>SHAmadi</div>
+            <div class="ref-desc">Primera sede latinoamericana de SHA. Arquitectura ADN (Sordo Madaleno). HBOT + chelation + 100 salas tratamiento.</div>
+            <div class="ref-price">Advanced Longevity</div>
+          </div>
+          <div class="ref-card">
+            <div class="ref-flag">Ruanda · África · 2025</div>
+            <div class="ref-name">Wilderness Bisate<br>The Sanctuary</div>
+            <div class="ref-desc">Trekking con gorilas de montaña + sesión HBOT al atardecer. Primera cámara hiperbárica de lujo de Ruanda. Ultra exclusivo.</div>
+            <div class="ref-price">La propuesta más singular del mundo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 6 — RETORNO DE INVERSIÓN
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-6">
+  <div class="slide-inner">
+    <div class="roi-layout">
+      <div>
+        <span class="label">Retorno de inversión</span>
+        <h2 class="serif">Los números<br>hablan solos.</h2>
+        <div class="divider"></div>
+        <p class="lead">Con tres turnos diarios a cuatro plazas y una ocupación media del 65%, la cámara se amortiza en menos de seis meses y genera un beneficio neto superior a <strong style="color:var(--black);">€400.000 al año.</strong></p>
+        <p class="lead" style="margin-top:16px;font-size:13px;opacity:0.75;">El modelo de tarificación más eficiente para un spa de hotel de lujo: precio por sesión, sin personal especializado requerido, sin consumibles costosos, sin clasificación sanitaria.</p>
+
+        <div style="margin-top:36px;padding:24px 28px;background:var(--aqua-light);border-left:4px solid var(--aqua);">
+          <p style="font-family:var(--font-serif);font-size:15px;font-style:italic;color:var(--charcoal);line-height:1.7;">"Un huésped que realiza 3 sesiones durante su estancia genera el mismo ingreso adicional que una noche de habitación premium — sin impacto en la disponibilidad del hotel."</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="roi-numbers">
+          <div class="roi-box highlight">
+            <div class="roi-val">€ 421.200</div>
+            <div class="roi-lbl">Beneficio neto estimado por año</div>
+          </div>
+          <div class="roi-box">
+            <div class="roi-val">€ 468.000</div>
+            <div class="roi-lbl">Ingresos brutos / año</div>
+          </div>
+          <div class="roi-box">
+            <div class="roi-val">€ 1.168.600</div>
+            <div class="roi-lbl">Beneficio acumulado 3 años</div>
+          </div>
+        </div>
+
+        <div class="roi-calc-section" style="margin-top:2px;">
+          <p style="font-family:var(--font-sans);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--body);opacity:0.5;margin-bottom:16px;">Hipótesis de cálculo</p>
+          <table class="roi-table">
+            <tr>
+              <td>Precio por plaza / sesión</td>
+              <td><strong>€ 200</strong></td>
+            </tr>
+            <tr>
+              <td>Plazas por sesión</td>
+              <td><strong>4 simultáneas</strong></td>
+            </tr>
+            <tr>
+              <td>Sesiones por día (3 turnos)</td>
+              <td><strong>3</strong></td>
+            </tr>
+            <tr>
+              <td>Días operativos / año</td>
+              <td><strong>300 días</strong></td>
+            </tr>
+            <tr>
+              <td>Ocupación media estimada</td>
+              <td><strong>65 %</strong></td>
+            </tr>
+            <tr>
+              <td>Coste operativo / sesión</td>
+              <td><strong>€ 20</strong> <span class="muted">(energía + mantenimiento)</span></td>
+            </tr>
+            <tr>
+              <td>Inversión total estimada</td>
+              <td><strong>€ 95.000</strong></td>
+            </tr>
+            <tr class="total">
+              <td>Payback estimado</td>
+              <td>< 3 meses</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 7 — BENEFICIOS PARA LOS HUÉSPEDES
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-7">
+  <div class="slide-inner">
+    <div class="beneficios-intro">
+      <div>
+        <span class="label">Para sus huéspedes</span>
+        <h2 class="serif">Be your<br>best self.</h2>
+        <div class="divider"></div>
+      </div>
+      <div>
+        <p class="lead" style="max-width:none;">El 100% de la clientela de Marbella Club — huéspedes internacionales UHNW, golfistas de élite, familias de alto poder adquisitivo — son exactamente el perfil que más demanda y más valora la terapia hiperbárica. No hay que crear el mercado. Solo hay que estar donde el mercado ya está.</p>
+      </div>
+    </div>
+
+    <div class="beneficios-grid">
+      <div class="benef-item">
+        <div class="benef-icon">⚡</div>
+        <div class="benef-title">Recuperación de élite</div>
+        <div class="benef-text">El protocolo de recuperación de Cristiano Ronaldo, Novak Djokovic y los equipos de la NFL. Ideal para el huésped golfista tras 18 hoyos — reducción de inflamación y recuperación muscular en 60 minutos.</div>
+      </div>
+      <div class="benef-item">
+        <div class="benef-icon">✈️</div>
+        <div class="benef-title">Jet lag & llegada</div>
+        <div class="benef-text">El 100% de los huéspedes de larga distancia (Oriente Medio, EE.UU., Asia) sufren jet lag al llegar. Una sesión el primer día reestablece el ritmo circadiano y mejora exponencialmente la experiencia de estancia.</div>
+      </div>
+      <div class="benef-item">
+        <div class="benef-icon">🧬</div>
+        <div class="benef-title">Longevidad & anti-aging</div>
+        <div class="benef-text">Estimulación de células madre, producción de colágeno y reducción de la inflamación sistémica. El protocolo de longevidad más potente del mercado disponible sin hospitalización. Complementario al Thalasso Spa.</div>
+      </div>
+      <div class="benef-item">
+        <div class="benef-icon">🧠</div>
+        <div class="benef-title">Estrés ejecutivo</div>
+        <div class="benef-text">Los CEOs y UHNW que visitan Marbella Club en modo workcation lo agradecen especialmente. El HBOT activa el sistema nervioso parasimpático, reduce el cortisol y mejora el sueño — el ROI personal más directo.</div>
+      </div>
+      <div class="benef-item">
+        <div class="benef-icon">🍷</div>
+        <div class="benef-title">Morning recovery</div>
+        <div class="benef-text">Las veladas en Puerto Banús, las cenas de gala y los eventos sociales son parte del lifestyle Marbella. Una sesión matutina neutraliza el impacto del alcohol y restaura el bienestar — servicio discreto y diferencial.</div>
+      </div>
+      <div class="benef-item">
+        <div class="benef-icon">🌊</div>
+        <div class="benef-title">Sinergia Thalasso</div>
+        <div class="benef-text">El oxígeno hiperbárico potencia los efectos de todos los tratamientos de talasoterapia existentes. Propuesta de protocolo combinado: HBOT + ritual marino = el programa wellness más completo de la Costa del Sol.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 8 — MODELO DE SERVICIO SOULBARIC
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-8">
+  <div class="slide-inner">
+    <span class="label">Nuestro modelo de servicio</span>
+    <h2 class="serif" style="max-width:560px;">SoulBaric: su socio experto,<br>no solo su proveedor.</h2>
+    <div class="divider"></div>
+
+    <div class="servicio-layout" style="margin-top:40px;">
+      <div>
+        <p class="lead" style="margin-bottom:32px;">La mayor preocupación de cualquier hotel al incorporar un nuevo servicio es la gestión operativa y la responsabilidad técnica. SoulBaric asume ambas — desde la instalación hasta el protocolo de cada sesión.</p>
+
+        <div class="servicio-steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <div>
+              <div class="step-title">Estudio de viabilidad previo</div>
+              <div class="step-text">Evaluación técnica in-situ del espacio disponible, conexiones eléctricas y accesos. Sin coste — 100% descontable del precio final si se confirma la instalación.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <div>
+              <div class="step-title">Instalación llave en mano</div>
+              <div class="step-text">Transporte, montaje y puesta en marcha completa por técnicos certificados SoulBaric. Plazo estimado: 2-4 semanas desde confirmación del pedido.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <div>
+              <div class="step-title">Formación del equipo</div>
+              <div class="step-text">Programa de formación presencial para el personal de spa: protocolo de sesión, contraindicaciones, atención al cliente de alto nivel y gestión de emergencias.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">04</div>
+            <div>
+              <div class="step-title">Soporte técnico y científico continuo</div>
+              <div class="step-text">Línea directa 7 días / 12 horas. Mantenimiento preventivo anual incluido. Soporte científico de nuestro equipo de fisiólogos para adaptar protocolos según perfiles de huéspedes.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">05</div>
+            <div>
+              <div class="step-title">Integración en oferta wellness</div>
+              <div class="step-text">Diseño conjunto de los protocolos y paquetes de venta: precios sugeridos, combinaciones con tratamientos existentes y material de comunicación para el equipo comercial del hotel.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p style="font-family:var(--font-sans);font-size:9px;letter-spacing:0.22em;text-transform:uppercase;color:var(--body);opacity:0.5;margin-bottom:20px;">Por qué SoulBaric</p>
+        <div class="soulbaric-pillars">
+          <div class="pillar">
+            <div class="pillar-icon">🔬</div>
+            <div class="pillar-title">Conocimiento científico</div>
+            <div class="pillar-text">Equipo de fisiólogos y especialistas en oxigenoterapia hiperbárica. No vendemos equipos — aplicamos ciencia para optimizar los resultados de cada protocolo.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🏆</div>
+            <div class="pillar-title">Especialistas en lujo</div>
+            <div class="pillar-text">Diseñamos la experiencia hiperbárica para entornos de ultra lujo. Protocolos, presentación, servicio y comunicación al nivel que exige Marbella Club.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🛠️</div>
+            <div class="pillar-title">Servicio técnico premium</div>
+            <div class="pillar-text">Asistencia técnica 7/7 · 365 días. Piezas en stock. Tiempo de respuesta garantizado &lt; 24h. Su cámara nunca para.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">📋</div>
+            <div class="pillar-title">Protocolos certificados</div>
+            <div class="pillar-text">Todos nuestros protocolos siguen las guías clínicas internacionales ECHM y UHMS. Documentación completa para due diligence del hotel.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🌐</div>
+            <div class="pillar-title">Exclusividad Costa del Sol</div>
+            <div class="pillar-text">SoulBaric opera exclusivamente en el mercado de lujo de la Costa del Sol. Conocemos el cliente, el entorno y los estándares del sector.</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🤝</div>
+            <div class="pillar-title">Partner, no proveedor</div>
+            <div class="pillar-text">Acompañamos el lanzamiento con materiales de comunicación, formación continua y soporte comercial para maximizar la ocupación del servicio desde el primer día.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 9 — PREGUNTAS Y RESPUESTAS
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-9">
+  <div class="slide-inner">
+    <span class="label">Preparados para responder</span>
+    <h2 class="serif" style="max-width:500px;">Las preguntas más<br>probables en esta reunión.</h2>
+    <div class="divider"></div>
+
+    <div class="qa-layout">
+      <div class="qa-item">
+        <span class="qa-label">Gestión operativa</span>
+        <div class="qa-question">"¿Quién opera el servicio día a día? ¿Necesitamos contratar personal especializado?"</div>
+        <div class="qa-answer">No. SoulBaric forma a su propio personal de spa en el protocolo completo. Cualquier terapeuta capacitado puede supervisar las sesiones. <strong>La cámara no requiere personal médico.</strong> Solo presencia de un profesional formado durante la sesión — exactamente como un baño de flotación o una sauna de infrarrojos.</div>
+      </div>
+      <div class="qa-item">
+        <span class="qa-label">Seguridad y regulación</span>
+        <div class="qa-question">"¿Qué responsabilidad legal asume el hotel? ¿Necesitamos licencia sanitaria?"</div>
+        <div class="qa-answer">Ninguna licencia sanitaria especial. El HE5000 Plus opera hasta 1.9 ATA — rango no sujeto a regulación clínica en España. Marcado CE e ISO 13485. <strong>SoulBaric proporciona el protocolo de contraindicaciones, el cuestionario de salud previo y el dossier legal completo.</strong> El hotel opera con las mismas condiciones que cualquier servicio de spa avanzado.</div>
+      </div>
+      <div class="qa-item">
+        <span class="qa-label terra">Espacio e instalación</span>
+        <div class="qa-question">"¿Cuánto espacio necesita y qué obras implica la instalación?"</div>
+        <div class="qa-answer">Sala mínima de 4×4 metros con altura libre ≥ 2.5m y suelo capaz de soportar ≥ 700 kg. Conexión eléctrica trifásica dedicada. <strong>Sin obras de albañilería.</strong> La cámara entra en piezas y se monta in situ. Realizamos el Estudio de Viabilidad previo sin coste — 100% descontable si se confirma el pedido.</div>
+      </div>
+      <div class="qa-item">
+        <span class="qa-label terra">Demanda real</span>
+        <div class="qa-question">"¿Cómo sabemos que nuestros huéspedes van a usar este servicio?"</div>
+        <div class="qa-answer">OxygenSpa en San Pedro de Alcántara (a 20 minutos de Marbella Club) opera con lista de espera — y no es un hotel de lujo. <strong>Sus huéspedes ya buscan HBOT.</strong> Muchos lo practican regularmente en sus lugares de residencia (Dubai, Londres, Miami). Ofrecerlo dentro del hotel elimina la fricción de desplazarse y lo convierte en una decisión natural de la estancia.</div>
+      </div>
+      <div class="qa-item">
+        <span class="qa-label">Posicionamiento de marca</span>
+        <div class="qa-question">"¿Cómo encaja esto con el espíritu y la imagen del Marbella Club?"</div>
+        <div class="qa-answer">Perfectamente. Marbella Club ya practica la filosofía de <em>"ancestral practices with advanced scientific techniques"</em> en su Thalasso Spa. <strong>La terapia hiperbárica es la evolución natural de ese posicionamiento:</strong> ciencia al servicio del bienestar, en el entorno más exclusivo de la Costa del Sol. No es biohacking tecnológico — es longevidad de lujo silencioso.</div>
+      </div>
+      <div class="qa-item">
+        <span class="qa-label">Inversión y plazos</span>
+        <div class="qa-question">"¿Cuál es exactamente la inversión total y en qué plazo podría estar operativo?"</div>
+        <div class="qa-answer"><strong>Inversión total estimada: €95.000–€105.000</strong> (equipo + IVA + transporte + instalación llave en mano). Condiciones: 60% anticipo + 40% a la entrega. <strong>Plazo operativo: 8–12 semanas desde la firma</strong> (producción + transporte + instalación + formación). El Estudio de Viabilidad previo confirma el espacio y el plazo definitivo.</div>
+      </div>
+      <div class="qa-item">
+        <span class="qa-label">Precio al huésped</span>
+        <div class="qa-question">"¿A qué precio deberíamos ofrecer el servicio? ¿Es mucho para nuestro cliente?"</div>
+        <div class="qa-answer">En absoluto. Six Senses Ibiza cobra €2.500–€5.500 por programas que incluyen HBOT. SHA Wellness factura €7.500 por semana. <strong>A €150–250 por sesión individual, Marbella Club ofrecería el servicio más accesible del mercado de lujo</strong> — con el mayor contexto de experiencia: playa, golf, gastronomía y spa en uno.</div>
+      </div>
+      <div class="qa-item">
+        <span class="qa-label">Mantenimiento</span>
+        <div class="qa-question">"¿Qué costes recurrentes implica una vez instalado? ¿Qué pasa si falla?"</div>
+        <div class="qa-answer">El mantenimiento anual preventivo está incluido en nuestro contrato de servicio. Coste operativo estimado: €20 por sesión (energía + consumibles). <strong>SoulBaric garantiza tiempo de respuesta &lt; 24h</strong> ante cualquier incidencia técnica, con piezas en stock para los modelos de la gama HE5000. La tasa de fallos técnicos es inferior al 0.5% del tiempo operativo.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════
+     SLIDE 10 — CIERRE
+═══════════════════════════════════════ -->
+<section class="slide" id="slide-10">
+  <div class="cierre-bg"></div>
+  <div class="slide-inner" style="position:relative;z-index:1;text-align:center;">
+
+    <span class="label label-white" style="display:block;text-align:center;">Próximos pasos</span>
+    <h2 class="serif" style="color:#fff;text-align:center;margin:0 auto;">De hoy a operativo<br>en 10 semanas.</h2>
+    <div class="divider white center"></div>
+
+    <div class="cierre-steps">
+      <div class="cierre-step">
+        <div class="cierre-step-num">1</div>
+        <div class="cierre-step-title">Estudio de Viabilidad</div>
+        <div class="cierre-step-text">Visita técnica al spa del Marbella Club. Evaluación del espacio, accesos y conexiones. Sin coste. Resultado en 48 horas.</div>
+      </div>
+      <div class="cierre-step">
+        <div class="cierre-step-num">2</div>
+        <div class="cierre-step-title">Propuesta formal</div>
+        <div class="cierre-step-text">Presupuesto oficial detallado, contrato de servicio y protocolo de instalación. Validez 30 días.</div>
+      </div>
+      <div class="cierre-step">
+        <div class="cierre-step-num">3</div>
+        <div class="cierre-step-title">Instalación & apertura</div>
+        <div class="cierre-step-text">8-12 semanas desde la firma. Formación del equipo incluida. Marbella Club establece el estándar del wellness de longevidad en la Costa del Sol.</div>
+      </div>
+    </div>
+
+    <div class="cierre-contact" style="justify-content:center;margin:0 auto;max-width:700px;">
+      <div class="contact-item">
+        <div class="contact-label">Empresa</div>
+        <div class="contact-value">SoulBaric · Costa del Sol</div>
+      </div>
+      <div style="width:1px;height:40px;background:rgba(255,255,255,0.1);"></div>
+      <div class="contact-item">
+        <div class="contact-label">Especialidad</div>
+        <div class="contact-value">Wellness hiperbárico de lujo</div>
+      </div>
+      <div style="width:1px;height:40px;background:rgba(255,255,255,0.1);"></div>
+      <div class="contact-item">
+        <div class="contact-label">Producto</div>
+        <div class="contact-value">HE5000 Plus 4 plazas · 1.9 ATA</div>
+      </div>
+    </div>
+
+    <p class="cierre-tagline">"Elegant simplicity is our philosophy — and so is yours."</p>
+  </div>
+</section>
+
+
+<script>
+/* ══ SLIDE NAVIGATION ══ */
+const slides = document.querySelectorAll('.slide');
+const dots   = document.querySelectorAll('.nav-dot');
+const counter = document.getElementById('slide-counter');
+const progressBar = document.getElementById('progress-bar');
+const header = document.getElementById('top-header');
+
+const darkSlides = [10]; // 1-indexed — slide 1 now light, slide 10 is dark closing
+
+function updateNav(){
+  let current = 1;
+  slides.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top <= window.innerHeight/2) current = i+1;
+  });
+
+  dots.forEach((d,i)=>{
+    d.classList.toggle('active', i+1 === current);
+    d.classList.toggle('light', darkSlides.includes(i+1));
+  });
+
+  const visCount = document.querySelectorAll('.slide:not(.hidden-mode)').length;
+  const n = String(current).padStart(2,'0');
+  const t = String(visCount || slides.length).padStart(2,'0');
+  counter.textContent = n + ' / ' + t;
+  counter.classList.toggle('on-dark', darkSlides.includes(current));
+
+  const progress = ((current - 1) / (slides.length - 1)) * 100;
+  progressBar.style.width = progress + '%';
+
+  const isDark = darkSlides.includes(current);
+  header.classList.toggle('dark-bg', !isDark);
+}
+
+function goToSlide(n){
+  document.getElementById('slide-'+n).scrollIntoView({behavior:'smooth'});
+}
+
+window.addEventListener('scroll', updateNav, {passive:true});
+updateNav();
+
+/* ══ INTERSECTION OBSERVER for fade-up ══ */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:0.15});
+
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+
+/* ══ KEYBOARD NAV ══ */
+let currentSlide = 1;
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){
+    e.preventDefault();
+    if(currentSlide < slides.length){ currentSlide++; goToSlide(currentSlide); }
+  }
+  if(e.key==='ArrowUp'||e.key==='PageUp'){
+    e.preventDefault();
+    if(currentSlide > 1){ currentSlide--; goToSlide(currentSlide); }
+  }
+});
+
+window.addEventListener('scroll',()=>{
+  slides.forEach((s,i)=>{
+    const rect = s.getBoundingClientRect();
+    if(rect.top <= window.innerHeight/2) currentSlide = i+1;
+  });
+});
+
+/* ══ MODE SELECTOR ══ */
+// Vision mode: slides 1,2,4,7,8,10  (oportunidad, referentes, beneficios, servicio, cierre)
+// Business mode: all slides 1-10
+const VISION_SLIDES  = [1,2,4,7,8,10];
+const BUSINESS_SLIDES= [1,2,3,4,5,6,7,8,9,10];
+
+let currentMode = 'vision';
+
+function setMode(mode){
+  currentMode = mode;
+
+  // Update portada buttons
+  document.querySelectorAll('.mode-btn').forEach(b=>{
+    b.classList.toggle('active', b.classList.contains(mode));
+  });
+
+  const allSlides = document.querySelectorAll('.slide');
+  const visibleSet = mode === 'vision' ? VISION_SLIDES : BUSINESS_SLIDES;
+
+  allSlides.forEach((s,i)=>{
+    const n = i+1;
+    s.classList.toggle('hidden-mode', !visibleSet.includes(n));
+  });
+
+  // Update nav dots
+  const allDots = document.querySelectorAll('.nav-dot');
+  allDots.forEach((d,i)=>{
+    const n = i+1;
+    d.style.display = visibleSet.includes(n) ? '' : 'none';
+  });
+
+  // Badge
+  const badge = document.getElementById('mode-badge');
+  if(mode === 'vision'){
+    badge.textContent = '✦ Visión · Lujo Silencioso';
+    badge.className = 'vision';
+    badge.style.display = 'block';
+    setTimeout(()=>badge.style.display='none', 2500);
+  } else {
+    badge.textContent = '◈ Propuesta Completa';
+    badge.className = 'business';
+    badge.style.display = 'block';
+    setTimeout(()=>badge.style.display='none', 2500);
+  }
+
+  // Go to slide 2
+  setTimeout(()=>goToSlide(2), 100);
+}
+
+// Init: apply vision mode on load (without jumping away from portada)
+window.addEventListener('load', ()=>{
+  currentMode = 'vision';
+  const VISION = [1,2,4,7,8,10];
+  document.querySelectorAll('.slide').forEach((s,i)=>{
+    s.classList.toggle('hidden-mode', !VISION.includes(i+1));
+  });
+  document.querySelectorAll('.nav-dot').forEach((d,i)=>{
+    d.style.display = VISION.includes(i+1) ? '' : 'none';
+  });
+  // mark vision button active
+  document.querySelectorAll('.mode-btn').forEach(b=>{
+    b.classList.toggle('active', b.classList.contains('vision'));
+  });
+});
+</script>
+
+</body>
+</html>

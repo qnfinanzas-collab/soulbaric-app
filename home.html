@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoulBaric — Plataforma de Inversión Hiperbárica</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:    #C89968;
+      --gold-d:  #8B6F47;
+      --gold-l:  #D4A574;
+      --dark:    #1a1a1a;
+      --dark2:   #2d2d2d;
+      --bg:      #f5f3f0;
+      --white:   #ffffff;
+      --border:  #e8e4df;
+      --text:    #3d3530;
+      --text-m:  #7a6e68;
+      --green:   #2e7d32;
+      --radius:  12px;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark2) 100%);
+      border-bottom: 3px solid var(--gold);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    }
+
+    .logo-wrap { display: flex; align-items: center; gap: 14px; }
+    .logo-wrap h1 { font-size: 26px; color: var(--gold); letter-spacing: .5px; }
+    .logo-wrap p  { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+
+    .header-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      color: rgba(255,255,255,.75);
+      border: 1px solid rgba(255,255,255,.1);
+      transition: all .2s;
+    }
+    .nav-link:hover { background: rgba(200,153,104,.2); color: var(--gold); border-color: var(--gold); }
+    .nav-link.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+    .version-badge {
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      background: rgba(200,153,104,.08);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--dark) 0%, #1f1f1f 60%, #2a1f14 100%);
+      padding: 80px 32px 90px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 120%, rgba(200,153,104,.18) 0%, transparent 65%);
+    }
+    .hero h2 {
+      font-size: 46px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 20px;
+      position: relative;
+      line-height: 1.15;
+    }
+    .hero h2 span { color: var(--gold); }
+    .hero p {
+      font-size: 17px;
+      color: rgba(255,255,255,.6);
+      max-width: 680px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      position: relative;
+    }
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+    .btn-hero-main {
+      padding: 14px 36px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-l));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 4px 20px rgba(200,153,104,.4);
+    }
+    .btn-hero-main:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(200,153,104,.5); }
+    .btn-hero-sec {
+      padding: 14px 36px;
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .25s;
+    }
+    .btn-hero-sec:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: linear-gradient(135deg, var(--dark2), var(--dark));
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-top: 1px solid rgba(200,153,104,.2);
+    }
+    .stat-cell {
+      padding: 22px 16px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-val { font-size: 28px; font-weight: 800; color: var(--gold); }
+    .stat-lbl { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; }
+
+    /* ── QUICK ACCESS ── */
+    .quick-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 32px 0;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-m);
+      margin-bottom: 18px;
+    }
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+    .quick-card {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 10px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .quick-card:hover {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, rgba(200,153,104,.06), rgba(200,153,104,.02));
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(200,153,104,.15);
+    }
+    .quick-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+    .quick-lbl  { font-size: 11px; font-weight: 700; }
+    .quick-sub  { font-size: 10px; color: var(--text-m); margin-top: 2px; }
+
+    /* ── MODULES ── */
+    .modules-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 56px 32px;
+    }
+    .big-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .big-sub {
+      font-size: 14px;
+      color: var(--text-m);
+      margin-bottom: 36px;
+    }
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .mod-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      overflow: hidden;
+      transition: all .25s;
+      display: flex;
+      flex-direction: column;
+    }
+    .mod-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-6px);
+      box-shadow: 0 14px 36px rgba(200,153,104,.18);
+    }
+    .mod-head {
+      padding: 28px 24px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .mod-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .mod-title { font-size: 16px; font-weight: 700; }
+    .mod-badge {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-top: 3px;
+      display: inline-block;
+    }
+    .mod-body { padding: 20px 24px; flex: 1; }
+    .mod-desc { font-size: 12px; color: var(--text-m); line-height: 1.6; margin-bottom: 16px; }
+    .mod-list { list-style: none; }
+    .mod-list li {
+      font-size: 11px;
+      color: var(--text);
+      padding: 5px 0;
+      border-bottom: 1px solid #f5f3f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mod-list li::before { content: '▸'; color: var(--gold); font-weight: 700; flex-shrink: 0; }
+    .mod-foot { padding: 16px 24px; border-top: 1px solid var(--border); }
+    .mod-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      text-align: center;
+      background: linear-gradient(135deg, var(--gold), var(--gold-l));
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .mod-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(200,153,104,.35); }
+    .mod-btn.outline {
+      background: transparent;
+      color: var(--gold);
+      border: 1.5px solid var(--gold);
+    }
+    .mod-btn.outline:hover { background: rgba(200,153,104,.08); }
+
+    /* ── NEW BADGE ── */
+    .new-tag {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #e53935;
+      color: #fff;
+      margin-left: 4px;
+      vertical-align: middle;
+      letter-spacing: .5px;
+    }
+
+    /* ── FEATURES STRIP ── */
+    .features-wrap {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .features-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 56px 32px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      margin-top: 36px;
+    }
+    .feat-item { display: flex; gap: 14px; align-items: flex-start; }
+    .feat-icon-wrap {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: rgba(200,153,104,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .feat-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+    .feat-desc  { font-size: 11px; color: var(--text-m); line-height: 1.6; }
+
+    /* ── CTA ── */
+    .cta-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 56px 32px;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, var(--dark) 0%, #1f150a 100%);
+      border-radius: 16px;
+      padding: 56px 48px;
+      text-align: center;
+      border: 1px solid rgba(200,153,104,.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 150%, rgba(200,153,104,.15) 0%, transparent 60%);
+    }
+    .cta-box h2 { font-size: 32px; color: #fff; margin-bottom: 12px; position: relative; }
+    .cta-box p  { font-size: 15px; color: rgba(255,255,255,.55); margin-bottom: 32px; position: relative; }
+    .cta-btns   { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      border-top: 3px solid var(--gold);
+      padding: 32px;
+      text-align: center;
+    }
+    footer p { font-size: 12px; color: #666; margin-bottom: 8px; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+    .footer-links a { color: var(--gold); text-decoration: none; font-size: 12px; transition: opacity .2s; }
+    .footer-links a:hover { opacity: .75; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero h2, .hero p, .hero-btns { animation: fadeUp .6s ease both; }
+    .hero p    { animation-delay: .1s; }
+    .hero-btns { animation-delay: .2s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .modules-grid { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-grid    { grid-template-columns: repeat(3, 1fr); }
+      .stats-bar     { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .hero h2 { font-size: 30px; }
+      .modules-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .quick-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-bar  { grid-template-columns: repeat(2, 1fr); }
+      .header-nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo-wrap">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <svg width="42" height="42" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+        <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+        <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+        <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+        <circle cx="50" cy="18" r="4.5" fill="#C89968"/>
+        <circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="50" cy="82" r="4.5" fill="#C89968"/>
+        <circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="18" cy="50" r="4.5" fill="#C89968"/>
+        <circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="82" cy="50" r="4.5" fill="#C89968"/>
+        <circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+      </svg>
+      <div>
+        <h1 style="margin:0;">SoulBaric</h1>
+        <p style="margin:0;">CellPods · Soluciones de Inversión Hiperbárica</p>
+      </div>
+    </div>
+    <span class="version-badge">v3.0 Premium</span>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html"      class="nav-link">📁 Proyectos</a>
+    <a href="catalogo.html"   class="nav-link">📦 Catálogo</a>
+    <a href="dashboard.html"  class="nav-link">📊 Dashboard</a>
+    <a href="propuestas.html" class="nav-link">📋 Propuestas</a>
+    <a href="crm.html"        class="nav-link" style="color:#C89968;border-color:rgba(200,153,104,0.3);">🎯 CRM</a>
+    <a href="manual.html"     class="nav-link">📚 Manual</a>
+    <a href="propuesta-eden.html" class="nav-link" style="color:#C89968;border-color:rgba(200,153,104,0.3);">🌊 EDEN</a>
+    <a href="presentacion-marbella-club.html" class="nav-link" style="color:#5BAFA6;border-color:rgba(91,175,166,0.4);background:rgba(91,175,166,0.08);">🏨 MARBELLA</a>
+    <a href="presentacion-marbella-club-directriz.html" class="nav-link" style="color:#B8966A;border-color:rgba(184,150,106,0.4);background:rgba(184,150,106,0.06);">✦ DIRECTRIZ</a>
+  </nav>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <h2>Plataforma Profesional de<br><span>Inversión Hiperbárica</span></h2>
+  <p>Sistema integral con configurador de proyectos, catálogo de cámaras, simulador de retornos, gestión de inversores y asistente IA. Todo en una sola plataforma.</p>
+  <div class="hero-btns">
+    <a href="index.html"      class="btn-hero-main">📁 Configurador de Proyectos</a>
+    <a href="crm.html"        class="btn-hero-main" style="background:linear-gradient(135deg,#C89968,#8B6F47);box-shadow:0 4px 18px rgba(200,153,104,.35);">🎯 CRM · Pipeline Comercial</a>
+    <a href="propuestas.html" class="btn-hero-sec">📋 Propuestas &amp; Inversores</a>
+  </div>
+</section>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar">
+  <div class="stat-cell">
+    <div class="stat-val" id="stat-projects">0</div>
+    <div class="stat-lbl">Proyectos</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-val" id="stat-configs">0</div>
+    <div class="stat-lbl">Configuraciones</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-val" id="stat-candidates" style="color:#C89968;">0</div>
+    <div class="stat-lbl">CRM Pipeline</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-val" id="stat-investment">€0</div>
+    <div class="stat-lbl">Valor Pipeline</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-val" id="stat-roi">0%</div>
+    <div class="stat-lbl">ROI Promedio</div>
+  </div>
+</div>
+
+<!-- ── QUICK ACCESS ── -->
+<div class="quick-wrap">
+  <div class="section-title">⚡ Acceso Rápido</div>
+  <div class="quick-grid">
+    <a href="index.html" class="quick-card">
+      <span class="quick-icon">🧮</span>
+      <div class="quick-lbl">Proyectos</div>
+      <div class="quick-sub">Crear proyectos</div>
+    </a>
+    <a href="catalogo.html" class="quick-card">
+      <span class="quick-icon">📦</span>
+      <div class="quick-lbl">Catálogo</div>
+      <div class="quick-sub">11 modelos SoulBaric</div>
+    </a>
+    <a href="crm.html" class="quick-card" style="border-color:rgba(200,153,104,.35);background:linear-gradient(135deg,#fff,#fdf6ee);">
+      <span class="quick-icon">🎯</span>
+      <div class="quick-lbl" style="color:#8B6F47;">CRM</div>
+      <div class="quick-sub" id="qc-crm-stat">Pipeline · Prospectos</div>
+    </a>
+    <a href="propuestas.html" class="quick-card">
+      <span class="quick-icon">📋</span>
+      <div class="quick-lbl">Propuestas</div>
+      <div class="quick-sub">Inversores · PDF</div>
+    </a>
+    <a href="propuestas.html#operativa" class="quick-card">
+      <span class="quick-icon">📊</span>
+      <div class="quick-lbl">Simulador</div>
+      <div class="quick-sub">TIR · ROI · Payback</div>
+    </a>
+    <a href="dashboard.html" class="quick-card">
+      <span class="quick-icon">🏠</span>
+      <div class="quick-lbl">Dashboard</div>
+      <div class="quick-sub">Panel de control</div>
+    </a>
+    <a href="javascript:exportAll()" class="quick-card">
+      <span class="quick-icon">💾</span>
+      <div class="quick-lbl">Exportar</div>
+      <div class="quick-sub">Backup completo</div>
+    </a>
+  </div>
+</div>
+
+<!-- ── MODULES ── -->
+<div class="modules-wrap">
+  <div class="big-title">🚀 Módulos del Sistema</div>
+  <div class="big-sub">Cada módulo está integrado y comparte datos en tiempo real</div>
+  <div class="modules-grid">
+
+    <!-- Configurador de Proyectos -->
+    <div class="mod-card">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(200,153,104,.12);">🧮</div>
+        <div>
+          <div class="mod-title">Configurador de Proyectos</div>
+          <span class="mod-badge" style="background:rgba(200,153,104,.15);color:#8B6F47;">Motor de Proyecciones</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Calcula ROI, TIR y Payback de cualquier proyecto hiperbárico con ocupación mensual variable, costes operativos y múltiples cámaras por proyecto.</p>
+        <ul class="mod-list">
+          <li>Ficha CRM del centro colaborador</li>
+          <li>Multi-configuración de cámaras por proyecto</li>
+          <li>Ocupación variable mes a mes</li>
+          <li>Análisis de audiencia y facturación</li>
+          <li>Proyección a 5 años · TIR · ROI · Payback</li>
+          <li>Guardar y cargar proyectos</li>
+        </ul>
+      </div>
+      <div class="mod-foot">
+        <a href="index.html" class="mod-btn">Abrir Configurador →</a>
+      </div>
+    </div>
+
+    <!-- Catálogo -->
+    <div class="mod-card">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(21,101,192,.1);">📦</div>
+        <div>
+          <div class="mod-title">Catálogo de Cámaras <span class="new-tag">NUEVO</span></div>
+          <span class="mod-badge" style="background:rgba(21,101,192,.1);color:#1565c0;">11 Modelos SoulBaric</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Explora todos los modelos de cámara hiperbárica con precios, specs y complementos wellness. Guarda configuraciones completas y transfiérelas directamente al configurador.</p>
+        <ul class="mod-list">
+          <li>11 modelos SoulBaric con precios actualizados</li>
+          <li>6 complementos wellness configurables</li>
+          <li>Presets de logística (marítimo / aéreo)</li>
+          <li>Parámetros operativos por configuración</li>
+          <li>Guardar configuraciones con nombre</li>
+          <li>Transferir a proyecto con un clic</li>
+        </ul>
+      </div>
+      <div class="mod-foot">
+        <a href="catalogo.html" class="mod-btn">Ver Catálogo →</a>
+      </div>
+    </div>
+
+    <!-- CRM Comercial -->
+    <div class="mod-card" style="border-color:rgba(200,153,104,.4);background:linear-gradient(135deg,#fdf6ee 0%,#fff 100%);">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(200,153,104,.18);">🎯</div>
+        <div>
+          <div class="mod-title">CRM Comercial <span class="new-tag">NUEVO</span></div>
+          <span class="mod-badge" style="background:rgba(200,153,104,.2);color:#8B6F47;">Pipeline · Costa del Sol</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">CRM completo para gestionar el pipeline comercial de SoulBaric en la Costa del Sol — hoteles 5★, villas de lujo, promotoras y clínicas wellness. 34 prospectos reales precargados.</p>
+        <ul class="mod-list">
+          <li>🏨 34 prospectos reales Costa del Sol</li>
+          <li>📊 Kanban pipeline: Prospecto → Cerrado</li>
+          <li>👥 Multi-contacto por establecimiento</li>
+          <li>📝 Seguimiento comercial con timeline</li>
+          <li>📄 Carta de intención PDF (Presupuestos)</li>
+          <li>🤖 Asistentes por segmento con argumentarios</li>
+        </ul>
+      </div>
+      <div class="mod-foot">
+        <a href="crm.html" class="mod-btn" style="background:linear-gradient(135deg,#C89968,#8B6F47);">Abrir CRM →</a>
+      </div>
+    </div>
+
+    <!-- Propuestas & Inversores -->
+    <div class="mod-card">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(46,125,50,.1);">📋</div>
+        <div>
+          <div class="mod-title">Propuestas &amp; Inversores</div>
+          <span class="mod-badge" style="background:rgba(46,125,50,.1);color:#2e7d32;">Candidatos &amp; Contratos</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Gestiona candidatos inversores, genera propuestas y contratos en PDF de calidad premium, y envía por email o WhatsApp directamente desde la app.</p>
+        <ul class="mod-list">
+          <li>CRM de candidatos con perfiles inversor</li>
+          <li>Propuesta PDF premium con 3 escenarios</li>
+          <li>Contrato notarial con 11 cláusulas</li>
+          <li>Envío por 📧 email y 💬 WhatsApp</li>
+          <li>Importar / exportar candidatos CSV</li>
+          <li>Asignación de proyectos a candidatos</li>
+        </ul>
+      </div>
+      <div class="mod-foot">
+        <a href="propuestas.html" class="mod-btn">Abrir Propuestas →</a>
+      </div>
+    </div>
+
+    <!-- Inversión Operativa -->
+    <div class="mod-card">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(106,27,154,.1);">💼</div>
+        <div>
+          <div class="mod-title">Inversión Operativa <span class="new-tag">NUEVO</span></div>
+          <span class="mod-badge" style="background:rgba(106,27,154,.1);color:#6a1b9a;">Simulador · Inversores · Liquidaciones</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Módulo completo para estructurar la inversión operativa del negocio: simula retornos, registra inversores, calcula liquidaciones y gestiona la puesta en marcha.</p>
+        <ul class="mod-list">
+          <li>🚀 Puesta en Marcha — costes previos por categoría</li>
+          <li>⏳ Período de carencia integrado en cálculos</li>
+          <li>📊 Simulador: BNP Share · Revenue Share · Híbrido</li>
+          <li>TIR, ROI, Payback y proyección año a año</li>
+          <li>👥 Registro y seguimiento de inversores</li>
+          <li>💰 Liquidaciones mensuales por inversor</li>
+        </ul>
+      </div>
+      <div class="mod-foot">
+        <a href="propuestas.html" class="mod-btn">Abrir Módulo →</a>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="mod-card">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(230,81,0,.1);">📊</div>
+        <div>
+          <div class="mod-title">Dashboard</div>
+          <span class="mod-badge" style="background:rgba(230,81,0,.1);color:#e65100;">Panel Ejecutivo</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Panel central de control con KPIs en tiempo real, gráficos de análisis, comparativas entre proyectos y acceso directo a todos los módulos.</p>
+        <ul class="mod-list">
+          <li>KPIs en tiempo real de todos los proyectos</li>
+          <li>Gráficos de ROI, TIR y facturación</li>
+          <li>Comparativa entre proyectos</li>
+          <li>Acceso rápido con un clic</li>
+          <li>Vista ejecutiva para presentaciones</li>
+        </ul>
+      </div>
+      <div class="mod-foot">
+        <a href="dashboard.html" class="mod-btn">Abrir Dashboard →</a>
+      </div>
+    </div>
+
+    <!-- Asistente IA -->
+    <div class="mod-card" style="border-color:rgba(200,153,104,0.4);background:linear-gradient(135deg,#fdf6ee,#fff);">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(200,153,104,.18);">🌊</div>
+        <div>
+          <div class="mod-title">Proyecto EDEN <span class="new-tag">ACTIVO</span></div>
+          <span class="mod-badge" style="background:rgba(200,153,104,.2);color:#8B6F47;">Beach Club · Estepona · Piloto 90d</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Colaboración exclusiva con EDEN Beach Gastrobar SL (Marc). Instalación piloto HP750 en el Paseo Marítimo de Estepona. Sesión 85€ · 10% BNP colaborador · Activación 7.000€.</p>
+        <ul class="mod-list">
+          <li>1 cámara HP750 · 75 min · 12h/día · 7 días</li>
+          <li>Piloto 90 días — 7.000€ (2.000€ + 5.000€)</li>
+          <li>EDEN colaborador: 10% BNP mensual</li>
+          <li>Opción 5 años: 16.667€ · Recompra ×1.25</li>
+          <li>Break-even: 88 sesiones (30,6% ocupación)</li>
+          <li>Inicio previsto: Abril 2026</li>
+        </ul>
+      </div>
+      <div class="mod-foot" style="display:flex;gap:8px;">
+        <a href="propuesta-eden.html" class="mod-btn" style="flex:1;">Ver Propuesta →</a>
+        <a href="eden-import.html" class="mod-btn outline" style="flex:1;">💾 Importar</a>
+      </div>
+    </div>
+
+    <!-- Marbella Club -->
+    <div class="mod-card" style="border-color:rgba(91,175,166,0.5);background:linear-gradient(135deg,#f0faf9,#fff);grid-column:1/-1;">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(91,175,166,0.18);">🏨</div>
+        <div>
+          <div class="mod-title">Marbella Club Hotel &amp; Resort <span class="new-tag" style="background:rgba(91,175,166,0.2);color:#3a8a84;border:1px solid rgba(91,175,166,0.4);">PROPUESTA ACTIVA</span></div>
+          <span class="mod-badge" style="background:rgba(91,175,166,0.15);color:#3a8a84;">HE5000 Plus · 4 Plazas · 1.9 ATA · Costa del Sol · 2026</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Propuesta exclusiva para convertir Marbella Club en el primer resort de la Costa del Sol con terapia hiperbárica integrada. HE5000 Plus 4 plazas · €421.200 beneficio neto estimado/año · Payback &lt; 3 meses.</p>
+        <ul class="mod-list">
+          <li>HE5000 Plus 1.9 · 4 plazas simultáneas · Certificación CE · ISO 13485</li>
+          <li>€468.000 ingresos brutos/año · €421.200 beneficio neto/año</li>
+          <li>Payback estimado &lt; 3 meses · Beneficio acumulado 3 años: €1.168.600</li>
+          <li>Referentes: Six Senses Ibiza, Alpina Gstaad, Clinique La Prairie</li>
+          <li>Instalación llave en mano · Formación equipo · Soporte 365 días</li>
+          <li>0 competidores directos en Costa del Sol · Ventana 2026</li>
+        </ul>
+      </div>
+      <div class="mod-foot" style="display:flex;gap:8px;">
+        <a href="presentacion-marbella-club.html" class="mod-btn" style="flex:1;background:linear-gradient(135deg,#5BAFA6,#3a8a84);border-color:#5BAFA6;">Ver Presentación →</a>
+        <a href="presentacion-marbella-club-directriz.html" class="mod-btn outline" style="flex:1;color:#B8966A;border-color:rgba(184,150,106,0.4);">✦ Ver Directriz</a>
+        <a href="crm.html" class="mod-btn outline" style="flex:1;color:#5BAFA6;border-color:rgba(91,175,166,0.5);">🎯 CRM</a>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <div class="mod-head">
+        <div class="mod-icon-wrap" style="background:rgba(200,153,104,.12);">🤖</div>
+        <div>
+          <div class="mod-title">Asistente IA <span class="new-tag">NUEVO</span></div>
+          <span class="mod-badge" style="background:rgba(200,153,104,.15);color:#8B6F47;">Chat · Consultas · Guía</span>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p class="mod-desc">Asistente inteligente disponible en toda la plataforma. Responde preguntas sobre inversión, cámaras, modelos de retorno y cómo usar cada módulo de la app.</p>
+        <ul class="mod-list">
+          <li>Consultas sobre TIR, ROI, Payback</li>
+          <li>Precios y recomendación de cámaras</li>
+          <li>Explicación de modelos BNP · Revenue · Híbrido</li>
+          <li>Guía paso a paso de cada módulo</li>
+          <li>Chips de seguimiento para explorar temas</li>
+          <li>Disponible en todas las páginas — botón 🤖</li>
+        </ul>
+      </div>
+      <div class="mod-foot">
+        <a href="javascript:window.sbToggleChat&&window.sbToggleChat()" class="mod-btn outline">Abrir Asistente 🤖</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── FEATURES STRIP ── -->
+<div class="features-wrap">
+  <div class="features-inner">
+    <div class="big-title">✨ Capacidades Clave</div>
+    <div class="big-sub">Lo que diferencia a SoulBaric de cualquier hoja de cálculo</div>
+    <div class="features-grid">
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">📐</div>
+        <div>
+          <div class="feat-title">Multi-cámara por proyecto</div>
+          <div class="feat-desc">Un proyecto puede tener varias cámaras con TIR, ROI y Payback calculados de forma independiente para cada una.</div>
+        </div>
+      </div>
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">⏳</div>
+        <div>
+          <div class="feat-title">Período de carencia</div>
+          <div class="feat-desc">Configura los meses sin ingresos al inicio del negocio. El simulador ajusta automáticamente TIR, Payback y proyecciones.</div>
+        </div>
+      </div>
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">📄</div>
+        <div>
+          <div class="feat-title">Propuestas &amp; contratos PDF</div>
+          <div class="feat-desc">Genera documentos de calidad premium con 3 escenarios y envíalos por email o WhatsApp directamente desde la app.</div>
+        </div>
+      </div>
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">🚀</div>
+        <div>
+          <div class="feat-title">Puesta en Marcha</div>
+          <div class="feat-desc">Planifica todos los costes previos al arranque (marketing, formación, legal...) en partidas únicas o mensuales por categoría.</div>
+        </div>
+      </div>
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">📊</div>
+        <div>
+          <div class="feat-title">3 modelos de retorno</div>
+          <div class="feat-desc">BNP Share, Revenue Share e Híbrido con simulación en tiempo real, análisis de sensibilidad y 3 escenarios (conservador / base / optimista).</div>
+        </div>
+      </div>
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">🔒</div>
+        <div>
+          <div class="feat-title">100% local &amp; privado</div>
+          <div class="feat-desc">Todos los datos se guardan en tu navegador. Sin servidor externo, sin suscripción, sin pérdida de datos. Backup en cualquier momento.</div>
+        </div>
+      </div>
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">💰</div>
+        <div>
+          <div class="feat-title">Liquidaciones automáticas</div>
+          <div class="feat-desc">Seguimiento mensual por inversor con estado de pago, acumulado cobrado y % del capital recuperado. Exportable a PDF.</div>
+        </div>
+      </div>
+
+      <div class="feat-item">
+        <div class="feat-icon-wrap">🤖</div>
+        <div>
+          <div class="feat-title">Asistente IA integrado</div>
+          <div class="feat-desc">Chat disponible en todas las páginas que responde preguntas sobre inversión, cámaras, modelos y cómo usar la plataforma.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA ── -->
+<div class="cta-wrap">
+  <div class="cta-box">
+    <h2>¿Listo para estructurar tu primera inversión?</h2>
+    <p>Configura una cámara en el catálogo, crea tu proyecto en el configurador y genera una propuesta profesional en minutos.</p>
+    <div class="cta-btns">
+      <a href="crm.html"        class="btn-hero-main" style="background:linear-gradient(135deg,#C89968,#8B6F47);box-shadow:0 4px 18px rgba(200,153,104,.35);">🎯 Pipeline CRM</a>
+      <a href="catalogo.html"   class="btn-hero-main" style="background:linear-gradient(135deg,#2a2a2a,#1a1a1a);box-shadow:none;border:1px solid rgba(200,153,104,.4);">📦 Explorar Catálogo</a>
+      <a href="propuestas.html" class="btn-hero-sec">📋 Ver Propuestas</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>© 2026 SoulBaric — Plataforma Integral de Inversión Hiperbárica</p>
+  <p style="color:#555;">Versión 3.0 · Todos los derechos reservados</p>
+  <div class="footer-links">
+    <a href="crm.html">🎯 CRM</a>
+    <a href="manual.html">📚 Manual</a>
+    <a href="catalogo.html">📦 Catálogo</a>
+    <a href="javascript:exportAll()">💾 Exportar datos</a>
+    <a href="javascript:window.sbToggleChat&&window.sbToggleChat()">🤖 Asistente IA</a>
+  </div>
+</footer>
+
+<script>
+  function updateStats() {
+    const projects   = JSON.parse(localStorage.getItem('soulbaric_projects')        || '[]');
+    const configs    = JSON.parse(localStorage.getItem('soulbaric_configuraciones') || '[]');
+
+    document.getElementById('stat-projects').textContent = projects.length;
+    document.getElementById('stat-configs').textContent  = configs.length;
+
+    // CRM pipeline stats (soulbaric_candidatos)
+    const crmCands = JSON.parse(localStorage.getItem('soulbaric_candidatos') || '[]');
+    const activeCRM = crmCands.filter(c => c.etapa !== 'cerrado_perdido').length;
+    document.getElementById('stat-candidates').textContent = activeCRM;
+
+    // Pipeline value from CRM
+    const pipeline = crmCands.reduce((s, c) => s + (parseFloat(c.presupuesto) || 0), 0);
+    const fmt = v => v >= 1000000
+      ? (v / 1000000).toFixed(1) + 'M'
+      : v >= 1000
+        ? Math.round(v / 1000) + 'K'
+        : Math.round(v);
+    document.getElementById('stat-investment').textContent = pipeline ? '€' + fmt(pipeline) : '€0';
+
+    // Quick card CRM stat
+    const qc = document.getElementById('qc-crm-stat');
+    if (qc && activeCRM) qc.textContent = activeCRM + ' candidatos activos';
+
+    // ROI promedio de proyectos
+    const rois = projects.map(p => p.scenario?.roiPct || p.scenario?.roi || 0).filter(r => r > 0);
+    const avgROI = rois.length ? Math.round(rois.reduce((a, b) => a + b, 0) / rois.length) : 0;
+    document.getElementById('stat-roi').textContent = avgROI + '%';
+  }
+
+  function exportAll() {
+    const data = {
+      exportDate:    new Date().toLocaleString('es-ES'),
+      projects:      JSON.parse(localStorage.getItem('soulbaric_projects')        || '[]'),
+      candidates:    JSON.parse(localStorage.getItem('soulbaric_candidates')      || '[]'),
+      configuraciones: JSON.parse(localStorage.getItem('soulbaric_configuraciones') || '[]'),
+      operativa:     JSON.parse(localStorage.getItem('soulbaric_operativa')       || '{}'),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'soulbaric_backup_' + new Date().toISOString().split('T')[0] + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  document.addEventListener('DOMContentLoaded', updateStats);
+</script>
+
+<script src="asistente-chat.js"></script>
+</body>
+</html>

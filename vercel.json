@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "name": "soulbaric-app",
+  "builds": [
+    { "src": "**/*.html", "use": "@vercel/static" },
+    { "src": "**/*.js",   "use": "@vercel/static" },
+    { "src": "**/*.csv",  "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/",                     "dest": "/index.html" },
+    { "src": "/home",                 "dest": "/home.html" },
+    { "src": "/crm",                  "dest": "/crm.html" },
+    { "src": "/dashboard",            "dest": "/dashboard.html" },
+    { "src": "/catalogo",             "dest": "/catalogo.html" },
+    { "src": "/manual",               "dest": "/manual.html" },
+    { "src": "/propuestas",           "dest": "/propuestas.html" },
+    { "src": "/(.*\\.html)",          "dest": "/$1" },
+    { "src": "/(.*\\.js)",            "dest": "/$1" },
+    { "src": "/(.*\\.csv)",           "dest": "/$1" }
+  ]
+}

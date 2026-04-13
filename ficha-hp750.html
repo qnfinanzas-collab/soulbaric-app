@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HP750 — Ficha Técnica · SoulBaric</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:     #C89968;
+      --gold-d:   #8B6F47;
+      --gold-l:   #D4A574;
+      --gold-xl:  #EDD9BC;
+      --bg:       #faf8f6;
+      --bg-warm:  #f0ebe5;
+      --bg-card:  #ffffff;
+      --border:   #e8e4df;
+      --text:     #3d3530;
+      --text-m:   #8b7d76;
+      --text-l:   #c5bdb8;
+      --black:    #1a1a1a;
+      --dark:     #2d2d2d;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════════════
+       NAV
+    ══════════════════════════════════════ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(250,248,246,0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-left { display: flex; align-items: center; gap: 20px; }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .nav-logo-text { display: flex; flex-direction: column; line-height: 1; }
+    .nav-logo-name {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+    .nav-logo-sub {
+      font-size: 7.5px;
+      font-weight: 700;
+      color: var(--text-m);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+    .nav-divider {
+      width: 1px; height: 20px;
+      background: var(--border);
+    }
+    .nav-page {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-m);
+      letter-spacing: 0.5px;
+    }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.2px;
+    }
+    .btn-nav-outline {
+      background: transparent;
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+    }
+    .btn-nav-outline:hover {
+      background: rgba(200,153,104,0.10);
+    }
+    .btn-nav-solid {
+      background: var(--gold);
+      border: 1.5px solid var(--gold);
+      color: white;
+    }
+    .btn-nav-solid:hover {
+      background: var(--gold-d);
+      border-color: var(--gold-d);
+    }
+
+    /* ══════════════════════════════════════
+       HERO
+    ══════════════════════════════════════ */
+    .hero {
+      min-height: 92vh;
+      background: linear-gradient(150deg, #ffffff 0%, #faf8f6 50%, #f0ebe5 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 48px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Glow decorativo bronce */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -150px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(200,153,104,0.14) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,153,104,0.09) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    /* Línea decorativa superior */
+    .hero-line {
+      width: 48px; height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-l));
+      border-radius: 2px;
+      margin: 0 auto 24px;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .hero-model {
+      font-size: clamp(96px, 16vw, 180px);
+      font-weight: 900;
+      color: var(--black);
+      letter-spacing: -6px;
+      line-height: 0.88;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-model span {
+      /* Sutil gradiente en el texto del modelo */
+      background: linear-gradient(135deg, #1a1a1a 0%, #3d3530 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: clamp(14px, 2vw, 20px);
+      font-weight: 400;
+      color: var(--text-m);
+      letter-spacing: 1px;
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Stats bar */
+    .hero-stats {
+      display: inline-flex;
+      gap: 0;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--bg-card);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-stat {
+      padding: 22px 36px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+      min-width: 110px;
+    }
+    .hero-stat:last-child { border-right: none; }
+    .hs-value {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--black);
+      letter-spacing: -1px;
+      display: block;
+      line-height: 1;
+    }
+    .hs-unit {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+      margin-top: 2px;
+    }
+    .hs-label {
+      font-size: 9px;
+      color: var(--text-l);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 4px;
+      display: block;
+    }
+    .hero-scroll {
+      font-size: 10px;
+      color: var(--text-l);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════
+       IMAGE SLOT — sección oscura como contraste
+    ══════════════════════════════════════ */
+    .img-section {
+      background: var(--black);
+      padding: 64px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .img-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .image-slot {
+      width: 100%;
+      max-width: 1000px;
+      aspect-ratio: 16/9;
+      border: 2px dashed rgba(200,153,104,0.35);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      background: #111;
+    }
+    .image-slot:hover {
+      border-color: var(--gold);
+      background: #161616;
+    }
+    .image-slot img {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+    .img-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 1;
+    }
+    .img-placeholder-icon { font-size: 44px; opacity: 0.35; }
+    .img-placeholder-text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.35);
+      font-weight: 500;
+    }
+    .img-placeholder-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+    }
+    #imageInput { display: none; }
+
+    /* ══════════════════════════════════════
+       SECCIONES GENÉRICAS
+    ══════════════════════════════════════ */
+    .sec {
+      padding: 80px 48px;
+    }
+    .sec-white { background: var(--bg-card); }
+    .sec-warm  { background: var(--bg-warm); }
+    .sec-bg    { background: var(--bg); }
+    .sec-dark  { background: var(--black); }
+
+    .sec-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .sec-header {
+      margin-bottom: 48px;
+    }
+    .sec-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .sec-title {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 900;
+      color: var(--black);
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+    }
+
+    /* ══════════════════════════════════════
+       OVERVIEW — 3 columnas con datos reales
+    ══════════════════════════════════════ */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .ov-col {
+      background: var(--bg-card);
+      padding: 36px 32px;
+    }
+    .ov-col-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .ov-icon {
+      width: 38px; height: 38px;
+      background: rgba(200,153,104,0.12);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ov-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.3;
+    }
+    .ov-item {
+      margin-bottom: 18px;
+    }
+    .ov-item:last-child { margin-bottom: 0; }
+    .ov-key {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 4px;
+    }
+    .ov-val {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.55;
+      font-weight: 500;
+    }
+    .ov-val strong {
+      color: var(--black);
+      font-weight: 700;
+    }
+
+    /* ══════════════════════════════════════
+       SPECS CARDS
+    ══════════════════════════════════════ */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .specs-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .sc-head {
+      background: linear-gradient(135deg, var(--black) 0%, var(--dark) 100%);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .sc-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .sc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sc-row:last-child { border-bottom: none; }
+    .sc-row:nth-child(even) { background: var(--bg); }
+    .sc-k {
+      font-size: 12px;
+      color: var(--text-m);
+      font-weight: 500;
+    }
+    .sc-v {
+      font-size: 12px;
+      color: var(--black);
+      font-weight: 700;
+      text-align: right;
+    }
+    .sc-v.gold { color: var(--gold); }
+
+    /* ══════════════════════════════════════
+       DIMENSIONES
+    ══════════════════════════════════════ */
+    .dims-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: start;
+    }
+    .dim-svg-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dim-list { display: flex; flex-direction: column; gap: 0; }
+    .dim-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+    .dim-row:last-child { border-bottom: none; }
+    .dim-lbl {
+      font-size: 14px;
+      color: var(--text-m);
+      font-weight: 500;
+    }
+    .dim-val {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--black);
+      white-space: nowrap;
+    }
+    .dim-val .dim-unit {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-left: 4px;
+    }
+    .dim-val.gold { color: var(--gold); }
+
+    /* ══════════════════════════════════════
+       HIGHLIGHTS
+    ══════════════════════════════════════ */
+    .hl-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .hl-card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 32px 28px;
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--gold);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .hl-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(200,153,104,0.15);
+    }
+    .hl-icon { font-size: 30px; margin-bottom: 16px; }
+    .hl-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 8px;
+    }
+    .hl-desc {
+      font-size: 12px;
+      color: var(--text-m);
+      line-height: 1.7;
+    }
+
+    /* ══════════════════════════════════════
+       CERTIFICACIONES
+    ══════════════════════════════════════ */
+    .certs-wrap {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cert {
+      padding: 14px 28px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+      cursor: default;
+    }
+    .cert:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 4px 16px rgba(200,153,104,0.2);
+    }
+
+    /* ══════════════════════════════════════
+       IN THE BOX
+    ══════════════════════════════════════ */
+    .box-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .box-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 20px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .box-item:hover { border-color: var(--gold); }
+    .box-item-icon { font-size: 28px; margin-bottom: 10px; }
+    .box-item-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.4;
+    }
+    .box-item-sub {
+      font-size: 10px;
+      color: var(--text-m);
+      margin-top: 4px;
+    }
+
+    /* ══════════════════════════════════════
+       PRECIO
+    ══════════════════════════════════════ */
+    .price-card {
+      background: linear-gradient(140deg, var(--black) 0%, #2a2218 100%);
+      border-radius: 20px;
+      padding: 56px 48px;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(200,153,104,0.2);
+    }
+    .price-card::before {
+      content: '';
+      position: absolute;
+      top: -40%; right: -20%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,153,104,0.18) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .pc-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .pc-model {
+      font-size: 52px;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -2px;
+      margin-bottom: 4px;
+    }
+    .pc-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 44px;
+    }
+    /* Línea separadora dorada */
+    .pc-rule {
+      width: 48px; height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 0 auto 44px;
+    }
+    .pc-price {
+      font-size: 64px;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -3px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .pc-iva {
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .pc-siniva {
+      font-size: 20px;
+      color: rgba(255,255,255,0.4);
+      font-weight: 600;
+      margin-bottom: 40px;
+    }
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-d) 100%);
+      color: white;
+      border: none;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: all 0.2s;
+      margin-bottom: 24px;
+    }
+    .btn-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(200,153,104,0.5);
+    }
+    .pc-note {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      line-height: 1.7;
+    }
+
+    /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+    footer {
+      background: var(--black);
+      color: rgba(255,255,255,0.35);
+      padding: 36px 48px;
+      text-align: center;
+      font-size: 11px;
+      border-top: 1px solid rgba(200,153,104,0.15);
+    }
+    footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--gold-l); }
+    .footer-links { margin-top: 10px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+    /* ══════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up.d1 { transition-delay: 0.05s; }
+    .fade-up.d2 { transition-delay: 0.12s; }
+    .fade-up.d3 { transition-delay: 0.19s; }
+
+    /* ══════════════════════════════════════
+       PRINT
+    ══════════════════════════════════════ */
+    @media print {
+      nav, .img-section, .btn-print { display: none !important; }
+      .hero { min-height: auto; padding: 40px; }
+      .fade-up { opacity: 1 !important; transform: none !important; }
+    }
+
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .sec { padding: 60px 24px; }
+      .hero { padding: 60px 24px 40px; }
+      .overview-grid { grid-template-columns: 1fr; }
+      .specs-grid { grid-template-columns: 1fr; }
+      .hl-grid { grid-template-columns: repeat(2,1fr); }
+      .box-grid { grid-template-columns: repeat(2,1fr); }
+      .dims-layout { grid-template-columns: 1fr; }
+      .hero-stats { flex-wrap: wrap; }
+      .hero-stat { min-width: 90px; padding: 16px 20px; }
+    }
+    @media (max-width: 600px) {
+      .hl-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-direction: column; }
+      .hero-stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .hero-stat:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-left">
+    <a href="home.html" class="nav-brand">
+      <!-- Logo SVG SoulBaric CellPods -->
+      <svg class="nav-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+        <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+        <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+        <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+        <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+        <circle cx="50" cy="18" r="4.5" fill="#C89968"/>
+        <circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="50" cy="82" r="4.5" fill="#C89968"/>
+        <circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="18" cy="50" r="4.5" fill="#C89968"/>
+        <circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="82" cy="50" r="4.5" fill="#C89968"/>
+        <circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+        <circle cx="51" cy="51" r="2.8" fill="#C89968" opacity="0.55"/>
+      </svg>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">SoulBaric</span>
+        <span class="nav-logo-sub">CellPods</span>
+      </div>
+    </a>
+    <div class="nav-divider"></div>
+    <span class="nav-page">Ficha Técnica · HP750</span>
+  </div>
+  <div class="nav-actions">
+    <a href="catalogo.html" class="btn-nav btn-nav-outline">← Catálogo</a>
+    <button class="btn-nav btn-nav-solid" onclick="window.print()">🖨️ Imprimir PDF</button>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <!-- Logo en hero -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:32px;">
+    <svg width="72" height="72" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+      <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+      <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+      <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+      <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+      <circle cx="50" cy="18" r="4.5" fill="#C89968"/>
+      <circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="50" cy="82" r="4.5" fill="#C89968"/>
+      <circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="18" cy="50" r="4.5" fill="#C89968"/>
+      <circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="82" cy="50" r="4.5" fill="#C89968"/>
+      <circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+      <circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+    </svg>
+    <div style="font-size:13px;font-weight:900;color:var(--gold);letter-spacing:4px;text-transform:uppercase;">SoulBaric</div>
+    <div style="font-size:9px;font-weight:700;color:var(--text-m);letter-spacing:3px;text-transform:uppercase;">CellPods</div>
+  </div>
+
+  <div class="hero-line"></div>
+  <div class="hero-eyebrow">SoulBaric · CellPods · Cámara Hiperbárica Rígida</div>
+  <div class="hero-model"><span>HP750</span></div>
+  <div class="hero-subtitle">Cápsula Rígida Vertical · 1–2 Personas · 1.9 ATA</div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hs-value">1.9</span>
+      <span class="hs-unit">ATA</span>
+      <span class="hs-label">Presión máx.</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">75</span>
+      <span class="hs-unit">cm ø</span>
+      <span class="hs-label">Diámetro interior</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">1–2</span>
+      <span class="hs-unit">plazas</span>
+      <span class="hs-label">Capacidad</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">200</span>
+      <span class="hs-unit">cm</span>
+      <span class="hs-label">Longitud</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hs-value">700</span>
+      <span class="hs-unit">kg</span>
+      <span class="hs-label">Peso neto</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll">↓ &nbsp; especificaciones técnicas completas</div>
+</div>
+
+<!-- ═══ IMAGE SLOT ═══ -->
+<div class="img-section">
+  <div class="img-label">Fotografía del equipo</div>
+  <div class="image-slot"
+    onclick="document.getElementById('imageInput').click()"
+    ondragover="event.preventDefault()"
+    ondrop="handleDrop(event)">
+    <div class="img-placeholder" id="imgPlaceholder">
+      <div class="img-placeholder-icon">📷</div>
+      <div class="img-placeholder-text">Añadir fotografía del equipo</div>
+      <div class="img-placeholder-sub">Arrastra una imagen o haz clic · JPG, PNG, WEBP</div>
+    </div>
+  </div>
+  <input type="file" id="imageInput" accept="image/*" onchange="loadImage(this)">
+</div>
+
+<!-- ═══ OVERVIEW 3-COL ═══ -->
+<div class="sec sec-bg">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Descripción técnica</div>
+      <div class="sec-title">Ingeniería de precisión.</div>
+    </div>
+    <div class="overview-grid fade-up d1">
+
+      <!-- Col 1: Estructura -->
+      <div class="ov-col">
+        <div class="ov-col-head">
+          <div class="ov-icon">🏗️</div>
+          <div class="ov-title">Estructura y materiales</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Tipo de cámara</div>
+          <div class="ov-val">Cápsula rígida vertical<br>para <strong>1–2 personas</strong></div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Material de la cápsula</div>
+          <div class="ov-val"><strong>Acero inoxidable 304</strong><br>Espesor 4.0 mm ±0.2</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Material de la puerta</div>
+          <div class="ov-val"><strong>Policarbonato de alta resistencia</strong><br>Espesor 10 mm ±0.2</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Sistema de apertura</div>
+          <div class="ov-val">Apertura <strong>vertical</strong> —<br>la puerta se abre hacia el techo</div>
+        </div>
+      </div>
+
+      <!-- Col 2: Dimensiones -->
+      <div class="ov-col">
+        <div class="ov-col-head">
+          <div class="ov-icon">📐</div>
+          <div class="ov-title">Dimensiones y peso</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Cápsula — Largo × Ancho × Alto</div>
+          <div class="ov-val"><strong>2000 mm × 962 mm × 1596 mm</strong></div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Ancho de puerta</div>
+          <div class="ov-val"><strong>660 mm</strong></div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Embalaje cápsula</div>
+          <div class="ov-val"><strong>2260 × 1218 × 1950 mm</strong><br>(caja de madera)</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Peso neto total</div>
+          <div class="ov-val"><strong>700 kg</strong></div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Peso bruto (con embalaje)</div>
+          <div class="ov-val"><strong>889 kg</strong></div>
+        </div>
+      </div>
+
+      <!-- Col 3: Control -->
+      <div class="ov-col">
+        <div class="ov-col-head">
+          <div class="ov-icon">🖥️</div>
+          <div class="ov-title">Sistema de control y personalización</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Pantallas de control</div>
+          <div class="ov-val">Doble pantalla táctil de <strong>10.1"</strong><br>(interna y externa) — versión estándar</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Interfaz personalizable</div>
+          <div class="ov-val">Iconos, botones, tipografía,<br>colores y <strong>logotipo propio</strong></div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Color exterior</div>
+          <div class="ov-val"><strong>Blanco</strong> — personalizable en<br>cualquier RAL, incluso metalizado</div>
+        </div>
+        <div class="ov-item">
+          <div class="ov-key">Interior</div>
+          <div class="ov-val"><strong>Polipiel blanco plisado</strong><br>(opcional: acolchado en rombos)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SPECS CARDS ═══ -->
+<div class="sec sec-white">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Especificaciones completas</div>
+      <div class="sec-title">Cada detalle importa.</div>
+    </div>
+    <div class="specs-grid">
+
+      <div class="specs-card fade-up d1">
+        <div class="sc-head"><span>🫧</span><span class="sc-title">Cápsula hiperbárica</span></div>
+        <div class="sc-row"><span class="sc-k">Presión máxima</span><span class="sc-v">1.9 ATA</span></div>
+        <div class="sc-row"><span class="sc-k">Diámetro interior</span><span class="sc-v">75 cm (750 mm)</span></div>
+        <div class="sc-row"><span class="sc-k">Longitud cápsula</span><span class="sc-v">200 cm (2000 mm)</span></div>
+        <div class="sc-row"><span class="sc-k">Ancho exterior</span><span class="sc-v">96.2 cm (962 mm)</span></div>
+        <div class="sc-row"><span class="sc-k">Alto total</span><span class="sc-v">159.6 cm (1596 mm)</span></div>
+        <div class="sc-row"><span class="sc-k">Ancho de puerta</span><span class="sc-v">66 cm (660 mm)</span></div>
+        <div class="sc-row"><span class="sc-k">Material cápsula</span><span class="sc-v">Acero inox. 304 · 4.0 mm</span></div>
+        <div class="sc-row"><span class="sc-k">Material puerta</span><span class="sc-v">Policarbonato · 10 mm</span></div>
+        <div class="sc-row"><span class="sc-k">Apertura</span><span class="sc-v">Vertical (hacia el techo)</span></div>
+        <div class="sc-row"><span class="sc-k">Interior estándar</span><span class="sc-v">Polipiel blanco plisado</span></div>
+      </div>
+
+      <div class="specs-card fade-up d2">
+        <div class="sc-head"><span>⚙️</span><span class="sc-title">Sistema todo-en-uno</span></div>
+        <div class="sc-row"><span class="sc-k">Caudal O₂</span><span class="sc-v">10 L/min</span></div>
+        <div class="sc-row"><span class="sc-k">Pureza O₂</span><span class="sc-v gold">93%</span></div>
+        <div class="sc-row"><span class="sc-k">Caudal de aire</span><span class="sc-v">72 L/min</span></div>
+        <div class="sc-row"><span class="sc-k">Alimentación</span><span class="sc-v">110 / 220 V</span></div>
+        <div class="sc-row"><span class="sc-k">Potencia</span><span class="sc-v">3.850 W</span></div>
+        <div class="sc-row"><span class="sc-k">Consumo / sesión</span><span class="sc-v">2.695 kWh</span></div>
+        <div class="sc-row"><span class="sc-k">Pantallas táctiles</span><span class="sc-v">2 × 10.1" (int. + ext.)</span></div>
+        <div class="sc-row"><span class="sc-k">Timer</span><span class="sc-v">0 – 120 min</span></div>
+        <div class="sc-row"><span class="sc-k">Válvula de alivio</span><span class="sc-v">✓ Incluida</span></div>
+        <div class="sc-row"><span class="sc-k">Interfono</span><span class="sc-v">✓ Incluido</span></div>
+      </div>
+
+      <div class="specs-card fade-up d1">
+        <div class="sc-head"><span>📦</span><span class="sc-title">Pesos y embalaje</span></div>
+        <div class="sc-row"><span class="sc-k">Peso neto total</span><span class="sc-v gold">700 kg</span></div>
+        <div class="sc-row"><span class="sc-k">Peso bruto (embalado)</span><span class="sc-v">889 kg</span></div>
+        <div class="sc-row"><span class="sc-k">Embalaje cápsula</span><span class="sc-v">2260 × 1218 × 1950 mm</span></div>
+        <div class="sc-row"><span class="sc-k">Tipo de embalaje</span><span class="sc-v">Caja de madera</span></div>
+      </div>
+
+      <div class="specs-card fade-up d2">
+        <div class="sc-head"><span>🎨</span><span class="sc-title">Personalización y acabados</span></div>
+        <div class="sc-row"><span class="sc-k">Color exterior base</span><span class="sc-v">Blanco</span></div>
+        <div class="sc-row"><span class="sc-k">Colores disponibles</span><span class="sc-v">Cualquier RAL + metalizado</span></div>
+        <div class="sc-row"><span class="sc-k">Interior estándar</span><span class="sc-v">Polipiel blanco plisado</span></div>
+        <div class="sc-row"><span class="sc-k">Interior opcional</span><span class="sc-v">Acolchado en rombos</span></div>
+        <div class="sc-row"><span class="sc-k">Interfaz UI</span><span class="sc-v">100% personalizable</span></div>
+        <div class="sc-row"><span class="sc-k">Logotipo propio</span><span class="sc-v">✓ Sí</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DIMENSIONES ═══ -->
+<div class="sec sec-warm">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Dimensiones &amp; Geometría</div>
+      <div class="sec-title">Precisión milimétrica<br>en cada medida.</div>
+    </div>
+    <div class="dims-layout fade-up d1">
+
+      <!-- SVG diagrama basado en dimensiones reales -->
+      <div class="dim-svg-wrap">
+        <svg viewBox="0 0 420 320" width="100%" style="max-width:420px;">
+
+          <!-- Fondo muy suave -->
+          <rect x="0" y="0" width="420" height="320" fill="none"/>
+
+          <!-- ── VISTA FRONTAL (izq) ── -->
+          <!-- Cápsula: forma ovalada/redondeada — exterior 962mm ancho × 1596mm alto -->
+          <!-- Representada a escala: 962 → ~100px ancho, 1596 → ~165px alto -->
+          <g transform="translate(70,40)">
+            <text x="50" y="-10" text-anchor="middle" font-size="8" fill="#C89968"
+              font-family="Inter,sans-serif" font-weight="700" letter-spacing="1.5">VISTA FRONTAL</text>
+
+            <!-- Cuerpo exterior -->
+            <rect x="0" y="0" width="100" height="165" rx="50" ry="50"
+              fill="rgba(200,153,104,0.06)" stroke="#C89968" stroke-width="2"/>
+
+            <!-- Diámetro interior (75cm) — proporcional: 75/96.2 × 100 ≈ 78px -->
+            <ellipse cx="50" cy="82" rx="39" ry="39"
+              fill="rgba(200,153,104,0.08)" stroke="#C89968" stroke-width="1.5"
+              stroke-dasharray="5,4"/>
+
+            <!-- Puerta (660mm ancho → 660/962 × 100 ≈ 68px) -->
+            <rect x="16" y="0" width="68" height="22" rx="6"
+              fill="rgba(200,153,104,0.12)" stroke="#C89968" stroke-width="1.5"/>
+
+            <!-- Label puerta -->
+            <text x="50" y="13" text-anchor="middle" font-size="7.5" fill="#C89968"
+              font-family="Inter,sans-serif" font-weight="600">Puerta 660 mm</text>
+
+            <!-- Flecha ancho -->
+            <line x1="-14" y1="165" x2="114" y2="165" stroke="#8b7d76" stroke-width="1.2"/>
+            <polygon points="-14,162.5 -14,167.5 -21,165" fill="#8b7d76"/>
+            <polygon points="114,162.5 114,167.5 121,165" fill="#8b7d76"/>
+            <text x="50" y="178" text-anchor="middle" font-size="9" fill="#8b7d76"
+              font-family="Inter,sans-serif">962 mm</text>
+
+            <!-- Flecha alto -->
+            <line x1="-22" y1="0" x2="-22" y2="165" stroke="#8b7d76" stroke-width="1.2"/>
+            <polygon points="-24.5,0 -19.5,0 -22,-7" fill="#8b7d76"/>
+            <polygon points="-24.5,165 -19.5,165 -22,172" fill="#8b7d76"/>
+            <text x="-32" y="85" text-anchor="middle" font-size="9" fill="#8b7d76"
+              font-family="Inter,sans-serif" transform="rotate(-90,-32,85)">1596 mm</text>
+
+            <!-- Label int -->
+            <line x1="50" y1="82" x2="89" y2="56" stroke="#C89968" stroke-width="0.8" stroke-dasharray="3,3"/>
+            <text x="92" y="53" font-size="7.5" fill="#C89968" font-family="Inter,sans-serif">ø 750 mm</text>
+          </g>
+
+          <!-- ── VISTA LATERAL (der) ── -->
+          <!-- 2000mm largo × 962mm ancho — escala: 2000→160px, 962→77px -->
+          <g transform="translate(230,80)">
+            <text x="80" y="-30" text-anchor="middle" font-size="8" fill="#C89968"
+              font-family="Inter,sans-serif" font-weight="700" letter-spacing="1.5">VISTA LATERAL</text>
+
+            <!-- Cuerpo lateral (horizontal) -->
+            <rect x="0" y="0" width="160" height="77" rx="38" ry="38"
+              fill="rgba(200,153,104,0.06)" stroke="#C89968" stroke-width="2"/>
+
+            <!-- Ventana / ojo -->
+            <circle cx="138" cy="38" r="13"
+              fill="rgba(200,153,104,0.10)" stroke="#C89968" stroke-width="1.5"/>
+
+            <!-- Flecha longitud -->
+            <line x1="0" y1="95" x2="160" y2="95" stroke="#8b7d76" stroke-width="1.2"/>
+            <polygon points="0,92.5 0,97.5 -7,95" fill="#8b7d76"/>
+            <polygon points="160,92.5 160,97.5 167,95" fill="#8b7d76"/>
+            <text x="80" y="108" text-anchor="middle" font-size="9" fill="#8b7d76"
+              font-family="Inter,sans-serif">2000 mm</text>
+
+            <!-- Indicador puerta (ventana) -->
+            <line x1="138" y1="24" x2="158" y2="4" stroke="#8b7d76" stroke-width="0.8" stroke-dasharray="3,3"/>
+            <text x="142" y="-2" font-size="7.5" fill="#8b7d76" font-family="Inter,sans-serif">Puerta</text>
+          </g>
+
+          <!-- Título general -->
+          <text x="210" y="296" text-anchor="middle" font-size="8.5" fill="#8b7d76"
+            font-family="Inter,sans-serif" letter-spacing="0.5">
+            HP750 · Diagrama de dimensiones (escala orientativa)
+          </text>
+        </svg>
+      </div>
+
+      <!-- Tabla de medidas reales -->
+      <div class="dim-list">
+        <div class="dim-row">
+          <span class="dim-lbl">Longitud cápsula</span>
+          <span class="dim-val">2000 mm <span class="dim-unit">200 cm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Ancho exterior</span>
+          <span class="dim-val">962 mm <span class="dim-unit">96.2 cm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Alto total</span>
+          <span class="dim-val">1596 mm <span class="dim-unit">159.6 cm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Diámetro interior</span>
+          <span class="dim-val">750 mm <span class="dim-unit">75 cm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Ancho de puerta</span>
+          <span class="dim-val">660 mm <span class="dim-unit">66 cm</span></span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Embalaje (L × A × H)</span>
+          <span class="dim-val" style="font-size:15px;">2260 × 1218 × 1950 mm</span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Peso neto total</span>
+          <span class="dim-val gold">700 kg</span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-lbl">Peso bruto (embalado)</span>
+          <span class="dim-val">889 kg</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HIGHLIGHTS ═══ -->
+<div class="sec sec-white">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Características destacadas</div>
+      <div class="sec-title">Diseñado para el máximo<br>confort y rendimiento.</div>
+    </div>
+    <div class="hl-grid">
+      <div class="hl-card fade-up d1">
+        <div class="hl-icon">🚪</div>
+        <div class="hl-title">Apertura cenital</div>
+        <div class="hl-desc">La puerta se abre verticalmente hacia el techo para facilitar la entrada y salida del paciente con total comodidad y seguridad.</div>
+      </div>
+      <div class="hl-card fade-up d2">
+        <div class="hl-icon">🖥️</div>
+        <div class="hl-title">Doble pantalla táctil 10.1"</div>
+        <div class="hl-desc">Panel interno y externo con interfaz 100% personalizable: iconos, colores, tipografía y logotipo corporativo propio.</div>
+      </div>
+      <div class="hl-card fade-up d3">
+        <div class="hl-icon">🎨</div>
+        <div class="hl-title">Personalización total</div>
+        <div class="hl-desc">Color exterior en cualquier código RAL, incluyendo acabados metalizados. Interior en polipiel plisada o acolchado en rombos.</div>
+      </div>
+      <div class="hl-card fade-up d1">
+        <div class="hl-icon">🫁</div>
+        <div class="hl-title">O₂ al 93% de pureza</div>
+        <div class="hl-desc">Concentrador de oxígeno integrado de 10 L/min con caudal de aire de 72 L/min para sesiones de oxigenación hiperbárica efectivas.</div>
+      </div>
+      <div class="hl-card fade-up d2">
+        <div class="hl-icon">🔒</div>
+        <div class="hl-title">Seguridad certificada</div>
+        <div class="hl-desc">Válvula de alivio automática e interfono bidireccional para comunicación continua durante toda la sesión.</div>
+      </div>
+      <div class="hl-card fade-up d3">
+        <div class="hl-icon">⚡</div>
+        <div class="hl-title">Sistema todo-en-uno</div>
+        <div class="hl-desc">Instalación llave en mano: cápsula + concentrador + control integrado. Conexión a 110/220 V sin obras ni infraestructura adicional.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ IN THE BOX ═══ -->
+<div class="sec sec-bg">
+  <div class="sec-inner">
+    <div class="sec-header fade-up">
+      <div class="sec-label">Contenido del suministro</div>
+      <div class="sec-title">Todo lo necesario<br>para empezar.</div>
+    </div>
+    <div class="box-grid fade-up d1">
+      <div class="box-item">
+        <div class="box-item-icon">🫧</div>
+        <div class="box-item-title">Cápsula HP750</div>
+        <div class="box-item-sub">Acero inox. 304 + policarbonato</div>
+      </div>
+      <div class="box-item">
+        <div class="box-item-icon">📦</div>
+        <div class="box-item-title">Sistema todo-en-uno</div>
+        <div class="box-item-sub">Control + concentrador integrado</div>
+      </div>
+      <div class="box-item">
+        <div class="box-item-icon">🖥️</div>
+        <div class="box-item-title">2 Pantallas táctiles 10.1"</div>
+        <div class="box-item-sub">Interna y externa</div>
+      </div>
+      <div class="box-item">
+        <div class="box-item-icon">🎙️</div>
+        <div class="box-item-title">Sistema de interfono</div>
+        <div class="box-item-sub">Comunicación bidireccional</div>
+      </div>
+      <div class="box-item">
+        <div class="box-item-icon">🔧</div>
+        <div class="box-item-title">Kit de instalación</div>
+        <div class="box-item-sub">Tornillería y accesorios</div>
+      </div>
+      <div class="box-item">
+        <div class="box-item-icon">📋</div>
+        <div class="box-item-title">Documentación técnica</div>
+        <div class="box-item-sub">Manual de uso y mantenimiento</div>
+      </div>
+      <div class="box-item">
+        <div class="box-item-icon">🛡️</div>
+        <div class="box-item-title">Certificados CE / FDA</div>
+        <div class="box-item-sub">Homologaciones incluidas</div>
+      </div>
+      <div class="box-item">
+        <div class="box-item-icon">📞</div>
+        <div class="box-item-title">Soporte técnico</div>
+        <div class="box-item-sub">Puesta en marcha y formación</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CERTIFICACIONES ═══ -->
+<div class="sec sec-warm" style="text-align:center;">
+  <div class="sec-inner">
+    <div class="sec-header fade-up" style="text-align:center;">
+      <div class="sec-label">Homologaciones</div>
+      <div class="sec-title">Certificado para uso<br>profesional y clínico.</div>
+    </div>
+    <div class="certs-wrap fade-up d1">
+      <div class="cert">🇪🇺 &nbsp;CE</div>
+      <div class="cert">FDA</div>
+      <div class="cert">ISO 13485</div>
+      <div class="cert">ASME</div>
+      <div class="cert">TÜV</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRICING ═══ -->
+<div class="sec sec-white">
+  <div class="sec-inner">
+    <div class="price-card fade-up">
+      <div class="pc-eyebrow">Precio de referencia</div>
+      <div class="pc-model">HP750</div>
+      <div class="pc-sub">Cámara Hiperbárica Rígida · SoulBaric CellPods</div>
+      <div class="pc-rule"></div>
+      <div class="pc-price">77.171 €</div>
+      <div class="pc-iva">IVA incluido (21%)</div>
+      <div class="pc-siniva">63.777,69 € sin IVA</div>
+      <button class="btn-print" onclick="window.print()">🖨️ &nbsp;Imprimir / Guardar PDF</button>
+      <div class="pc-note">
+        Precio orientativo sujeto a configuración y personalización final.<br>
+        Consultar disponibilidad, plazos de entrega y opciones de financiación con SoulBaric.
+      </div>
+      <!-- Firma de marca en el precio -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:32px;padding-top:24px;border-top:1px solid rgba(200,153,104,0.15);">
+        <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="46" stroke="#C89968" stroke-width="2.2"/>
+          <line x1="50" y1="4" x2="50" y2="36" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="50" y1="64" x2="50" y2="96" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="4" y1="50" x2="36" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <line x1="64" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="1.1" opacity="0.5"/>
+          <circle cx="43" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+          <circle cx="57" cy="50" r="7" fill="none" stroke="#C89968" stroke-width="1.6"/>
+          <circle cx="50" cy="50" r="3.5" fill="#C89968"/>
+          <circle cx="50" cy="18" r="4.5" fill="#C89968"/>
+          <circle cx="37" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="63" cy="27" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="50" cy="82" r="4.5" fill="#C89968"/>
+          <circle cx="37" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="63" cy="73" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="18" cy="50" r="4.5" fill="#C89968"/>
+          <circle cx="27" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="27" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="82" cy="50" r="4.5" fill="#C89968"/>
+          <circle cx="73" cy="37" r="3.5" fill="#C89968" opacity="0.8"/>
+          <circle cx="73" cy="63" r="3.5" fill="#C89968" opacity="0.8"/>
+        </svg>
+        <div style="text-align:left;">
+          <div style="font-size:12px;font-weight:900;color:var(--gold);letter-spacing:2px;text-transform:uppercase;line-height:1;">SoulBaric</div>
+          <div style="font-size:7px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-top:2px;">CellPods</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div>© 2025 SoulBaric · Plataforma Profesional de Inversión Hiperbárica</div>
+  <div class="footer-links">
+    <a href="home.html">Inicio</a>
+    <a href="catalogo.html">Catálogo</a>
+    <a href="index.html">Calculadora</a>
+    <a href="propuestas.html">Propuestas</a>
+  </div>
+</footer>
+
+<script src="asistente-chat.js"></script>
+<script>
+// ─── IMAGE SLOT ──────────────────────────────────────────────────
+function loadImage(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => showImage(e.target.result);
+  reader.readAsDataURL(input.files[0]);
+}
+function handleDrop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = ev => showImage(ev.target.result);
+  reader.readAsDataURL(file);
+}
+function showImage(src) {
+  document.getElementById('imgPlaceholder').style.display = 'none';
+  const slot = document.querySelector('.image-slot');
+  let img = slot.querySelector('img');
+  if (!img) { img = document.createElement('img'); slot.appendChild(img); }
+  img.src = src;
+}
+
+// ─── SCROLL ANIMATIONS ───────────────────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

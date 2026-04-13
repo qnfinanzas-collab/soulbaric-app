@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SoulBaric — Gestor de Propuestas</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="confirm-delete.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #C89968;
+      --primary-d: #8B6F47;
+      --accent: #D4A574;
+      --black: #1a1a1a;
+      --black-light: #2d2d2d;
+      --bg: #faf8f6;
+      --bg-dark: #f0ebe5;
+      --card: #ffffff;
+      --border: #e8e4df;
+      --text: #3d3530;
+      --text-m: #8b7d76;
+      --green: #4caf50;
+      --red: #f44336;
+      --radius: 8px;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ HEADER ═══ */
+    header {
+      background: linear-gradient(135deg, var(--black) 0%, var(--black-light) 100%);
+      border-bottom: 4px solid var(--primary);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ CONTAINER ═══ */
+    .container {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      min-height: calc(100vh - 48px);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ SIDEBAR ═══ */
+    .sidebar {
+      background: var(--bg-dark);
+      border-right: 1px solid var(--border);
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-item {
+      padding: 9px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: all 0.2s;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-d) 100%);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 6px rgba(200, 153, 104, 0.3);
+    }
+
+    .nav-item.active {
+      box-shadow: 0 2px 8px rgba(200, 153, 104, 0.4);
+    }
+
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 5px;
+      padding: 8px;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    .kpi-label {
+      color: var(--text-m);
+      margin-bottom: 2px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ MAIN ═══ */
+    .main {
+      padding: 16px;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .main.active {
+      display: block;
+    }
+
+    .main h2 {
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ SECTION ═══ */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      margin-bottom: 16px;
+    }
+
+    .section-header {
+      background: linear-gradient(135deg, var(--black-light) 0%, var(--black) 100%);
+      color: var(--primary);
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .section-body {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .section-body.full {
+      grid-template-columns: 1fr;
+    }
+
+    .section-body.grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ INPUTS ═══ */
+    label {
+      display: block;
+      font-size: 10px;
+      color: var(--text-m);
+      margin-bottom: 2px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text);
+      padding: 6px 8px;
+      font-size: 11px;
+      transition: all 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(200, 153, 104, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ TABLE ═══ */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    thead th {
+      background: var(--bg-dark);
+      padding: 8px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+      text-transform: uppercase;
+    }
+
+    tbody td {
+      padding: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:hover {
+      background: rgba(200, 153, 104, 0.05);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ BUTTONS ═══ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.3s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-d) 100%);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(200, 153, 104, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 12px rgba(200, 153, 104, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-dark);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--green) 0%, #45a049 100%);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--red) 0%, #d84e42 100%);
+      color: #fff;
+    }
+
+    .btn-small {
+      padding: 5px 10px;
+      font-size: 9px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ BUTTONS GRID ═══ */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-grid.full {
+      grid-template-columns: 1fr;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ BADGE ═══ */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .badge-success {
+      background: rgba(76, 175, 80, 0.15);
+      color: var(--green);
+    }
+
+    .badge-warning {
+      background: rgba(200, 153, 104, 0.15);
+      color: var(--primary-d);
+    }
+
+    .badge-danger {
+      background: rgba(244, 67, 54, 0.15);
+      color: var(--red);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ MODAL ═══ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-m);
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════ RESPONSIVE ═══ */
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 8px;
+      }
+      .section-body {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="font-size: 20px;">◉</div>
+  <h1>SoulBaric — Gestor de Propuestas</h1>
+</header>
+
+<div class="container">
+
+  <!-- ════════════════════════════════════════ SIDEBAR ════════════════ -->
+  <aside class="sidebar">
+    <button class="nav-item active" onclick="showView('candidatos')">👥 Candidatos</button>
+    <button class="nav-item" onclick="showView('propuestas')">📋 Propuestas</button>
+    <button class="nav-item" onclick="showView('asignacion')">🎯 Asignación</button>
+    <button class="nav-item" onclick="showView('seguimiento')">📊 Seguimiento</button>
+    <button class="nav-item" onclick="showView('importar')">📥 Importar</button>
+
+    <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border);">
+
+    <div style="font-size: 10px; color: var(--text-m); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px;">Estadísticas</div>
+    <div class="kpi">
+      <div class="kpi-label">Candidatos</div>
+      <div class="kpi-value" id="statCandidatos">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Propuestas</div>
+      <div class="kpi-value" id="statPropuestas">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Asignadas</div>
+      <div class="kpi-value" id="statAsignadas">0</div>
+    </div>
+  </aside>
+
+  <!-- ════════════════════════════════════════ MAIN ════════════════════ -->
+  <main class="main active" id="view-candidatos">
+    <h2>👥 Gestión de Candidatos</h2>
+
+    <div class="btn-grid grid-3">
+      <button class="btn btn-primary" onclick="openModal('modal-nuevo-candidato')">➕ Nuevo</button>
+      <button class="btn btn-secondary" onclick="exportarCandidatos()">📤 Exportar CSV</button>
+      <button class="btn btn-secondary" onclick="openModal('modal-proyectos')">📦 Proyectos</button>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Lista de Candidatos</div>
+      <div style="overflow-x: auto;">
+        <table id="candidatos-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Inversión</th>
+              <th>Perfil</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="candidatos-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <main class="main" id="view-propuestas">
+    <h2>📋 Creador de Propuestas</h2>
+
+    <div class="btn-grid grid-3">
+      <button class="btn btn-primary" onclick="openModal('modal-nueva-propuesta')">➕ Nueva</button>
+      <button class="btn btn-secondary" onclick="openModal('modal-proyectos')">📦 Proyectos</button>
+      <button class="btn btn-secondary" onclick="exportProyectos()">📤 Exportar</button>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Lista de Propuestas</div>
+      <div style="overflow-x: auto;">
+        <table id="propuestas-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cámara</th>
+              <th>Inversión</th>
+              <th>ROI</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="propuestas-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <main class="main" id="view-asignacion">
+    <h2>🎯 Asignación de Propuestas</h2>
+
+    <div class="section">
+      <div class="section-header">Asignación Manual</div>
+      <div class="section-body full">
+        <div>
+          <label>Selecciona Candidato</label>
+          <select id="select-candidato" style="margin-bottom: 10px;"></select>
+        </div>
+        <div>
+          <label>Selecciona Propuesta</label>
+          <select id="select-propuesta" style="margin-bottom: 10px;"></select>
+        </div>
+        <button class="btn btn-primary" onclick="asignarPropuesta()">🎯 Asignar</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Asignaciones Activas</div>
+      <div id="asignaciones-container" style="padding: 12px;"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Matching Automático</div>
+      <div class="section-body full">
+        <p style="font-size: 11px; color: var(--text-m); margin-bottom: 8px;">Asigna propuestas automáticamente según perfil e inversión.</p>
+        <button class="btn btn-success" onclick="matchingAutomatico()">⚡ Ejecutar Matching</button>
+      </div>
+    </div>
+  </main>
+
+  <main class="main" id="view-seguimiento">
+    <h2>📊 Seguimiento y Reportes</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+      <div class="kpi" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);">
+        <div class="kpi-label">Enviadas</div>
+        <div class="kpi-value" id="kpi-enviadas" style="color: var(--green);">0</div>
+      </div>
+      <div class="kpi" style="background: linear-gradient(135deg, rgba(200, 153, 104, 0.1) 0%, rgba(200, 153, 104, 0.05) 100%);">
+        <div class="kpi-label">Visualizadas</div>
+        <div class="kpi-value" id="kpi-vistas">0</div>
+      </div>
+      <div class="kpi" style="background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.05) 100%);">
+        <div class="kpi-label">En Negociación</div>
+        <div class="kpi-value" id="kpi-negociacion" style="color: #2196F3;">0</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Historial de Asignaciones</div>
+      <div id="historial-container" style="padding: 12px;"></div>
+    </div>
+  </main>
+
+  <main class="main" id="view-importar">
+    <h2>📥 Importar Candidatos CSV</h2>
+
+    <div class="section">
+      <div class="section-header">Formato esperado</div>
+      <div class="section-body full" style="background: var(--bg); border: 1px dashed var(--border); border-radius: 5px; font-size: 11px;">
+        <code style="word-break: break-all;">nombre,email,inversion,perfil</code><br>
+        <span style="color: var(--text-m); margin-top: 4px; display: block;">Ejemplo: Juan Pérez,juan@example.com,50000,conservative</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">Cargar archivo</div>
+      <div class="section-body full">
+        <label>Selecciona archivo CSV</label>
+        <input type="file" id="csv-file" accept=".csv" style="margin-bottom: 10px;">
+        <button class="btn btn-primary" onclick="importarCSV()">📥 Importar</button>
+        <div id="import-result" style="margin-top: 12px;"></div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ════════════════════════════════════════ MODALES ════════════════════ -->
+
+<!-- NUEVO CANDIDATO -->
+<div id="modal-nuevo-candidato" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>Nuevo Candidato Inversor</span>
+      <button class="modal-close" onclick="closeModal('modal-nuevo-candidato')">✕</button>
+    </div>
+
+    <label>Nombre completo *</label>
+    <input type="text" id="cand-nombre" placeholder="Juan Pérez García">
+
+    <label style="margin-top: 8px;">Email *</label>
+    <input type="email" id="cand-email" placeholder="juan@example.com">
+
+    <label style="margin-top: 8px;">Teléfono</label>
+    <input type="text" id="cand-telefono" placeholder="+34 666 555 444">
+
+    <label style="margin-top: 8px;">Monto a Invertir (€) *</label>
+    <input type="number" id="cand-inversion" placeholder="50000" min="0">
+
+    <label style="margin-top: 8px;">Perfil *</label>
+    <select id="cand-perfil">
+      <option value="">-- Seleccionar --</option>
+      <option value="conservative">Conservador (bajo riesgo)</option>
+      <option value="moderate">Moderado (riesgo medio)</option>
+      <option value="aggressive">Agresivo (alto riesgo)</option>
+    </select>
+
+    <label style="margin-top: 8px;">Sector de Interés</label>
+    <select id="cand-sector">
+      <option value="wellness">Wellness/Salud</option>
+      <option value="hospitality">Hostelería</option>
+      <option value="medical">Médico</option>
+      <option value="fitness">Fitness</option>
+    </select>
+
+    <label style="margin-top: 8px;">Notas</label>
+    <textarea id="cand-notas" placeholder="Información adicional..."></textarea>
+
+    <button class="btn btn-primary" onclick="guardarCandidato()" style="margin-top: 12px;">✓ Guardar</button>
+  </div>
+</div>
+
+<!-- NUEVA PROPUESTA -->
+<div id="modal-nueva-propuesta" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>Nueva Propuesta de Inversión</span>
+      <button class="modal-close" onclick="closeModal('modal-nueva-propuesta')">✕</button>
+    </div>
+
+    <label>Nombre de la Propuesta *</label>
+    <input type="text" id="prop-nombre" placeholder="Resort Sol + Cámara 2P">
+
+    <label style="margin-top: 8px;">Tipo de Cámara *</label>
+    <select id="prop-camara">
+      <option value="">-- Seleccionar --</option>
+      <option value="1plaza">1 Plaza</option>
+      <option value="2plazas">2 Plazas</option>
+      <option value="4plazas">4 Plazas</option>
+    </select>
+
+    <label style="margin-top: 8px;">Ubicación *</label>
+    <input type="text" id="prop-ubicacion" placeholder="Hotel Gran Sol, Málaga">
+
+    <label style="margin-top: 8px;">Inversión (€) *</label>
+    <input type="number" id="prop-inversion" placeholder="30000" min="0">
+
+    <label style="margin-top: 8px;">% Beneficio Inversor *</label>
+    <input type="number" id="prop-porcentaje" placeholder="15" min="1" max="100" step="0.5">
+
+    <label style="margin-top: 8px;">Ocupación Media (%) *</label>
+    <input type="number" id="prop-ocupacion" placeholder="70" min="0" max="100">
+
+    <label style="margin-top: 8px;">ROI Esperado 5 Años (%)</label>
+    <input type="number" id="prop-roi" placeholder="480" min="0" step="1" readonly>
+
+    <button class="btn btn-primary" onclick="guardarPropuesta()" style="margin-top: 12px;">✓ Guardar</button>
+  </div>
+</div>
+
+<!-- PROYECTOS GUARDADOS -->
+<div id="modal-proyectos" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>Proyectos Guardados</span>
+      <button class="modal-close" onclick="closeModal('modal-proyectos')">✕</button>
+    </div>
+
+    <p style="font-size: 11px; color: var(--text-m); margin-bottom: 12px;">Selecciona un proyecto para cargar sus datos automáticamente.</p>
+    <div id="proyectos-lista" style="margin-bottom: 12px;"></div>
+    <button class="btn btn-secondary" onclick="closeModal('modal-proyectos')" style="width: 100%;">Cerrar</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// DATABASE & INIT
+// ═══════════════════════════════════════════════════════════════════════════
+let DB = { candidatos: [], propuestas: [], asignaciones: [], historial: [] };
+
+function loadDB() {
+  const saved = localStorage.getItem('soulbaric_db');
+  if (saved) DB = JSON.parse(saved);
+}
+
+function saveDB() {
+  localStorage.setItem('soulbaric_db', JSON.stringify(DB));
+}
+
+function showView(view) {
+  document.querySelectorAll('.main').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  event.target.classList.add('active');
+  if (view === 'candidatos') renderCandidatos();
+  if (view === 'propuestas') { renderPropuestas(); loadProyectos(); }
+  if (view === 'asignacion') renderAsignacion();
+  if (view === 'seguimiento') renderSeguimiento();
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+function updateStats() {
+  document.getElementById('statCandidatos').textContent = DB.candidatos.length;
+  document.getElementById('statPropuestas').textContent = DB.propuestas.length;
+  document.getElementById('statAsignadas').textContent = DB.asignaciones.filter(a => a.estado === 'asignada').length;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CANDIDATOS
+// ═══════════════════════════════════════════════════════════════════════════
+function guardarCandidato() {
+  const candidato = {
+    id: Date.now(),
+    nombre: document.getElementById('cand-nombre').value,
+    email: document.getElementById('cand-email').value,
+    telefono: document.getElementById('cand-telefono').value,
+    inversion: parseFloat(document.getElementById('cand-inversion').value),
+    perfil: document.getElementById('cand-perfil').value,
+    sector: document.getElementById('cand-sector').value,
+    notas: document.getElementById('cand-notas').value,
+    estado: 'nuevo'
+  };
+  if (!candidato.nombre || !candidato.email || !candidato.inversion) { alert('⚠️ Completa campos obligatorios'); return; }
+  DB.candidatos.push(candidato);
+  saveDB();
+  updateStats();
+  document.getElementById('cand-nombre').value = '';
+  document.getElementById('cand-email').value = '';
+  closeModal('modal-nuevo-candidato');
+  renderCandidatos();
+  alert('✅ Candidato guardado');
+}
+
+function renderCandidatos() {
+  const tbody = document.getElementById('candidatos-tbody');
+  tbody.innerHTML = '';
+  DB.candidatos.forEach((c, idx) => {
+    const row = `
+      <tr>
+        <td><strong>${c.nombre}</strong></td>
+        <td><small>${c.email}</small></td>
+        <td>€${c.inversion.toLocaleString('es-ES')}</td>
+        <td><span class="badge badge-${c.perfil === 'conservative' ? 'success' : c.perfil === 'moderate' ? 'warning' : 'danger'}">${c.perfil}</span></td>
+        <td>
+          <button class="btn btn-small btn-secondary" onclick="eliminarCandidato(${idx})">✕</button>
+        </td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
+  });
+  updateSelectores();
+}
+
+function eliminarCandidato(idx) {
+  const nombre = DB.candidatos[idx]?.nombre || 'este candidato';
+  confirmDelete(nombre, () => {
+    DB.candidatos.splice(idx, 1);
+    saveDB();
+    updateStats();
+    renderCandidatos();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PROPUESTAS
+// ═══════════════════════════════════════════════════════════════════════════
+function guardarPropuesta() {
+  const propuesta = {
+    id: Date.now(),
+    nombre: document.getElementById('prop-nombre').value,
+    camara: document.getElementById('prop-camara').value,
+    ubicacion: document.getElementById('prop-ubicacion').value,
+    inversion: parseFloat(document.getElementById('prop-inversion').value),
+    porcentaje: parseFloat(document.getElementById('prop-porcentaje').value),
+    ocupacion: parseFloat(document.getElementById('prop-ocupacion').value),
+    roi: calcularROI(parseFloat(document.getElementById('prop-inversion').value), parseFloat(document.getElementById('prop-porcentaje').value), parseFloat(document.getElementById('prop-ocupacion').value))
+  };
+  if (!propuesta.nombre || !propuesta.camara || !propuesta.inversion) { alert('⚠️ Completa campos obligatorios'); return; }
+  DB.propuestas.push(propuesta);
+  saveDB();
+  updateStats();
+  document.getElementById('prop-nombre').value = '';
+  closeModal('modal-nueva-propuesta');
+  renderPropuestas();
+  alert('✅ Propuesta guardada');
+}
+
+function calcularROI(inversion, porcentaje, ocupacion) {
+  const retornoMensualBase = (inversion / 12) * (porcentaje / 100) * (ocupacion / 100) * 2;
+  const retornoAnual = retornoMensualBase * 12;
+  return Math.round(((retornoAnual * 5 - inversion) / inversion) * 100);
+}
+
+function renderPropuestas() {
+  const tbody = document.getElementById('propuestas-tbody');
+  tbody.innerHTML = '';
+  DB.propuestas.forEach((p, idx) => {
+    const row = `
+      <tr>
+        <td><strong>${p.nombre}</strong></td>
+        <td><small>${p.camara}</small></td>
+        <td>€${p.inversion.toLocaleString('es-ES')}</td>
+        <td><span class="badge badge-success">${p.roi}%</span></td>
+        <td>
+          <button class="btn btn-small btn-danger" onclick="eliminarPropuesta(${idx})">✕</button>
+        </td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
+  });
+  updateSelectores();
+}
+
+function eliminarPropuesta(idx) {
+  const nombre = DB.propuestas[idx]?.nombre || 'esta propuesta';
+  confirmDelete(nombre, () => {
+    DB.propuestas.splice(idx, 1);
+    saveDB();
+    updateStats();
+    renderPropuestas();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ASIGNACION & MATCHING
+// ═══════════════════════════════════════════════════════════════════════════
+function updateSelectores() {
+  const selCand = document.getElementById('select-candidato');
+  selCand.innerHTML = '<option value="">-- Seleccionar candidato --</option>';
+  DB.candidatos.forEach(c => {
+    selCand.innerHTML += `<option value="${c.id}">${c.nombre} (€${c.inversion})</option>`;
+  });
+  const selProp = document.getElementById('select-propuesta');
+  selProp.innerHTML = '<option value="">-- Seleccionar propuesta --</option>';
+  DB.propuestas.forEach(p => {
+    selProp.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+  });
+}
+
+function asignarPropuesta() {
+  const candId = document.getElementById('select-candidato').value;
+  const propId = document.getElementById('select-propuesta').value;
+  if (!candId || !propId) { alert('⚠️ Selecciona candidato y propuesta'); return; }
+  const candidato = DB.candidatos.find(c => c.id == candId);
+  const propuesta = DB.propuestas.find(p => p.id == propId);
+  const asignacion = {
+    id: Date.now(),
+    candidatoId: candId,
+    propuestaId: propId,
+    candidatoNombre: candidato.nombre,
+    propuestaNombre: propuesta.nombre,
+    estado: 'asignada'
+  };
+  DB.asignaciones.push(asignacion);
+  candidato.estado = 'asignado';
+  saveDB();
+  updateStats();
+  renderAsignacion();
+  alert(`✅ Propuesta asignada a ${candidato.nombre}`);
+}
+
+function renderAsignacion() {
+  const container = document.getElementById('asignaciones-container');
+  if (DB.asignaciones.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-m); font-size: 11px;">Sin asignaciones aún.</p>';
+    return;
+  }
+  container.innerHTML = '';
+  DB.asignaciones.forEach((a, idx) => {
+    const html = `
+      <div style="background: var(--bg); padding: 8px; border-radius: 5px; margin-bottom: 6px; border-left: 3px solid var(--primary); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong style="color: var(--primary);">${a.candidatoNombre}</strong><br>
+          <small style="color: var(--text-m);">← ${a.propuestaNombre}</small>
+        </div>
+        <button class="btn btn-small btn-danger" onclick="eliminarAsignacion(${idx})">✕</button>
+      </div>
+    `;
+    container.innerHTML += html;
+  });
+}
+
+function eliminarAsignacion(idx) {
+  const a = DB.asignaciones[idx];
+  const label = a ? `Asignación: ${a.candidatoNombre} → ${a.propuestaNombre}` : 'esta asignación';
+  confirmDelete(label, () => {
+    DB.asignaciones.splice(idx, 1);
+    saveDB();
+    updateStats();
+    renderAsignacion();
+  });
+}
+
+function matchingAutomatico() {
+  let matches = 0;
+  DB.candidatos.forEach(candidato => {
+    if (candidato.estado !== 'nuevo') return;
+    const propuesta = DB.propuestas.find(p => {
+      const compatible = p.inversion <= candidato.inversion * 1.5;
+      const perfilMatch = (candidato.perfil === 'conservative' && p.roi < 200) ||
+                         (candidato.perfil === 'moderate' && p.roi >= 200 && p.roi <= 500) ||
+                         (candidato.perfil === 'aggressive' && p.roi > 500);
+      return compatible && perfilMatch;
+    });
+    if (propuesta) {
+      const asignacion = {
+        id: Date.now() + matches,
+        candidatoId: candidato.id,
+        propuestaId: propuesta.id,
+        candidatoNombre: candidato.nombre,
+        propuestaNombre: propuesta.nombre,
+        estado: 'asignada'
+      };
+      DB.asignaciones.push(asignacion);
+      candidato.estado = 'asignado';
+      matches++;
+    }
+  });
+  saveDB();
+  updateStats();
+  renderAsignacion();
+  alert(`✅ ${matches} propuesta(s) asignada(s)`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PROYECTOS
+// ═══════════════════════════════════════════════════════════════════════════
+function loadProyectos() {
+  const proyectos = JSON.parse(localStorage.getItem('soulbaric_projects')) || [];
+  const container = document.getElementById('proyectos-lista');
+  container.innerHTML = '';
+  if (proyectos.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-m); font-size: 11px;">No hay proyectos guardados. Crea uno en la calculadora.</p>';
+    return;
+  }
+  proyectos.forEach((proj) => {
+    const html = `
+      <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 10px; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong style="color: var(--primary);">${proj.name}</strong>
+            <div style="font-size: 10px; color: var(--text-m);">🏢 ${proj.chamber.capacity}P • ROI ${Math.round(proj.scenario.roi)}% • €${proj.investment.total.toLocaleString('es-ES')}</div>
+          </div>
+          <button class="btn btn-small btn-primary" onclick="usarProyecto(${proj.id})">Usar</button>
+        </div>
+      </div>
+    `;
+    container.innerHTML += html;
+  });
+}
+
+function usarProyecto(projectId) {
+  const proyectos = JSON.parse(localStorage.getItem('soulbaric_projects')) || [];
+  const proyecto = proyectos.find(p => p.id === projectId);
+  if (!proyecto) { alert('Proyecto no encontrado'); return; }
+  document.getElementById('prop-nombre').value = proyecto.name;
+  document.getElementById('prop-camara').value = proyecto.chamber.capacity + 'plaza' + (proyecto.chamber.capacity > 1 ? 's' : '');
+  document.getElementById('prop-ubicacion').value = proyecto.location.name || proyecto.location.type;
+  document.getElementById('prop-inversion').value = proyecto.investment.total;
+  document.getElementById('prop-porcentaje').value = proyecto.investment.investorPct;
+  document.getElementById('prop-ocupacion').value = Math.round(proyecto.monthlyOccupancy.reduce((a,b)=>a+b)/12);
+  document.getElementById('prop-roi').value = Math.round(proyecto.scenario.roi);
+  closeModal('modal-proyectos');
+  openModal('modal-nueva-propuesta');
+  alert('✅ Proyecto cargado');
+}
+
+function exportProyectos() {
+  const proyectos = JSON.parse(localStorage.getItem('soulbaric_projects')) || [];
+  if (proyectos.length === 0) { alert('No hay proyectos'); return; }
+  const data = { exportDate: new Date().toLocaleString('es-ES'), proyectos: proyectos };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SoulBaric_Proyectos_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SEGUIMIENTO
+// ═══════════════════════════════════════════════════════════════════════════
+function renderSeguimiento() {
+  document.getElementById('kpi-enviadas').textContent = DB.asignaciones.length;
+  document.getElementById('kpi-vistas').textContent = DB.asignaciones.filter(a => a.visto).length;
+  document.getElementById('kpi-negociacion').textContent = DB.asignaciones.filter(a => a.respuesta === 'interes').length;
+  const historialContainer = document.getElementById('historial-container');
+  if (DB.historial.length === 0) {
+    historialContainer.innerHTML = '<p style="color: var(--text-m); font-size: 11px;">Sin historial.</p>';
+    return;
+  }
+  historialContainer.innerHTML = '';
+  DB.historial.slice().reverse().forEach(h => {
+    const html = `
+      <div style="background: var(--bg); padding: 8px; border-radius: 5px; margin-bottom: 6px; border-left: 3px solid var(--primary);">
+        <strong style="color: var(--primary);">📋 ${h.tipo === 'asignacion' ? 'Propuesta Asignada' : 'Evento'}</strong>
+        ${h.asignacion ? `<div style="font-size: 10px; color: var(--text-m);">${h.asignacion.candidatoNombre} ← ${h.asignacion.propuestaNombre}</div>` : ''}
+      </div>
+    `;
+    historialContainer.innerHTML += html;
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// IMPORTAR CSV
+// ═══════════════════════════════════════════════════════════════════════════
+function importarCSV() {
+  const file = document.getElementById('csv-file').files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const lines = e.target.result.split('\n');
+    let importados = 0, errores = 0;
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const [nombre, email, inversion, perfil] = lines[i].split(',').map(x => x.trim());
+      if (!nombre || !email || !inversion) { errores++; continue; }
+      DB.candidatos.push({
+        id: Date.now() + i,
+        nombre, email, inversion: parseFloat(inversion),
+        perfil: perfil || 'moderate',
+        estado: 'nuevo'
+      });
+      importados++;
+    }
+    saveDB();
+    updateStats();
+    document.getElementById('import-result').innerHTML = `<div style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50; padding: 8px; border-radius: 5px; color: #4caf50; font-size: 11px;">✅ ${importados} importado(s) • ${errores} error(es)</div>`;
+    renderCandidatos();
+  };
+  reader.readAsText(file);
+}
+
+function exportarCandidatos() {
+  let csv = 'nombre,email,inversion,perfil\n';
+  DB.candidatos.forEach(c => {
+    csv += `"${c.nombre}","${c.email}","${c.inversion}","${c.perfil}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SoulBaric_Candidatos_${new Date().toLocaleDateString('es-ES')}.csv`;
+  a.click();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
+loadDB();
+updateStats();
+</script>
+<script src="asistente-chat.js"></script>
+</body>
+</html>
