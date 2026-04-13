@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoulBaric — Recuperar datos</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 40px 24px;
+      min-height: 100vh;
+    }
+    h1 { color: #C89968; font-size: 22px; margin-bottom: 8px; }
+    p  { color: #888; font-size: 13px; margin-bottom: 32px; }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(200,153,104,0.2);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+    .card h2 { font-size: 14px; color: #C89968; margin-bottom: 6px; }
+    .found   { color: #81c784; font-size: 13px; }
+    .empty   { color: #e57373; font-size: 13px; }
+    .count   { font-weight: 700; font-size: 18px; color: #fff; }
+    .actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-export {
+      background: #C89968;
+      color: #1a1a1a;
+    }
+    .btn-import {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-home {
+      background: #2e7d32;
+      color: #fff;
+    }
+    textarea {
+      width: 100%;
+      margin-top: 16px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      padding: 12px;
+      font-family: monospace;
+      resize: vertical;
+      min-height: 120px;
+    }
+    .section-title {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #666;
+      margin: 28px 0 12px;
+    }
+    #importArea { display: none; }
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 16px;
+      display: none;
+    }
+    .alert.ok    { background: rgba(129,199,132,0.15); border: 1px solid #81c784; color: #81c784; }
+    .alert.error { background: rgba(229,115,115,0.15); border: 1px solid #e57373; color: #e57373; }
+  </style>
+</head>
+<body>
+
+  <h1>🔍 Diagnóstico y recuperación de datos</h1>
+  <p>Esta página analiza qué información tienes guardada en este navegador.</p>
+
+  <div class="section-title">Estado de los datos</div>
+  <div id="results"></div>
+
+  <div class="actions" id="actions"></div>
+
+  <div id="exportArea"></div>
+  <div id="importArea">
+    <div class="section-title">Pega aquí el archivo de backup</div>
+    <textarea id="importText" placeholder='Pega aquí el contenido del archivo .json de backup...'></textarea>
+    <div style="margin-top:12px">
+      <button class="btn-home" onclick="importData()">Importar datos</button>
+    </div>
+    <div class="alert ok"    id="alertOk">✅ Datos importados correctamente. Redirigiendo...</div>
+    <div class="alert error" id="alertErr">❌ Error al importar. Comprueba que el archivo es correcto.</div>
+  </div>
+
+<script>
+const KEYS = [
+  { key: 'soulbaric_candidatos',     label: 'Candidatos / Clientes' },
+  { key: 'soulbaric_candidates',     label: 'Candidates (alt)' },
+  { key: 'soulbaric_db',             label: 'Base de datos general' },
+  { key: 'soulbaric_projects',       label: 'Proyectos' },
+  { key: 'soulbaric_proposals',      label: 'Propuestas' },
+  { key: 'soulbaric_presupuestos',   label: 'Presupuestos' },
+  { key: 'soulbaric_configuraciones',label: 'Configuraciones' },
+  { key: 'soulbaric_operativa',      label: 'Operativa' },
+  { key: 'sb_api_key',               label: 'API Key' },
+];
+
+let found = {};
+let totalRecords = 0;
+let hasData = false;
+
+// Analizar localStorage
+KEYS.forEach(({ key, label }) => {
+  const raw = localStorage.getItem(key);
+  const el  = document.createElement('div');
+  el.className = 'card';
+
+  if (raw) {
+    hasData = true;
+    found[key] = raw;
+    let count = '';
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        count = parsed.length;
+        totalRecords += parsed.length;
+      } else if (typeof parsed === 'object') {
+        count = Object.keys(parsed).length;
+        totalRecords += Object.keys(parsed).length;
+      }
+    } catch(e) { count = '—'; }
+
+    el.innerHTML = `
+      <h2>${label}</h2>
+      <div class="found">✅ Encontrado — <span class="count">${count}</span> registros</div>
+    `;
+  } else {
+    el.innerHTML = `
+      <h2>${label}</h2>
+      <div class="empty">❌ Sin datos en este navegador</div>
+    `;
+  }
+  document.getElementById('results').appendChild(el);
+});
+
+// Botones de acción
+const actions = document.getElementById('actions');
+if (hasData) {
+  actions.innerHTML = `
+    <button class="btn-export" onclick="exportData()">⬇ Exportar backup (.json)</button>
+    <button class="btn-home"   onclick="location.href='/home.html'">→ Ir a la app</button>
+  `;
+  // Resumen
+  const summary = document.createElement('div');
+  summary.innerHTML = `<p style="margin-top:16px;color:#81c784;font-size:14px">✅ Se encontraron <strong>${totalRecords}</strong> registros en este navegador. Tus datos están aquí.</p>`;
+  document.getElementById('results').prepend(summary);
+} else {
+  actions.innerHTML = `
+    <button class="btn-import" onclick="showImport()">⬆ Tengo un backup para restaurar</button>
+    <button class="btn-home"   onclick="location.href='/home.html'">→ Ir a la app</button>
+  `;
+  const summary = document.createElement('div');
+  summary.innerHTML = `<p style="margin-top:16px;color:#e57373;font-size:14px">❌ No hay datos guardados en este navegador para esta URL. Los datos pueden estar en otro dispositivo o navegador.</p>`;
+  document.getElementById('results').prepend(summary);
+}
+
+function exportData() {
+  const backup = {};
+  Object.entries(found).forEach(([k, v]) => {
+    try { backup[k] = JSON.parse(v); }
+    catch { backup[k] = v; }
+  });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'soulbaric-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function showImport() {
+  document.getElementById('importArea').style.display = 'block';
+  document.getElementById('importArea').scrollIntoView({ behavior: 'smooth' });
+}
+
+function importData() {
+  try {
+    const text = document.getElementById('importText').value.trim();
+    if (!text) { showAlert('error', 'El campo está vacío.'); return; }
+    const data = JSON.parse(text);
+    Object.entries(data).forEach(([k, v]) => {
+      localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+    });
+    document.getElementById('alertOk').style.display = 'block';
+    setTimeout(() => location.href = '/home.html', 2000);
+  } catch(e) {
+    document.getElementById('alertErr').style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
