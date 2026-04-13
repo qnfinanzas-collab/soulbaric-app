@@ -155,24 +155,20 @@ KEYS.forEach(({ key, label }) => {
 
 // Botones de acción
 const actions = document.getElementById('actions');
+// Siempre mostrar ambas opciones
+actions.innerHTML = `
+  <button class="btn-export" onclick="exportData()">⬇ Exportar backup (.json)</button>
+  <button class="btn-import" onclick="showImport()">⬆ Importar / Restaurar backup</button>
+  <button class="btn-home"   onclick="location.href='/home.html'">→ Ir a la app</button>
+`;
+
+const summary = document.createElement('div');
 if (hasData) {
-  actions.innerHTML = `
-    <button class="btn-export" onclick="exportData()">⬇ Exportar backup (.json)</button>
-    <button class="btn-home"   onclick="location.href='/home.html'">→ Ir a la app</button>
-  `;
-  // Resumen
-  const summary = document.createElement('div');
-  summary.innerHTML = `<p style="margin-top:16px;color:#81c784;font-size:14px">✅ Se encontraron <strong>${totalRecords}</strong> registros en este navegador. Tus datos están aquí.</p>`;
-  document.getElementById('results').prepend(summary);
+  summary.innerHTML = `<p style="margin-top:16px;color:#81c784;font-size:14px">✅ Se encontraron <strong>${totalRecords}</strong> registros en este navegador.</p>`;
 } else {
-  actions.innerHTML = `
-    <button class="btn-import" onclick="showImport()">⬆ Tengo un backup para restaurar</button>
-    <button class="btn-home"   onclick="location.href='/home.html'">→ Ir a la app</button>
-  `;
-  const summary = document.createElement('div');
-  summary.innerHTML = `<p style="margin-top:16px;color:#e57373;font-size:14px">❌ No hay datos guardados en este navegador para esta URL. Los datos pueden estar en otro dispositivo o navegador.</p>`;
-  document.getElementById('results').prepend(summary);
+  summary.innerHTML = `<p style="margin-top:16px;color:#e57373;font-size:14px">❌ No hay datos en este navegador. Importa un backup para restaurarlos.</p>`;
 }
+document.getElementById('results').prepend(summary);
 
 function exportData() {
   const backup = {};
