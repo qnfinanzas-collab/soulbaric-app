@@ -2697,6 +2697,25 @@ function saveProject() {
   let projects = getProjects();
   projects.push(project);
   localStorage.setItem('soulbaric_projects', JSON.stringify(projects));
+
+  // ── Asociar proyecto al candidato CRM si está seleccionado ──
+  if (window.crmSelectedCandidatoId) {
+    const cands = getCRMCandidatos();
+    const idx = cands.findIndex(c => c.id === window.crmSelectedCandidatoId);
+    if (idx >= 0) {
+      if (!cands[idx].proyectosAsociados) cands[idx].proyectosAsociados = [];
+      // Evitar duplicados por nombre
+      const yaExiste = cands[idx].proyectosAsociados.some(p => p.id === project.id);
+      if (!yaExiste) {
+        cands[idx].proyectosAsociados.push({ id: project.id, nombre: project.name, fecha: project.createdDate });
+      }
+      // Avanzar etapa automáticamente si está en prospecto → contactado
+      if (cands[idx].etapa === 'prospecto') cands[idx].etapa = 'contactado';
+      localStorage.setItem('soulbaric_candidatos', JSON.stringify(cands));
+      mostrarToast('🔗 Proyecto vinculado a ' + cands[idx].empresa + ' en el CRM', '#2e7d32');
+    }
+  }
+
   document.getElementById('projectName').value = '';
   renderProyectosInline();
   mostrarToast('✅ Proyecto "' + projectName + '" guardado', '#2e7d32');
@@ -3775,18 +3794,48 @@ function getLocalById(empresaId, localId) {
   return emp?.locales?.find(l => l.id === localId);
 }
 
+function getCRMCandidatos() {
+  try { return JSON.parse(localStorage.getItem('soulbaric_candidatos') || '[]'); } catch(e) { return []; }
+}
+const CRM_TIPO_ICONS = {hotel:'🏨',resort:'🌴',villa:'🏠',promotor:'🏗️',clinica:'⚕️',distribuidor:'🤝'};
+const CRM_TIPO_MAP   = {hotel:'hotel',resort:'resort',villa:'otro',promotor:'otro',clinica:'clinica',distribuidor:'otro',villa:'otro'};
+
 function renderEmpresaSelector() {
   const sel = document.getElementById('empresa-selector');
   if (!sel) return;
   const activo = sel.value;
   while (sel.options.length > 1) sel.remove(1);
-  getEmpresas().forEach(e => {
-    const opt = document.createElement('option');
-    opt.value = e.id;
-    opt.textContent = (e.razonSocial || e.nombre || 'Empresa sin nombre') +
-      (e.locales?.length ? ` (${e.locales.length} local${e.locales.length > 1 ? 'es' : ''})` : '');
-    sel.appendChild(opt);
-  });
+
+  // Empresas guardadas manualmente
+  const empresas = getEmpresas();
+  if (empresas.length > 0) {
+    const grp = document.createElement('optgroup');
+    grp.label = '── Mis empresas ──';
+    empresas.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value = e.id;
+      opt.textContent = (e.razonSocial || e.nombre || 'Empresa sin nombre') +
+        (e.locales?.length ? ` (${e.locales.length} local${e.locales.length > 1 ? 'es' : ''})` : '');
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  }
+
+  // Candidatos del CRM Pipeline
+  const candidatos = getCRMCandidatos();
+  if (candidatos.length > 0) {
+    const grp = document.createElement('optgroup');
+    grp.label = '── Candidatos CRM ──';
+    candidatos.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = 'crm_' + c.id;
+      opt.textContent = (CRM_TIPO_ICONS[c.tipo] || '🏢') + ' ' + c.empresa +
+        (c.ubicacion ? ' — ' + c.ubicacion.split(',')[0] : '');
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  }
+
   if (activo) sel.value = activo;
 }
 
@@ -3806,14 +3855,72 @@ function renderLocalSelector(empresaId) {
   });
 }
 
+function renderLocalSelectorCRM(empresaId, candidato) {
+  const sel = document.getElementById('local-selector');
+  const row = document.getElementById('local-selector-row');
+  if (!sel || !row) return;
+  row.style.display = '';
+  while (sel.options.length > 1) sel.remove(1);
+  const icon = CRM_TIPO_ICONS[candidato.tipo] || '🏢';
+  const opt = document.createElement('option');
+  opt.value = 'crm_local_' + candidato.id;
+  opt.textContent = icon + ' ' + candidato.empresa +
+    (candidato.tipo ? ` (${candidato.tipo})` : '') +
+    (candidato.ubicacion ? ' — ' + candidato.ubicacion : '');
+  sel.appendChild(opt);
+  sel.value = opt.value;
+}
+
 function seleccionarEmpresa(id) {
   if (!id) {
     document.getElementById('local-selector-row').style.display = 'none';
+    window.crmSelectedCandidatoId = null;
     return;
   }
+
+  // ── Candidato del CRM ──
+  if (id.startsWith('crm_')) {
+    const candidatoId = id.slice(4);
+    const c = getCRMCandidatos().find(x => x.id === candidatoId);
+    if (!c) return;
+    window.crmSelectedCandidatoId = c.id;
+    const set = (elId, val) => { const el = document.getElementById(elId); if (el && val != null) el.value = val; };
+    const tipo = CRM_TIPO_MAP[c.tipo] || 'otro';
+    const ciudad = c.ubicacion ? c.ubicacion.split(',')[0].trim() : '';
+    // Tab Empresa
+    set('crm-razon-social', c.empresa);
+    set('crm-tipo-centro',  tipo);
+    set('crm-email',        c.email);
+    set('crm-telefono',     c.telefono);
+    set('crm-observaciones', c.notas || '');
+    // Tab Local
+    set('crm-nombre-local', c.empresa);
+    set('locationType',     tipo);
+    set('crm-ciudad',       ciudad);
+    const mapaQ = [c.empresa, ciudad].filter(Boolean).join(', ');
+    set('crm-mapa-query',   mapaQ);
+    // Tab Contacto
+    set('crm-contacto-nombre', c.nombre);
+    set('crm-contacto-email',  c.email);
+    set('crm-contacto-tel',    c.telefono);
+    set('crm-contacto-wa',     c.telefono);
+    // Local selector con el establecimiento
+    renderLocalSelectorCRM(id, c);
+    // Auto-rellenar etapa en selector proyecto si está en prospecto
+    if (c.etapa === 'prospecto') {
+      const est = document.getElementById('crm-estado-proyecto');
+      if (est && !est.value) est.value = 'prospecto';
+    }
+    crmUpdateMapa();
+    crmAutoSave();
+    mostrarToast('✅ ' + c.empresa + ' cargado desde CRM', '#2e7d32');
+    return;
+  }
+
+  // ── Empresa manual ──
   const emp = getEmpresaById(id);
   if (!emp) return;
-  // Cargar datos de empresa en el formulario
+  window.crmSelectedCandidatoId = null;
   const set = (elId, val) => { const el = document.getElementById(elId); if (el && val) el.value = val; };
   set('crm-razon-social', emp.razonSocial);
   set('crm-cif',          emp.cif);
@@ -3827,17 +3934,34 @@ function seleccionarEmpresa(id) {
   set('crm-contacto-email',  emp.contactoEmail);
   set('crm-contacto-tel',    emp.contactoTel);
   set('crm-contacto-wa',     emp.contactoWa);
-  // Mostrar selector de locales
   renderLocalSelector(id);
-  if (emp.locales?.length > 0) {
-    document.getElementById('local-selector').value = '';
-  }
+  if (emp.locales?.length > 0) document.getElementById('local-selector').value = '';
   mostrarToast('🏢 ' + (emp.razonSocial || 'Empresa') + ' seleccionada', '#8B6F47');
 }
 
 function seleccionarLocal(localId) {
   const empresaId = document.getElementById('empresa-selector')?.value;
   if (!empresaId || !localId) return;
+
+  // ── Local de candidato CRM ──
+  if (localId.startsWith('crm_local_')) {
+    const candidatoId = localId.slice(10);
+    const c = getCRMCandidatos().find(x => x.id === candidatoId);
+    if (!c) return;
+    window.crmSelectedCandidatoId = c.id;
+    const set = (elId, val) => { const el = document.getElementById(elId); if (el && val != null) el.value = val; };
+    const tipo = CRM_TIPO_MAP[c.tipo] || 'otro';
+    const ciudad = c.ubicacion ? c.ubicacion.split(',')[0].trim() : '';
+    set('crm-nombre-local', c.empresa);
+    set('locationType',     tipo);
+    set('crm-ciudad',       ciudad);
+    set('crm-mapa-query',   [c.empresa, ciudad].filter(Boolean).join(', '));
+    crmUpdateMapa();
+    mostrarToast('📍 ' + c.empresa + (c.ubicacion ? ' — ' + c.ubicacion : ''), '#8B6F47');
+    return;
+  }
+
+  // ── Local manual ──
   const local = getLocalById(empresaId, localId);
   if (!local) return;
   const set = (elId, val) => { const el = document.getElementById(elId); if (el && val !== undefined) el.value = val; };
@@ -3848,7 +3972,6 @@ function seleccionarLocal(localId) {
   set('crm-cp',           local.cp);
   set('crm-mapa-query',   local.mapaQuery || [local.nombre, local.direccion, local.ciudad].filter(Boolean).join(', '));
   crmUpdateMapa();
-  // Sync para el proyecto activo
   if (wizardData) { wizardData.localId = localId; wizardData.empresaId = empresaId; }
   mostrarToast('📍 Local seleccionado: ' + local.nombre, '#8B6F47');
 }

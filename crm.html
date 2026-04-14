@@ -1504,6 +1504,14 @@ function renderCard(c){
   const ultSeg=(c.seguimiento||[])[0];
   const ultSegFd=ultSeg&&ultSeg.fecha?new Date(ultSeg.fecha+'T12:00:00').toLocaleDateString('es-ES',{day:'2-digit',month:'short'}):'';
   const principal=(c.contactos||[]).find(x=>x.principal)||(c.contactos||[])[0]||null;
+  // Proyectos asociados desde index.html
+  const proyAsoc=(c.proyectosAsociados||[]);
+  const proyBadge=proyAsoc.length>0
+    ?`<div style="margin-top:5px;padding:3px 7px;background:rgba(80,200,120,0.12);border:1px solid rgba(80,200,120,0.3);border-radius:6px;">
+        <span style="font-size:9px;font-weight:800;color:#50c878;">📐 PROYECTO:</span>
+        <span style="font-size:9px;color:#50c878;margin-left:3px;">${escH(proyAsoc[proyAsoc.length-1].nombre)}</span>
+      </div>`
+    :'';
   return `<div class="kand-card" onclick="abrirModalCandidato('${c.id}')">
     <span class="kand-tipo" style="background:${tipo.color}22;color:${tipo.color};">${tipo.label}</span>
     <div class="kand-name">${escH(c.nombre)}</div>
@@ -1513,6 +1521,7 @@ function renderCard(c){
     ${principal&&principal.telefono?`<div style="font-size:9px;color:var(--text-m);margin-top:1px;">📱 ${escH(principal.telefono)}</div>`:''}
     ${modelo?`<div class="kand-model">📦 ${modelo.nombre}</div>`:''}
     ${c.presupuestoOrientativo?`<div class="kand-precio">${fmt(+c.presupuestoOrientativo)}</div>`:''}
+    ${proyBadge}
     <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;">
       ${nContacts?`<span style="font-size:9px;color:var(--text-s);">👥 ${nContacts} contacto${nContacts>1?'s':''}</span>`:''}
       ${ultSeg?`<span style="font-size:9px;color:${RES_COLORS[ultSeg.resultado]||'var(--text-s)'};">${TIPO_ICONS[ultSeg.tipo]||'📌'} ${ultSegFd}</span>`:'<span style="font-size:9px;color:var(--text-s);">Sin seguimiento</span>'}
