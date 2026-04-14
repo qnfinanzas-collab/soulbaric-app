@@ -322,6 +322,8 @@
           <option value="">— Seleccionar proyecto —</option>
         </select>
       </div>
+      <!-- Panel de datos CRM vinculados -->
+      <div id="bp-crm-panel" style="display:none;margin-bottom:16px;"></div>
       <div id="bp-content" style="display:none;">
         <div class="bp-controls">
           <div class="form-group">
@@ -336,9 +338,10 @@
             <label>Crecimiento anual %</label>
             <input type="number" id="bp-growth" value="5" min="0" max="100" oninput="renderBusinessPlan()">
           </div>
-          <div class="form-group">
-            <label>Ocupación media %</label>
+          <div class="form-group" id="bp-ocup-group">
+            <label>Ocupación media % <span id="bp-ocup-badge" style="display:none;font-size:9px;font-weight:700;color:#10b981;background:rgba(16,185,129,.1);padding:2px 6px;border-radius:4px;margin-left:4px;">del CRM</span></label>
             <input type="number" id="bp-ocupacion" value="70" min="1" max="100" oninput="renderBusinessPlan()">
+            <div id="bp-ocup-hint" style="font-size:9px;color:var(--text-s);margin-top:3px;display:none;"></div>
           </div>
         </div>
         <div class="kpi-grid" id="bp-kpis"></div>
@@ -1465,6 +1468,101 @@ function saveLiquidacion(proyId, factu, year, mes) {
 }
 
 // ═══════════════════════════════════════════════
+// BUSINESS PLAN — HELPERS CRM
+// ═══════════════════════════════════════════════
+function getCRMCandidatos() {
+  try { return JSON.parse(localStorage.getItem('soulbaric_candidatos')||'[]'); } catch(e){ return []; }
+}
+
+function getCRMDataForProject(proy) {
+  if (!proy.candidatoId) return null;
+  const cand = getCRMCandidatos().find(function(c){ return c.id === proy.candidatoId; });
+  if (!cand || !cand.proyecto) return null;
+  const p = cand.proyecto;
+  // Need at least precio + operatividad to be useful
+  if (!p.precioSesion && !p.horasDia) return null;
+
+  // Plazas: from camera config
+  let plazas = 1;
+  if (p.configCatalogoId) {
+    try {
+      const configs = JSON.parse(localStorage.getItem('soulbaric_configuraciones')||'[]');
+      const cfg = configs.find(function(c){ return String(c.id) === String(p.configCatalogoId); });
+      if (cfg && cfg.plazas) plazas = parseInt(cfg.plazas) || 1;
+    } catch(e) {}
+  }
+
+  // Max sessions per month = floor(horasDia × 60 / duracionSesion) × diasMes
+  const horasDia       = p.horasDia        || 8;
+  const duracionSesion = p.duracionSesion   || 75;
+  const diasMes        = p.diasMes          || 22;
+  const precioSesion   = p.precioSesion     || 0;
+  const sesMaxDia      = Math.floor((horasDia * 60) / duracionSesion);
+  const sesMaxMes      = sesMaxDia * diasMes;
+
+  // Monthly occupancy (12 values from candidate, fallback to 70%)
+  const ocupacionMensual = (p.ocupacionMensual && p.ocupacionMensual.length === 12)
+    ? p.ocupacionMensual.map(function(v){ return parseInt(v)||70; })
+    : Array(12).fill(70);
+
+  return {
+    empresa:          cand.empresa || cand.nombre,
+    tipo:             cand.tipo,
+    plazas,
+    precioSesion,
+    sesMaxMes,
+    sesMaxDia,
+    horasDia,
+    duracionSesion,
+    diasMes,
+    ocupacionMensual,
+    perfilCliente:    p.perfilCliente || null,
+    configNombre:     p.configCatalogoId ? (function(){
+      try {
+        const configs = JSON.parse(localStorage.getItem('soulbaric_configuraciones')||'[]');
+        const cfg = configs.find(function(c){ return String(c.id) === String(p.configCatalogoId); });
+        return cfg ? (cfg.nombre || cfg.modeloNombre) : null;
+      } catch(e){ return null; }
+    })() : null,
+  };
+}
+
+function renderBPCrmPanel(proy, crm) {
+  const panel = document.getElementById('bp-crm-panel');
+  const badge = document.getElementById('bp-ocup-badge');
+  const hint  = document.getElementById('bp-ocup-hint');
+  const occInput = document.getElementById('bp-ocupacion');
+
+  if (!panel) return;
+
+  if (crm) {
+    // Show CRM data panel
+    const occAvg = Math.round(crm.ocupacionMensual.reduce(function(a,b){return a+b;},0) / 12);
+    occInput.value = occAvg;
+    if (badge) badge.style.display = 'inline';
+    if (hint) { hint.style.display = 'block'; hint.textContent = 'Usando ocupación mensual real del candidato CRM'; }
+    panel.style.display = 'block';
+    panel.innerHTML =
+      '<div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:12px 16px;">' +
+        '<div style="font-size:10px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🔗 Datos vinculados del CRM — ' + escH(crm.empresa) + '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:10px;">' +
+          '<span style="font-size:11px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:4px 10px;">📷 ' + (crm.configNombre || crm.plazas + ' plaza' + (crm.plazas>1?'s':'')) + '</span>' +
+          '<span style="font-size:11px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:4px 10px;">💰 ' + crm.precioSesion + '€/sesión</span>' +
+          '<span style="font-size:11px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:4px 10px;">⏱ ' + crm.sesMaxDia + ' sesiones/día</span>' +
+          '<span style="font-size:11px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:4px 10px;">📅 ' + crm.diasMes + ' días/mes</span>' +
+          '<span style="font-size:11px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:4px 10px;">🎯 ' + crm.sesMaxMes + ' sesiones/mes máx.</span>' +
+          '<span style="font-size:11px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:4px 10px;">📊 Ocup. media: ' + occAvg + '%</span>' +
+        '</div>' +
+      '</div>';
+  } else {
+    if (badge) badge.style.display = 'none';
+    if (hint) hint.style.display = 'none';
+    panel.style.display = 'none';
+    panel.innerHTML = '';
+  }
+}
+
+// ═══════════════════════════════════════════════
 // BUSINESS PLAN
 // ═══════════════════════════════════════════════
 function populateBPSelect() {
@@ -1480,44 +1578,78 @@ function renderBusinessPlan() {
   const proyId = document.getElementById('bp-proj-select').value;
   const content = document.getElementById('bp-content');
   const empty = document.getElementById('bp-empty');
-  if (!proyId) { content.style.display='none'; empty.style.display='block'; return; }
+  const crmPanelEl = document.getElementById('bp-crm-panel');
+  if (!proyId) {
+    content.style.display='none';
+    empty.style.display='block';
+    if (crmPanelEl) crmPanelEl.style.display='none';
+    return;
+  }
   const proy = getInvProyectos().find(p=>p.id===proyId);
   if (!proy) return;
   content.style.display='block';
   empty.style.display='none';
 
-  const years = parseInt(document.getElementById('bp-years').value)||5;
-  const growth = (parseFloat(document.getElementById('bp-growth').value)||5) / 100;
-  const ocupacion = (parseFloat(document.getElementById('bp-ocupacion').value)||70) / 100;
-  const baseFactu = (proy.factuMensual||0) * ocupacion / 0.70 * ocupacion; // adjust for occupancy
+  // ── Obtener datos CRM del candidato vinculado ──
+  const crm = getCRMDataForProject(proy);
+  renderBPCrmPanel(proy, crm);
 
-  let yearlyData = [];
-  let factuAno = proy.factuMensual * 12 * (ocupacion / 0.70);
-  for (let y=1; y<=years; y++) {
-    if (y>1) factuAno *= (1+growth);
-    const factuMes = factuAno / 12;
-    let assetAno=0, gastosAno=0, hotelAno=0, opAno=0, sbAno=0;
+  const years    = parseInt(document.getElementById('bp-years').value)    || 5;
+  const growth   = (parseFloat(document.getElementById('bp-growth').value)   || 5) / 100;
+  const occManual= (parseFloat(document.getElementById('bp-ocupacion').value) || 70) / 100;
 
-    if (proy.modelo===1) {
-      for (let m=0; m<12; m++) {
-        const mr = calcMes1(proy, factuMes, 0);
-        assetAno += mr.retornoPagado;
+  // ── Calcular facturación mensual base por mes ──
+  // Si hay datos CRM: usa sesiones × precio × plazas × ocupación mensual real
+  // Si no:           usa factuMensual manual × ajuste de ocupación
+  function getFactuMes(monthIdx, growthFactor) {
+    if (crm && crm.precioSesion > 0 && crm.sesMaxMes > 0) {
+      const occMes = crm.ocupacionMensual[monthIdx] / 100;
+      return Math.round(crm.sesMaxMes * occMes * growthFactor) * crm.precioSesion * crm.plazas;
+    } else {
+      const base = (proy.factuMensual || 0);
+      return base * occManual / 0.70 * growthFactor;
+    }
+  }
+
+  // ── Proyección año a año ──
+  const yearlyData = [];
+  for (let y = 1; y <= years; y++) {
+    const growthFactor = Math.pow(1 + growth, y - 1);
+    let factuAno=0, assetAno=0, gastosAno=0, hotelAno=0, opAno=0, sbAno=0;
+    const monthlyFact = [];
+
+    for (let m = 0; m < 12; m++) {
+      const factuMes = getFactuMes(m, growthFactor);
+      monthlyFact.push(factuMes);
+      factuAno += factuMes;
+    }
+
+    if (proy.modelo === 1) {
+      // Monthly: asset + gastos
+      for (let m = 0; m < 12; m++) {
+        const mr = calcMes1(proy, monthlyFact[m], 0);
+        assetAno  += mr.retornoPagado;
         gastosAno += mr.gastosFijos;
       }
-      for (let q=0; q<4; q++) {
-        const qr = calcTrimestre1(proy, [{factuNeta:factuMes,margenMes:(factuMes-calcMes1(proy,factuMes,0).retornoPagado-calcMes1(proy,factuMes,0).gastosFijos)},{factuNeta:factuMes,margenMes:(factuMes-calcMes1(proy,factuMes,0).retornoPagado-calcMes1(proy,factuMes,0).gastosFijos)},{factuNeta:factuMes,margenMes:(factuMes-calcMes1(proy,factuMes,0).retornoPagado-calcMes1(proy,factuMes,0).gastosFijos)}]);
+      // Quarterly: hotel + op + soulbaric (4 quarters)
+      for (let q = 0; q < 4; q++) {
+        const q3 = monthlyFact.slice(q * 3, q * 3 + 3).map(function(f) {
+          const mr = calcMes1(proy, f, 0);
+          return { factuNeta: f, margenMes: mr.margenMes };
+        });
+        const qr = calcTrimestre1(proy, q3);
         hotelAno += qr.pagoHotel;
-        opAno += qr.pagoOp;
-        sbAno += qr.benefSB;
+        opAno    += qr.pagoOp;
+        sbAno    += qr.benefSB;
       }
     } else {
-      for (let m=0; m<12; m++) {
-        const mr = calcMes2(proy, factuMes);
-        sbAno += mr.comisionSB;
+      for (let m = 0; m < 12; m++) {
+        const mr = calcMes2(proy, monthlyFact[m]);
+        sbAno    += mr.comisionSB;
         hotelAno += mr.retenidoHotel;
       }
     }
-    yearlyData.push({ year:y, factuAno, assetAno, gastosAno, hotelAno, opAno, sbAno });
+    yearlyData.push({ year: y, factuAno, assetAno, gastosAno, hotelAno, opAno, sbAno });
   }
 
   // KPIs
