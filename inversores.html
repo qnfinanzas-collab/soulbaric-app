@@ -291,6 +291,25 @@
         <h2>📁 Proyectos de Inversión</h2>
         <button class="btn-primary" onclick="openModalProyecto()">+ Nuevo Proyecto</button>
       </div>
+      <!-- Guía de flujo de trabajo -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:160px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:3px solid var(--gold);">
+          <div style="font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">① Inversores</div>
+          <div style="font-size:11px;color:var(--text-m);">Da de alta a los socios financieros en la sección <strong>👤 Inversores</strong></div>
+        </div>
+        <div style="flex:1;min-width:160px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:3px solid #3B82F6;">
+          <div style="font-size:10px;font-weight:800;color:#3B82F6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">② Proyecto</div>
+          <div style="font-size:11px;color:var(--text-m);">Crea un proyecto, elige el modelo y asigna inversores en <strong>🤝 Mesa de Inversión</strong></div>
+        </div>
+        <div style="flex:1;min-width:160px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:3px solid #10B981;">
+          <div style="font-size:10px;font-weight:800;color:#10B981;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">③ Liquidar</div>
+          <div style="font-size:11px;color:var(--text-m);">Cada mes introduce la facturación real en <strong>🧾 Liquidaciones</strong></div>
+        </div>
+        <div style="flex:1;min-width:160px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 14px;border-left:3px solid #8B5CF6;">
+          <div style="font-size:10px;font-weight:800;color:#8B5CF6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">④ Proyectar</div>
+          <div style="font-size:11px;color:var(--text-m);">Genera el <strong>📊 Business Plan</strong> a 3-7 años con todos los stakeholders</div>
+        </div>
+      </div>
       <div class="proj-grid" id="proj-grid"></div>
     </section>
 
@@ -880,33 +899,99 @@ function getPartnerName(inv) {
 function renderProyectos() {
   const proyectos = getInvProyectos();
   if (!proyectos.length) {
-    document.getElementById('proj-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📁</div><div class="empty-msg">Sin proyectos de inversión</div><div class="empty-sub">Crea el primer proyecto con el botón superior</div></div>`;
+    document.getElementById('proj-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📁</div><div class="empty-msg">Sin proyectos de inversión</div><div class="empty-sub">Pulsa "+ Nuevo Proyecto" para configurar la mesa de inversión</div></div>`;
     return;
   }
+  const inversores = getInversores();
+  function invNombre(id) {
+    if (!id || id === 'soulbaric_propio' || id === 'ninguno') return id === 'soulbaric_propio' ? 'SoulBaric' : '—';
+    const inv = inversores.find(i => i.id === id);
+    return inv ? (inv.empresa || inv.nombre) : '—';
+  }
+
   document.getElementById('proj-grid').innerHTML = proyectos.map(p => {
-    const modelBadge = p.modelo===1
+    const isM1 = p.modelo === 1;
+    const modelBadge = isM1
       ? '<span class="badge badge-m1">🤝 Modelo 1 · Partnership</span>'
       : '<span class="badge badge-m2">🏨 Modelo 2 · Hotel Owned</span>';
-    const partnerName = p.modelo===1
-      ? (p.hotelComision ? getPartnerName(p.hotelComision) : '—')
-      : (p.locationPartner ? getPartnerName(p.locationPartner) : '—');
-    const deuda = p.deudaAcumuladaAsset||0;
+    const deuda = p.deudaAcumuladaAsset || 0;
+
+    // ── Mesa de Inversión visual ──
+    let mesaHtml = '';
+    if (isM1) {
+      const assetNombre = invNombre(p.assetInversor?.inversorId);
+      const retornoDesc = p.assetInversor?.mecanismo === 'fijo'
+        ? fmt(p.assetInversor.retornoFijo) + '/mes fijo'
+        : (p.assetInversor?.retornoPct || 0) + '% fact.';
+      const hotelNombre = invNombre(p.hotelComision?.inversorId);
+      const opNombre    = invNombre(p.inversorOperativo?.inversorId);
+      mesaHtml = `
+        <div style="margin:12px 0;background:var(--card2);border-radius:8px;padding:10px 12px;font-size:11px;">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-s);margin-bottom:8px;">🤝 Mesa de Inversión</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:var(--blue);font-weight:700;">📷 Asset</span>
+              <span style="color:var(--text-m);">${escH(assetNombre)}</span>
+              <span style="color:var(--blue);font-weight:600;">${escH(retornoDesc)}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:#94a3b8;font-weight:700;">💰 Gastos</span>
+              <span style="color:var(--text-m);">Fijos mensuales</span>
+              <span style="color:#94a3b8;font-weight:600;">${fmt(p.gastosFijosMes||0)}/mes</span>
+            </div>
+            <div style="border-top:1px dashed var(--border);padding-top:5px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:var(--green);font-weight:700;">🏨 Hotel</span>
+              <span style="color:var(--text-m);">${escH(hotelNombre)}</span>
+              <span style="color:var(--green);font-weight:600;">${p.hotelComision?.pct||0}% fact. neta · trim.</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:var(--purple);font-weight:700;">⚙️ Op.</span>
+              <span style="color:var(--text-m);">${escH(opNombre)}</span>
+              <span style="color:var(--purple);font-weight:600;">${p.inversorOperativo?.pctMargen||0}% margen · trim.</span>
+            </div>
+            <div style="border-top:1px dashed var(--border);padding-top:5px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:var(--gold);font-weight:700;">✦ SoulBaric</span>
+              <span style="color:var(--text-m);">Gestión</span>
+              <span style="color:var(--gold);font-weight:600;">Beneficio restante</span>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      const hotelNombre = invNombre(p.locationPartner?.inversorId);
+      mesaHtml = `
+        <div style="margin:12px 0;background:var(--card2);border-radius:8px;padding:10px 12px;font-size:11px;">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-s);margin-bottom:8px;">🏨 Mesa de Inversión</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:var(--green);font-weight:700;">🏨 Hotel propietario</span>
+              <span style="color:var(--text-m);">${escH(hotelNombre)}</span>
+              <span style="color:var(--green);font-weight:600;">Retiene ${100-(p.soulbaricPct||0)}%</span>
+            </div>
+            <div style="border-top:1px dashed var(--border);padding-top:5px;display:flex;justify-content:space-between;align-items:center;">
+              <span style="color:var(--gold);font-weight:700;">✦ SoulBaric</span>
+              <span style="color:var(--text-m);">Gestión + formación</span>
+              <span style="color:var(--gold);font-weight:600;">${p.soulbaricPct||0}% fact. neta</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
     return `<div class="proj-card">
-      <div class="proj-card-name">${escH(p.nombre)}</div>
-      <div class="proj-card-partner">🏨 ${escH(partnerName)}</div>
-      <div class="proj-card-badges">
-        ${modelBadge}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+        <div class="proj-card-name" style="margin:0;">${escH(p.nombre)}</div>
         ${estadoBadge(p.estado)}
       </div>
-      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;">
-        <div>
-          <div class="proj-card-rev">${fmtK(p.factuMensual||0)}</div>
-          <div class="proj-card-rev-lbl">/ mes estimado</div>
-        </div>
-        ${deuda>0 ? `<div class="debt-badge" style="font-size:11px;padding:5px 10px;">⚠️ Deuda: ${fmt(deuda)}</div>` : ''}
+      <div class="proj-card-badges" style="margin-bottom:8px;">
+        ${modelBadge}
+        ${deuda > 0 ? `<span class="debt-badge">⚠️ Deuda: ${fmt(deuda)}</span>` : ''}
       </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-ghost" onclick="openModalProyecto('${escH(p.id)}')">✏️ Editar</button>
+      <div style="display:flex;gap:12px;margin-bottom:4px;">
+        <div><div class="proj-card-rev">${fmtK(p.factuMensual||0)}</div><div class="proj-card-rev-lbl">/ mes estimado</div></div>
+        <div><div class="proj-card-rev" style="color:var(--text-m);">${p.sesiones||'—'}</div><div class="proj-card-rev-lbl">sesiones/mes</div></div>
+      </div>
+      ${mesaHtml}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn-ghost" onclick="openModalProyecto('${escH(p.id)}')">✏️ Editar proyecto</button>
         <button class="btn-ghost" onclick="showSection('liquidaciones');selectLiqProyecto('${escH(p.id)}')">🧾 Liquidar</button>
         <button class="btn-danger" onclick="deleteProyecto('${escH(p.id)}')">Eliminar</button>
       </div>
@@ -1744,7 +1829,8 @@ function renderBusinessPlan() {
 // ═══════════════════════════════════════════════
 (function init() {
   initDemoData();
-  renderInversores();
+  // Aterrizar siempre en Proyectos — es la sección principal de trabajo
+  showSection('proyectos');
   populateBPSelect();
 })();
 </script>
