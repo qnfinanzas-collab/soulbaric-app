@@ -991,7 +991,8 @@ function renderProyectos() {
       </div>
       ${mesaHtml}
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn-ghost" onclick="openModalProyecto('${escH(p.id)}')">✏️ Editar proyecto</button>
+        <button class="btn-primary" style="font-size:11px;" onclick="abrirSelectorDossier('${escH(p.id)}')">📄 Dossier Inversor</button>
+        <button class="btn-ghost" onclick="openModalProyecto('${escH(p.id)}')">✏️ Editar</button>
         <button class="btn-ghost" onclick="showSection('liquidaciones');selectLiqProyecto('${escH(p.id)}')">🧾 Liquidar</button>
         <button class="btn-danger" onclick="deleteProyecto('${escH(p.id)}')">Eliminar</button>
       </div>
@@ -1833,6 +1834,701 @@ function renderBusinessPlan() {
   showSection('proyectos');
   populateBPSelect();
 })();
+
+function abrirSelectorDossier(proyId) {
+  document.getElementById('dossier-proy-id').value = proyId;
+  openModal('modal-dossier-sel');
+}
+
+function calcTIR(cashflows) {
+  // Newton-Raphson IRR — cashflows[0] is negative (investment)
+  let rate = 0.008;
+  for (let i = 0; i < 200; i++) {
+    let npv = 0, dnpv = 0;
+    cashflows.forEach(function(cf, t) {
+      const disc = Math.pow(1 + rate, t);
+      npv  += cf / disc;
+      dnpv -= t * cf / Math.pow(1 + rate, t + 1);
+    });
+    if (Math.abs(dnpv) < 1e-10) break;
+    const nr = rate - npv / dnpv;
+    if (Math.abs(nr - rate) < 1e-9) { rate = nr; break; }
+    rate = nr;
+    if (rate < -0.999) { rate = 0.001; }
+  }
+  const annual = (Math.pow(1 + rate, 12) - 1) * 100;
+  return isFinite(annual) ? annual : null;
+}
+
+function generarDossierInversor(proyId, tipoInversor) {
+  closeModal('modal-dossier-sel');
+  const proy = getInvProyectos().find(function(p){ return p.id === proyId; });
+  if (!proy) { toast('Proyecto no encontrado', true); return; }
+
+  // ── CRM data ──
+  const crmCands = getCRMCandidatos();
+  const cand = proy.candidatoId ? crmCands.find(function(c){ return c.id === proy.candidatoId; }) : null;
+  const candProyecto = cand ? (cand.proyecto || {}) : {};
+
+  // ── Camera config ──
+  let configNombre = '', plazas = 1;
+  if (candProyecto.configCatalogoId) {
+    try {
+      const configs = JSON.parse(localStorage.getItem('soulbaric_configuraciones') || '[]');
+      const cfg = configs.find(function(c){ return String(c.id) === String(candProyecto.configCatalogoId); });
+      if (cfg) { configNombre = cfg.nombre || cfg.modeloNombre || ''; plazas = cfg.plazas || 1; }
+    } catch(e) {}
+  }
+
+  // ── Financial projections (5 years) ──
+  const growth = 0.05;
+  const years  = 5;
+  const precioSesion   = candProyecto.precioSesion   || 0;
+  const horasDia       = candProyecto.horasDia        || 8;
+  const duracionSesion = candProyecto.duracionSesion  || 75;
+  const diasMes        = candProyecto.diasMes         || 22;
+  const ocupMensual    = (candProyecto.ocupacionMensual && candProyecto.ocupacionMensual.length === 12)
+    ? candProyecto.ocupacionMensual.map(function(v){ return parseInt(v)||70; })
+    : Array(12).fill(70);
+  const sesMaxDia = Math.floor((horasDia * 60) / duracionSesion);
+  const sesMaxMes = sesMaxDia * diasMes;
+  const baseFactuMes  = proy.factuMensual || (sesMaxMes * (ocupMensual.reduce(function(a,b){return a+b;},0)/12/100) * precioSesion * plazas);
+
+  // Investor-specific investment and return
+  let inversionTotal = 0;
+  let retornoLabel = '';
+  let retornoMensualBase = 0;
+  let retornoEsFixed = false;
+
+  if (tipoInversor === 'asset' || tipoInversor === 'full') {
+    if (proy.assetInversor) {
+      inversionTotal += proy.assetInversor.totalInversion || 0;
+      if (proy.assetInversor.mecanismo === 'fijo') {
+        retornoMensualBase = proy.assetInversor.retornoFijo || 0;
+        retornoLabel = fmt(retornoMensualBase) + '/mes fijo';
+        retornoEsFixed = true;
+      } else {
+        retornoLabel = (proy.assetInversor.retornoPct || 0) + '% sobre facturación neta';
+      }
+    }
+  }
+  if (tipoInversor === 'operativo' || tipoInversor === 'full') {
+    if (proy.inversorOperativo) {
+      inversionTotal += proy.inversorOperativo.totalInversion || 0;
+      if (tipoInversor === 'operativo') {
+        retornoLabel = (proy.inversorOperativo.pctMargen || 0) + '% sobre beneficio neto trimestral';
+      }
+    }
+    if (tipoInversor === 'full' && proy.inversorOperativo) {
+      retornoLabel += ' + ' + (proy.inversorOperativo.pctMargen || 0) + '% beneficio trim.';
+    }
+  }
+
+  // Year-by-year returns for THIS investor
+  const yearlyReturns = [];
+  let cumRecuperado = 0;
+  let paybackMes = null;
+  let cashflows = inversionTotal > 0 ? [-inversionTotal] : [];
+
+  for (let y = 1; y <= years; y++) {
+    const gf = Math.pow(1 + growth, y - 1);
+    let retornoAno = 0;
+    const monthlyFact = [];
+
+    for (let m = 0; m < 12; m++) {
+      const occ = ocupMensual[m] / 100;
+      const factuMes = sesMaxMes > 0 && precioSesion > 0
+        ? Math.round(sesMaxMes * occ * gf) * precioSesion * plazas
+        : baseFactuMes * gf;
+      monthlyFact.push(factuMes);
+    }
+
+    if (tipoInversor === 'asset' || tipoInversor === 'full') {
+      if (proy.assetInversor && proy.assetInversor.inversorId !== 'soulbaric_propio') {
+        for (let m = 0; m < 12; m++) {
+          const r = calcMes1(proy, monthlyFact[m], 0);
+          retornoAno += r.retornoPagado;
+        }
+      }
+    }
+    if (tipoInversor === 'operativo' || tipoInversor === 'full') {
+      if (proy.inversorOperativo && proy.inversorOperativo.inversorId && proy.inversorOperativo.inversorId !== 'ninguno') {
+        for (let q = 0; q < 4; q++) {
+          const q3 = monthlyFact.slice(q*3, q*3+3).map(function(f){
+            const mr = calcMes1(proy, f, 0);
+            return { factuNeta: f, margenMes: mr.margenMes };
+          });
+          const qr = calcTrimestre1(proy, q3);
+          retornoAno += qr.pagoOp;
+        }
+      }
+    }
+
+    cumRecuperado += retornoAno;
+    if (!paybackMes && inversionTotal > 0 && cumRecuperado >= inversionTotal) {
+      paybackMes = (y - 1) * 12 + Math.ceil(inversionTotal / (retornoAno / 12));
+    }
+    cashflows.push(retornoAno);
+    yearlyReturns.push({ year: y, retornoAno, cumRecuperado });
+  }
+
+  const tirAnual = inversionTotal > 0 && cashflows.length > 1 ? calcTIR(cashflows.map(function(cf, i){ return i === 0 ? cf : cf/12; }).reduce(function(acc, cf, i){ if(i===0){acc.push(cf);} else { for(let m=0;m<12;m++) acc.push(cf); } return acc; }, [])) : null;
+
+  const paybackTexto = paybackMes
+    ? (paybackMes <= 12 ? paybackMes + ' meses' : Math.floor(paybackMes/12) + ' años ' + (paybackMes%12 ? (paybackMes%12) + ' meses' : ''))
+    : 'Proyectado > ' + years + ' años';
+
+  const tirTexto = tirAnual !== null && tirAnual > 0 ? tirAnual.toFixed(1) + '%' : '—';
+  const totalRetorno5 = yearlyReturns.reduce(function(s,r){ return s + r.retornoAno; }, 0);
+  const multiplier    = inversionTotal > 0 ? (totalRetorno5 / inversionTotal).toFixed(2) : '—';
+
+  // ── Tipo labels ──
+  const tipoInfo = {
+    asset:    { label: 'Inversor de Cámara', icon: '📷', color: '#1d4ed8', bg: 'rgba(59,130,246,.08)', border: '#3B82F6' },
+    operativo:{ label: 'Inversor Operativo',  icon: '⚙️', color: '#6d28d9', bg: 'rgba(139,92,246,.08)', border: '#8B5CF6' },
+    full:     { label: 'Inversor Completo',   icon: '💎', color: '#92400e', bg: 'rgba(200,153,104,.10)', border: '#C89968' },
+  };
+  const ti = tipoInfo[tipoInversor] || tipoInfo.asset;
+
+  const locationName  = cand ? (cand.empresa || cand.nombre || proy.nombre) : proy.nombre;
+  const locationTipo  = cand ? (cand.tipo || 'hotel') : 'hotel';
+  const locationUbic  = cand ? (cand.ubicacion || 'Costa del Sol') : 'Costa del Sol';
+  const perfilCliente = candProyecto.perfilCliente || 'turista';
+  const perfilLabel   = { turista:'Turista / Vacacional', residente:'Residente local', deportista:'Deportista / Fitness', medico:'Paciente médico', wellness:'Usuario wellness', mixto:'Mixto' }[perfilCliente] || perfilCliente;
+  const occAvg        = Math.round(ocupMensual.reduce(function(a,b){return a+b;},0) / 12);
+  const visitasDia    = candProyecto.visitasDia || '—';
+  const pctInteres    = candProyecto.pctInteres || '—';
+
+  const modeloLabel   = proy.modelo === 1 ? 'Partnership' : 'Hotel Owned';
+  const fechaDoc      = new Date().toLocaleDateString('es-ES', { year:'numeric', month:'long', day:'numeric' });
+
+  // ── Hotel commission ──
+  const hotelPct = (proy.hotelComision && proy.hotelComision.pct) ? proy.hotelComision.pct : (proy.soulbaricPct ? (100-proy.soulbaricPct) : 0);
+  const sbPct    = proy.modelo === 2 ? (proy.soulbaricPct || 0) : null;
+
+  // ── Waterfall rows ──
+  const waterfallRows = proy.modelo === 1 ? [
+    { label: '① Inversor Cámara', desc: retornoEsFixed ? fmt(proy.assetInversor?.retornoFijo||0)+'/mes' : (proy.assetInversor?.retornoPct||0)+'% fact.', color:'#3B82F6' },
+    { label: '② Gastos Operativos', desc: fmt(proy.gastosFijosMes||0)+'/mes', color:'#94a3b8' },
+    { label: '③ Hotel (trimestral)', desc: (proy.hotelComision?.pct||0)+'% fact. neta', color:'#10B981' },
+    { label: '④ Inversor Operativo', desc: (proy.inversorOperativo?.pctMargen||0)+'% beneficio', color:'#8B5CF6' },
+    { label: '⑤ SoulBaric', desc: 'Beneficio restante · Gestión', color:'#C89968' },
+  ] : [
+    { label: '① Hotel (propietario)', desc: (100-(proy.soulbaricPct||0))+'% facturación neta', color:'#10B981' },
+    { label: '② SoulBaric', desc: (proy.soulbaricPct||0)+'% · Gestión y operativa', color:'#C89968' },
+  ];
+
+  // ── Seasonality bar ──
+  const MESES_SHORT = ['E','F','M','A','M','J','J','A','S','O','N','D'];
+  const occMax = Math.max(...ocupMensual);
+
+  // ══════════════════════════════════════════════════════════════
+  // BUILD HTML DOCUMENT
+  // ══════════════════════════════════════════════════════════════
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dossier Inversión · ${locationName}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  @page{size:A4;margin:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:#f5f0eb;color:#1a1410;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+
+  /* PRINT BUTTON */
+  .print-bar{background:#1a1410;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:999;}
+  .print-bar span{color:rgba(200,153,104,.8);font-size:12px;}
+  .print-btn{background:linear-gradient(135deg,#C89968,#a07848);color:#fff;border:none;padding:9px 22px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+  @media print{.print-bar{display:none;}}
+
+  /* PAGE */
+  .page{width:210mm;min-height:297mm;margin:0 auto;background:#fff;position:relative;overflow:hidden;}
+  @media print{.page{margin:0;box-shadow:none;page-break-after:always;}}
+  @media screen{.page{margin:16px auto;box-shadow:0 4px 32px rgba(0,0,0,.18);}}
+
+  /* COVER */
+  .cover{background:linear-gradient(160deg,#0a0806 0%,#1a1410 60%,#2a1f14 100%);min-height:297mm;display:flex;flex-direction:column;padding:0;}
+  .cover-top{padding:32px 40px 0;display:flex;justify-content:space-between;align-items:flex-start;}
+  .cover-logo{display:flex;align-items:center;gap:12px;}
+  .cover-logo-text{color:#C89968;font-size:22px;font-weight:900;letter-spacing:.5px;}
+  .cover-logo-sub{color:rgba(200,153,104,.5);font-size:10px;letter-spacing:2px;text-transform:uppercase;}
+  .cover-date{color:rgba(200,153,104,.45);font-size:10px;text-align:right;margin-top:4px;}
+  .cover-hero{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 40px 0;}
+  .cover-tag{display:inline-block;background:${ti.bg};border:1px solid ${ti.border};color:${ti.color};font-size:10px;font-weight:800;padding:5px 14px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;}
+  .cover-title{font-size:38px;font-weight:900;color:#fff;line-height:1.15;margin-bottom:12px;}
+  .cover-title span{color:#C89968;}
+  .cover-subtitle{font-size:15px;color:rgba(255,255,255,.55);margin-bottom:36px;line-height:1.6;}
+  .cover-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;}
+  .cover-kpi{background:rgba(200,153,104,.06);border:1px solid rgba(200,153,104,.2);border-radius:10px;padding:16px;}
+  .cover-kpi-val{font-size:22px;font-weight:900;color:#C89968;}
+  .cover-kpi-lbl{font-size:9px;color:rgba(200,153,104,.6);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;}
+  .cover-footer{background:rgba(200,153,104,.05);border-top:1px solid rgba(200,153,104,.15);padding:20px 40px;display:flex;justify-content:space-between;align-items:center;}
+  .cover-footer-brand{color:rgba(200,153,104,.5);font-size:10px;}
+  .cover-conf{color:rgba(200,153,104,.3);font-size:9px;text-align:right;}
+
+  /* INTERIOR PAGES */
+  .ipage{background:#fff;min-height:297mm;padding:0;display:flex;flex-direction:column;}
+  .ipage-header{background:linear-gradient(135deg,#0a0806,#1a1410);padding:20px 40px;display:flex;align-items:center;justify-content:space-between;}
+  .ipage-header-brand{color:#C89968;font-size:13px;font-weight:800;}
+  .ipage-header-section{color:rgba(200,153,104,.6);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;}
+  .ipage-body{flex:1;padding:32px 40px;}
+  .ipage-footer{background:#f9f6f2;border-top:1px solid #e8e2d9;padding:12px 40px;display:flex;justify-content:space-between;align-items:center;}
+  .ipage-footer-txt{color:#9e8e7e;font-size:9px;}
+
+  /* SECTION HEADERS */
+  .sec-num{font-size:10px;font-weight:800;color:#C89968;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;}
+  .sec-title{font-size:24px;font-weight:900;color:#1a1410;margin-bottom:6px;}
+  .sec-title span{color:#C89968;}
+  .sec-subtitle{font-size:12px;color:#6b5c4e;margin-bottom:24px;line-height:1.6;}
+  .divider{height:2px;background:linear-gradient(90deg,#C89968,transparent);margin-bottom:24px;border-radius:1px;}
+
+  /* DATA CARDS */
+  .data-grid{display:grid;gap:12px;margin-bottom:20px;}
+  .data-grid-2{grid-template-columns:1fr 1fr;}
+  .data-grid-3{grid-template-columns:1fr 1fr 1fr;}
+  .data-card{background:#f9f6f2;border:1px solid #e8e2d9;border-radius:10px;padding:14px 16px;}
+  .data-card-val{font-size:20px;font-weight:800;color:#1a1410;}
+  .data-card-lbl{font-size:9px;color:#9e8e7e;text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+  .data-card.accent{background:rgba(200,153,104,.07);border-color:rgba(200,153,104,.3);}
+  .data-card.accent .data-card-val{color:#C89968;}
+  .highlight-card{background:linear-gradient(135deg,#0a0806,#1a1410);border-radius:12px;padding:20px 24px;color:#fff;margin-bottom:20px;}
+  .highlight-card-val{font-size:32px;font-weight:900;color:#C89968;}
+  .highlight-card-lbl{font-size:10px;color:rgba(200,153,104,.6);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+  /* INVESTOR CARD */
+  .inv-tipo-card{border:2px solid ${ti.border};background:${ti.bg};border-radius:12px;padding:20px;margin-bottom:20px;}
+  .inv-tipo-title{font-size:16px;font-weight:800;color:${ti.color};margin-bottom:12px;}
+  .inv-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px;}
+  .inv-row:last-child{border-bottom:none;}
+  .inv-row-lbl{color:#6b5c4e;font-weight:600;}
+  .inv-row-val{font-weight:800;color:#1a1410;}
+
+  /* TABLE */
+  .proj-table{width:100%;border-collapse:collapse;font-size:11px;}
+  .proj-table th{background:#f0ebe5;padding:8px 10px;text-align:right;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#6b5c4e;}
+  .proj-table th:first-child{text-align:left;}
+  .proj-table td{padding:8px 10px;border-bottom:1px solid #f0ebe5;text-align:right;}
+  .proj-table td:first-child{text-align:left;font-weight:700;}
+  .proj-table tr:last-child td{background:#f9f6f2;font-weight:800;border-top:2px solid #e8e2d9;}
+
+  /* WATERFALL */
+  .wfall-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;margin-bottom:6px;background:#f9f6f2;}
+  .wfall-num{font-size:16px;width:24px;flex-shrink:0;}
+  .wfall-label{font-size:12px;font-weight:700;flex:1;}
+  .wfall-desc{font-size:11px;color:#6b5c4e;font-weight:600;}
+  .wfall-arrow{font-size:18px;color:#e8e2d9;margin:0 8px;}
+
+  /* SEASONALITY */
+  .seas-bar{display:flex;align-items:flex-end;gap:4px;height:60px;margin-bottom:6px;}
+  .seas-col{display:flex;flex-direction:column;align-items:center;flex:1;}
+  .seas-fill{border-radius:3px 3px 0 0;width:100%;min-height:3px;transition:height .3s;}
+  .seas-lbl{font-size:8px;color:#9e8e7e;margin-top:3px;font-weight:600;}
+
+  /* PROGRESS BAR */
+  .prog-wrap{background:#f0ebe5;border-radius:4px;height:8px;overflow:hidden;margin-top:4px;}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#C89968,#a07848);}
+
+  /* PAYBACK VISUAL */
+  .payback-track{background:#f0ebe5;border-radius:6px;height:14px;overflow:hidden;margin:8px 0;position:relative;}
+  .payback-fill{height:100%;background:linear-gradient(90deg,#10B981,#059669);border-radius:6px;}
+  .payback-marker{position:absolute;top:-2px;height:18px;width:2px;background:#C89968;}
+
+  /* CONTACT */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .contact-item{background:#f9f6f2;border:1px solid #e8e2d9;border-radius:10px;padding:14px;}
+  .contact-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#9e8e7e;margin-bottom:4px;}
+  .contact-val{font-size:13px;font-weight:700;color:#1a1410;}
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <span>📄 Dossier de Inversión · ${escH(proy.nombre)}</span>
+  <button class="print-btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PÁGINA 1 — PORTADA
+══════════════════════════════════════════ -->
+<div class="page">
+<div class="cover">
+  <div class="cover-top">
+    <div class="cover-logo">
+      <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
+        <ellipse cx="50" cy="50" rx="46" ry="46" fill="#1a1410" stroke="#C89968" stroke-width="2"/>
+        <ellipse cx="50" cy="50" rx="30" ry="30" fill="none" stroke="#C89968" stroke-width="1.5" opacity="0.5"/>
+        <circle cx="50" cy="50" r="7" fill="#C89968"/>
+        <line x1="50" y1="4" x2="50" y2="20" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+        <line x1="50" y1="80" x2="50" y2="96" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+        <line x1="4" y1="50" x2="20" y2="50" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+        <line x1="80" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="cover-logo-text">SoulBaric</div>
+        <div class="cover-logo-sub">CellPods · Costa del Sol</div>
+      </div>
+    </div>
+    <div class="cover-date">${fechaDoc}<br><span style="color:rgba(200,153,104,.3);">Documento confidencial</span></div>
+  </div>
+
+  <div class="cover-hero">
+    <div class="cover-tag">${ti.icon} ${escH(ti.label)}</div>
+    <div class="cover-title">Oportunidad de<br><span>Inversión</span></div>
+    <div class="cover-subtitle">
+      ${escH(proy.nombre)}<br>
+      ${escH(locationName)} · ${escH(locationUbic)}<br>
+      Modelo ${modeloLabel}
+    </div>
+    <div class="cover-kpis">
+      <div class="cover-kpi">
+        <div class="cover-kpi-val">${inversionTotal > 0 ? fmtK(inversionTotal) : 'A definir'}</div>
+        <div class="cover-kpi-lbl">Capital requerido</div>
+      </div>
+      <div class="cover-kpi">
+        <div class="cover-kpi-val">${escH(paybackTexto)}</div>
+        <div class="cover-kpi-lbl">Payback estimado</div>
+      </div>
+      <div class="cover-kpi">
+        <div class="cover-kpi-val">${tirTexto !== '—' ? tirTexto + ' TIR' : fmtK(totalRetorno5)}</div>
+        <div class="cover-kpi-lbl">${tirTexto !== '—' ? 'TIR anual estimada' : 'Retorno total 5 años'}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-footer-brand">SoulBaric · Alma Dimo Investments, S.L. · CIF B19929256<br>Ctra. de Cádiz 176, 29600 Marbella · info@soulbaric.com</div>
+    <div class="cover-conf">Este documento contiene información confidencial.<br>Uso exclusivo del destinatario.</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PÁGINA 2 — EL CONCEPTO
+══════════════════════════════════════════ -->
+<div class="page">
+<div class="ipage">
+  <div class="ipage-header">
+    <div class="ipage-header-brand">SoulBaric · CellPods</div>
+    <div class="ipage-header-section">01 · El Concepto</div>
+  </div>
+  <div class="ipage-body">
+    <div class="sec-num">01</div>
+    <div class="sec-title">¿Qué es <span>SoulBaric</span>?</div>
+    <div class="sec-subtitle">Tecnología de bienestar fotónico instalada en espacios premium con modelo de negocio llave en mano.</div>
+    <div class="divider"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+      <div>
+        <div style="font-size:13px;font-weight:800;color:#1a1410;margin-bottom:10px;">🔬 La Tecnología</div>
+        <p style="font-size:11px;color:#6b5c4e;line-height:1.8;margin-bottom:12px;">
+          Los <strong>CellPods de SoulBaric</strong> son cámaras de terapia fotónica avanzada que combinan luz roja e infrarroja cercana para estimular la regeneración celular, mejorar el rendimiento físico y acelerar la recuperación. Cada sesión dura entre 60 y 90 minutos con capacidad para ${plazas} ${plazas > 1 ? 'personas simultáneas' : 'persona'}.
+        </p>
+        <p style="font-size:11px;color:#6b5c4e;line-height:1.8;">
+          La fotobiomodulación es una de las modalidades terapéuticas con mayor evidencia científica del mercado wellness actual, con más de 5.000 estudios clínicos publicados.
+        </p>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:800;color:#1a1410;margin-bottom:10px;">📈 El Mercado</div>
+        <div class="data-card" style="margin-bottom:10px;">
+          <div class="data-card-val" style="font-size:16px;">€5.600M</div>
+          <div class="data-card-lbl">Mercado wellness fotónico Europa 2024</div>
+        </div>
+        <div class="data-card" style="margin-bottom:10px;">
+          <div class="data-card-val" style="font-size:16px;color:#10B981;">+14%</div>
+          <div class="data-card-lbl">Crecimiento anual estimado 2024-2030</div>
+        </div>
+        <div class="data-card">
+          <div class="data-card-val" style="font-size:16px;color:#C89968;">€80–€180</div>
+          <div class="data-card-lbl">Precio medio por sesión en el mercado premium</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:800;color:#1a1410;margin-bottom:12px;">🏗️ El Modelo de Negocio SoulBaric</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+      ${['🔍 Identificar ubicación premium con alto tráfico', '📐 Instalar y configurar el CellPod llave en mano', '🎯 Operar: reservas, formación de personal, soporte', '💰 Liquidar los ingresos entre los participantes según acuerdo'].map(function(s,i){
+        return '<div style="background:#f9f6f2;border-radius:8px;padding:12px;border-left:3px solid #C89968;">' +
+          '<div style="font-size:9px;font-weight:800;color:#C89968;margin-bottom:6px;">PASO 0'+(i+1)+'</div>' +
+          '<div style="font-size:10px;color:#6b5c4e;line-height:1.5;">'+s+'</div>' +
+        '</div>';
+      }).join('')}
+    </div>
+  </div>
+  <div class="ipage-footer">
+    <div class="ipage-footer-txt">SoulBaric · Alma Dimo Investments, S.L. · info@soulbaric.com</div>
+    <div class="ipage-footer-txt">Página 2 de 5 · Confidencial</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PÁGINA 3 — LA UBICACIÓN
+══════════════════════════════════════════ -->
+<div class="page">
+<div class="ipage">
+  <div class="ipage-header">
+    <div class="ipage-header-brand">SoulBaric · CellPods</div>
+    <div class="ipage-header-section">02 · La Ubicación</div>
+  </div>
+  <div class="ipage-body">
+    <div class="sec-num">02</div>
+    <div class="sec-title"><span>${escH(locationName)}</span></div>
+    <div class="sec-subtitle">${escH(locationUbic)} · ${locationTipo.charAt(0).toUpperCase()+locationTipo.slice(1)} · Perfil cliente: ${escH(perfilLabel)}</div>
+    <div class="divider"></div>
+
+    <div class="data-grid data-grid-3" style="margin-bottom:20px;">
+      <div class="data-card accent">
+        <div class="data-card-val">${visitasDia}</div>
+        <div class="data-card-lbl">Visitas/día al centro</div>
+      </div>
+      <div class="data-card accent">
+        <div class="data-card-val">${pctInteres}%</div>
+        <div class="data-card-lbl">% interés en cámara</div>
+      </div>
+      <div class="data-card accent">
+        <div class="data-card-val">${occAvg}%</div>
+        <div class="data-card-lbl">Ocupación media anual</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:800;color:#1a1410;margin-bottom:10px;">📅 Ocupación estimada por mes</div>
+    <div class="seas-bar">
+      ${ocupMensual.map(function(occ, i) {
+        const h = Math.round((occ / occMax) * 52);
+        const col = occ >= 80 ? '#10B981' : occ >= 60 ? '#f59e0b' : '#ef4444';
+        return '<div class="seas-col"><div class="seas-fill" style="height:'+h+'px;background:'+col+';"></div><div class="seas-lbl">'+MESES_SHORT[i]+'</div><div style="font-size:8px;color:#9e8e7e;margin-top:1px;">'+occ+'%</div></div>';
+      }).join('')}
+    </div>
+
+    <div style="margin-top:20px;font-size:12px;font-weight:800;color:#1a1410;margin-bottom:10px;">⚙️ Operativa del Proyecto</div>
+    <div class="data-grid data-grid-3">
+      <div class="data-card">
+        <div class="data-card-val">${horasDia}h</div>
+        <div class="data-card-lbl">Horas operativas/día</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-val">${duracionSesion} min</div>
+        <div class="data-card-lbl">Duración sesión</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-val">${sesMaxDia > 0 ? sesMaxDia : '—'}</div>
+        <div class="data-card-lbl">Sesiones máx/día</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-val">${diasMes} días</div>
+        <div class="data-card-lbl">Días operativos/mes</div>
+      </div>
+      <div class="data-card">
+        <div class="data-card-val">${sesMaxMes > 0 ? sesMaxMes : '—'}</div>
+        <div class="data-card-lbl">Sesiones máx/mes</div>
+      </div>
+      <div class="data-card accent">
+        <div class="data-card-val">${precioSesion > 0 ? precioSesion+'€' : fmtK(baseFactuMes)+'/mes'}</div>
+        <div class="data-card-lbl">${precioSesion > 0 ? 'Precio por sesión' : 'Facturación estimada'}</div>
+      </div>
+    </div>
+
+    <div class="highlight-card" style="margin-top:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;">
+        <div>
+          <div class="highlight-card-val">${fmtK(baseFactuMes * 12)}</div>
+          <div class="highlight-card-lbl">Facturación año 1 (proyectada)</div>
+        </div>
+        <div>
+          <div class="highlight-card-val">${fmtK(baseFactuMes)}</div>
+          <div class="highlight-card-lbl">Facturación media mensual</div>
+        </div>
+        <div>
+          <div class="highlight-card-val">${configNombre || plazas+' plaza'+(plazas>1?'s':'')}</div>
+          <div class="highlight-card-lbl">Configuración cámara</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ipage-footer">
+    <div class="ipage-footer-txt">SoulBaric · Alma Dimo Investments, S.L. · info@soulbaric.com</div>
+    <div class="ipage-footer-txt">Página 3 de 5 · Confidencial</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PÁGINA 4 — TU INVERSIÓN + RETORNO
+══════════════════════════════════════════ -->
+<div class="page">
+<div class="ipage">
+  <div class="ipage-header">
+    <div class="ipage-header-brand">SoulBaric · CellPods</div>
+    <div class="ipage-header-section">03 · Tu Inversión y Retorno</div>
+  </div>
+  <div class="ipage-body">
+    <div class="sec-num">03</div>
+    <div class="sec-title">Tu <span>Inversión</span></div>
+    <div class="sec-subtitle">Condiciones económicas personalizadas · ${escH(ti.label)}</div>
+    <div class="divider"></div>
+
+    <div class="inv-tipo-card">
+      <div class="inv-tipo-title">${ti.icon} ${escH(ti.label)}</div>
+      <div class="inv-row"><span class="inv-row-lbl">Capital requerido</span><span class="inv-row-val">${inversionTotal > 0 ? fmt(inversionTotal) : 'A negociar'}</span></div>
+      <div class="inv-row"><span class="inv-row-lbl">Mecanismo de retorno</span><span class="inv-row-val">${escH(retornoLabel || 'Según acuerdo')}</span></div>
+      <div class="inv-row"><span class="inv-row-lbl">Payback estimado</span><span class="inv-row-val">${escH(paybackTexto)}</span></div>
+      <div class="inv-row"><span class="inv-row-lbl">TIR anual estimada</span><span class="inv-row-val">${tirTexto}</span></div>
+      <div class="inv-row"><span class="inv-row-lbl">Retorno total ${years} años</span><span class="inv-row-val" style="color:#10B981;">${fmtK(totalRetorno5)}</span></div>
+      ${multiplier !== '—' ? '<div class="inv-row"><span class="inv-row-lbl">Multiplicador</span><span class="inv-row-val" style="color:#C89968;">×'+multiplier+'</span></div>' : ''}
+    </div>
+
+    <div style="font-size:12px;font-weight:800;color:#1a1410;margin-bottom:12px;">📊 Tu retorno año a año</div>
+    <table class="proj-table">
+      <thead>
+        <tr>
+          <th>Año</th>
+          <th>Tu retorno</th>
+          <th>Acumulado</th>
+          <th>% recuperado</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${yearlyReturns.map(function(r) {
+          const pct = inversionTotal > 0 ? Math.min(100, Math.round(r.cumRecuperado / inversionTotal * 100)) : 0;
+          const isPayback = paybackMes && r.year === Math.ceil(paybackMes / 12);
+          return '<tr style="'+(isPayback?'background:rgba(16,185,129,.05);':'')+'">' +
+            '<td style="color:#6b5c4e;">' + (isPayback ? '⭐ ' : '') + 'Año '+r.year+'</td>' +
+            '<td style="color:#1a1410;font-weight:800;">'+fmtK(r.retornoAno)+'</td>' +
+            '<td style="color:#10B981;font-weight:800;">'+fmtK(r.cumRecuperado)+'</td>' +
+            '<td><div style="display:flex;align-items:center;gap:8px;">' +
+              '<div class="prog-wrap" style="flex:1;"><div class="prog-fill" style="width:'+pct+'%;"></div></div>' +
+              '<span style="font-size:10px;font-weight:700;min-width:30px;">'+pct+'%</span>' +
+            '</div></td>' +
+          '</tr>';
+        }).join('')}
+        <tr>
+          <td>Total ${years} años</td>
+          <td>${fmtK(totalRetorno5)}</td>
+          <td>${fmtK(totalRetorno5)}</td>
+          <td>${inversionTotal > 0 ? Math.round(totalRetorno5/inversionTotal*100)+'%' : '—'}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ipage-footer">
+    <div class="ipage-footer-txt">SoulBaric · Alma Dimo Investments, S.L. · info@soulbaric.com</div>
+    <div class="ipage-footer-txt">Página 4 de 5 · Confidencial</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PÁGINA 5 — MODELO DE REPARTO + CONTACTO
+══════════════════════════════════════════ -->
+<div class="page">
+<div class="ipage">
+  <div class="ipage-header">
+    <div class="ipage-header-brand">SoulBaric · CellPods</div>
+    <div class="ipage-header-section">04 · Modelo de Reparto · 05 · Próximos Pasos</div>
+  </div>
+  <div class="ipage-body">
+    <div class="sec-num">04</div>
+    <div class="sec-title">Modelo de <span>Reparto</span></div>
+    <div class="sec-subtitle">Distribución de ingresos entre todos los participantes · Modelo ${modeloLabel}</div>
+    <div class="divider"></div>
+
+    <div style="margin-bottom:24px;">
+      ${waterfallRows.map(function(r) {
+        return '<div class="wfall-row"><span class="wfall-num">'+r.label.slice(0,2)+'</span>' +
+          '<span class="wfall-label" style="color:'+r.color+'">'+r.label.slice(2)+'</span>' +
+          '<span class="wfall-desc">'+r.desc+'</span></div>' +
+          (waterfallRows.indexOf(r) < waterfallRows.length-1 ? '<div style="text-align:center;color:#e8e2d9;font-size:16px;margin-bottom:4px;">↓</div>' : '');
+      }).join('')}
+    </div>
+
+    <div style="background:rgba(200,153,104,.06);border:1px solid rgba(200,153,104,.2);border-radius:10px;padding:14px;margin-bottom:24px;font-size:11px;color:#6b5c4e;line-height:1.8;">
+      💡 <strong>Tu posición en el reparto:</strong> como ${escH(ti.label.toLowerCase())}, tu retorno es <strong style="color:#1a1410;">${escH(retornoLabel || 'según los términos pactados')}</strong>, con prioridad sobre los beneficios distribuidos.
+    </div>
+
+    <div class="sec-num" style="margin-top:8px;">05</div>
+    <div class="sec-title">Próximos <span>Pasos</span></div>
+    <div class="divider"></div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+      ${['📞 Reunión de confirmación de términos', '📝 Firma del acuerdo de inversión', '🚀 Instalación y arranque del proyecto'].map(function(s,i){
+        return '<div style="background:#f9f6f2;border-radius:10px;padding:14px;border-top:3px solid #C89968;">' +
+          '<div style="font-size:9px;font-weight:800;color:#C89968;margin-bottom:6px;">PASO 0'+(i+1)+'</div>' +
+          '<div style="font-size:11px;color:#6b5c4e;line-height:1.5;">'+s+'</div>' +
+        '</div>';
+      }).join('')}
+    </div>
+
+    <div style="font-size:12px;font-weight:800;color:#1a1410;margin-bottom:12px;">📬 Contacto</div>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-label">Empresa</div>
+        <div class="contact-val">Alma Dimo Investments, S.L.</div>
+        <div style="font-size:10px;color:#9e8e7e;margin-top:2px;">CIF B19929256</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Dirección</div>
+        <div class="contact-val" style="font-size:12px;">Ctra. de Cádiz 176, 29600 Marbella</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Email</div>
+        <div class="contact-val">info@soulbaric.com</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">Web</div>
+        <div class="contact-val">www.soulbaric.com</div>
+      </div>
+    </div>
+  </div>
+  <div class="ipage-footer">
+    <div class="ipage-footer-txt">SoulBaric · Alma Dimo Investments, S.L. · info@soulbaric.com · www.soulbaric.com</div>
+    <div class="ipage-footer-txt">Página 5 de 5 · Confidencial · ${fechaDoc}</div>
+  </div>
+</div>
+</div>
+
+<script>
+  // Auto-open print on load only if query param ?print=1
+  if (window.location.search.includes('print=1')) window.print();
+<\/script>
+</body>
+</html>\`;
+
+  const w = window.open('', '_blank', 'width=900,height=1100');
+  if (!w) { toast('⚠️ Permite ventanas emergentes para generar el dossier', true); return; }
+  w.document.write(html);
+  w.document.close();
+}
 </script>
+
+<!-- ═══ MODAL: SELECTOR DOSSIER ═══ -->
+<div class="modal" id="modal-dossier-sel">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-header">
+      <span class="modal-title">📄 Generar Dossier de Inversión</span>
+      <button class="modal-close" onclick="closeModal('modal-dossier-sel')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <p style="font-size:12px;color:var(--text-m);margin-bottom:16px;">Selecciona el perfil del inversor para personalizar el dossier:</p>
+      <input type="hidden" id="dossier-proy-id">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="generarDossierInversor(document.getElementById('dossier-proy-id').value,'asset')"
+          style="padding:14px 16px;border-radius:10px;border:2px solid #3B82F6;background:rgba(59,130,246,.06);font-size:13px;font-weight:700;cursor:pointer;text-align:left;font-family:inherit;color:#1d4ed8;">
+          📷 Inversor de Cámara (Asset)<br>
+          <span style="font-size:10px;font-weight:400;color:#6b7280;">Financia el hardware · Retorno fijo o % facturación</span>
+        </button>
+        <button onclick="generarDossierInversor(document.getElementById('dossier-proy-id').value,'operativo')"
+          style="padding:14px 16px;border-radius:10px;border:2px solid #8B5CF6;background:rgba(139,92,246,.06);font-size:13px;font-weight:700;cursor:pointer;text-align:left;font-family:inherit;color:#6d28d9;">
+          ⚙️ Inversor Operativo<br>
+          <span style="font-size:10px;font-weight:400;color:#6b7280;">Financia la puesta en marcha · % sobre beneficio</span>
+        </button>
+        <button onclick="generarDossierInversor(document.getElementById('dossier-proy-id').value,'full')"
+          style="padding:14px 16px;border-radius:10px;border:2px solid var(--gold);background:rgba(200,153,104,.07);font-size:13px;font-weight:700;cursor:pointer;text-align:left;font-family:inherit;color:var(--gold2);">
+          💎 Inversor Completo (Full)<br>
+          <span style="font-size:10px;font-weight:400;color:#6b7280;">Financia cámara + operativa · Doble participación</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
