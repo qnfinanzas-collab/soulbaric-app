@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="/auth.js"></script>
+  <script>(function(){if(typeof SB_AUTH!=='undefined'&&!SB_AUTH.isAuthenticated()){window.location.replace("/login.html?redirect="+encodeURIComponent(window.location.pathname));}})()</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoulBaric · Inversiones</title>
+  <style>
+    :root {
+      --gold:#C89968; --gold2:#a07848;
+      --dark:#F0EAE3; --card:#FFFFFF; --card2:#FAF6F2; --card3:#F0EAE3;
+      --border:rgba(160,130,100,0.2); --border2:rgba(160,130,100,0.38);
+      --text:#1C1714; --text-m:#6B5C4E; --text-s:#9A8A7A;
+      --radius:12px; --shadow:0 2px 16px rgba(0,0,0,0.07);
+      --blue:#3B82F6; --green:#10B981; --purple:#8B5CF6; --red:#EF4444;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;}
+    a{text-decoration:none;}
+
+    /* HEADER */
+    header{background:linear-gradient(135deg,#0a0806 0%,#1a1410 100%);border-bottom:2px solid var(--gold);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .hdr-brand{display:flex;align-items:center;gap:10px;}
+    .hdr-logo{width:36px;height:36px;}
+    .hdr-brand-text{display:flex;flex-direction:column;}
+    .hdr-brand-name{font-size:15px;font-weight:800;color:var(--gold);letter-spacing:.5px;}
+    .hdr-brand-sub{font-size:10px;color:rgba(200,153,104,.55);letter-spacing:.3px;}
+    nav{display:flex;gap:4px;align-items:center;}
+    nav a{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;color:rgba(200,153,104,0.65);transition:all .2s;border:1px solid transparent;}
+    nav a:hover{background:rgba(200,153,104,0.12);color:var(--gold);}
+    nav a.active{background:rgba(200,153,104,0.18);color:var(--gold);border:1px solid rgba(200,153,104,0.35);}
+
+    /* LAYOUT */
+    .app-body{display:flex;height:calc(100vh - 56px);overflow:hidden;}
+
+    /* SIDEBAR */
+    .sidebar{width:200px;background:#fff;border-right:1px solid var(--border2);display:flex;flex-direction:column;padding:16px 10px;gap:4px;flex-shrink:0;}
+    .sidebar-item{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;color:var(--text-m);cursor:pointer;transition:all .18s;border:1px solid transparent;}
+    .sidebar-item:hover{background:var(--card2);color:var(--text);}
+    .sidebar-item.active{background:rgba(200,153,104,0.13);color:var(--gold);border-color:rgba(200,153,104,0.3);}
+    .sidebar-icon{font-size:16px;width:20px;text-align:center;}
+
+    /* MAIN CONTENT */
+    .main{flex:1;overflow-y:auto;padding:24px;}
+
+    /* SECTIONS */
+    .section{display:none;}
+    .section.active{display:block;}
+
+    /* CARDS */
+    .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px;}
+    .card2{background:var(--card2);border-radius:10px;border:1px solid var(--border);padding:16px;}
+
+    /* TOOLBAR */
+    .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+    .toolbar h2{font-size:20px;font-weight:700;color:var(--text);flex:1;}
+    .btn-primary{padding:8px 16px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px);}
+    .btn-ghost{padding:8px 14px;background:transparent;color:var(--gold);border:1px solid var(--border2);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;}
+    .btn-ghost:hover{background:rgba(200,153,104,0.08);}
+    .btn-danger{padding:6px 12px;background:transparent;color:var(--red);border:1px solid rgba(239,68,68,0.3);border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;}
+    .btn-danger:hover{background:rgba(239,68,68,0.07);}
+    .search-input{padding:8px 12px;border:1px solid var(--border2);border-radius:8px;font-size:12px;color:var(--text);background:var(--card);outline:none;width:200px;}
+    .search-input:focus{border-color:var(--gold);}
+
+    /* STATS BAR */
+    .stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
+    .stat-val{font-size:20px;font-weight:800;color:var(--gold);}
+    .stat-lbl{font-size:10px;color:var(--text-s);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+
+    /* INVESTOR GRID */
+    .inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+    .inv-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:box-shadow .2s;}
+    .inv-card:hover{box-shadow:0 4px 24px rgba(200,153,104,.15);}
+    .inv-card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .inv-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0;}
+    .inv-name{font-size:14px;font-weight:700;color:var(--text);}
+    .inv-empresa{font-size:11px;color:var(--text-s);}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+    .badge-asset{background:rgba(59,130,246,.1);color:#2563EB;border:1px solid rgba(59,130,246,.25);}
+    .badge-operativo{background:rgba(139,92,246,.1);color:#7C3AED;border:1px solid rgba(139,92,246,.25);}
+    .badge-full{background:rgba(200,153,104,.15);color:var(--gold2);border:1px solid rgba(200,153,104,.35);}
+    .badge-location{background:rgba(16,185,129,.1);color:#059669;border:1px solid rgba(16,185,129,.25);}
+    .badge-m1{background:rgba(59,130,246,.1);color:#2563EB;border:1px solid rgba(59,130,246,.25);}
+    .badge-m2{background:rgba(139,92,246,.1);color:#7C3AED;border:1px solid rgba(139,92,246,.25);}
+    .badge-activo{background:rgba(16,185,129,.1);color:#059669;border:1px solid rgba(16,185,129,.25);}
+    .badge-pausado{background:rgba(234,179,8,.1);color:#B45309;border:1px solid rgba(234,179,8,.25);}
+    .badge-finalizado{background:rgba(100,116,139,.1);color:#475569;border:1px solid rgba(100,116,139,.25);}
+    .inv-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+    .inv-metric-val{font-size:13px;font-weight:700;color:var(--text);}
+    .inv-metric-lbl{font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.4px;}
+    .inv-card-actions{display:flex;gap:8px;margin-top:12px;}
+
+    /* PROJECT CARDS */
+    .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+    .proj-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+    .proj-card-name{font-size:15px;font-weight:700;margin-bottom:4px;}
+    .proj-card-partner{font-size:11px;color:var(--text-s);margin-bottom:10px;}
+    .proj-card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+    .proj-card-rev{font-size:22px;font-weight:800;color:var(--gold);}
+    .proj-card-rev-lbl{font-size:10px;color:var(--text-s);}
+
+    /* MODAL */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+    .modal.open{display:flex;}
+    .modal-box{background:var(--card);border-radius:16px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+    .modal-box.wide{max-width:780px;}
+    .modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);z-index:10;border-radius:16px 16px 0 0;}
+    .modal-title{font-size:16px;font-weight:800;color:var(--text);}
+    .modal-close{width:30px;height:30px;border:none;background:var(--card3);border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-s);}
+    .modal-body{padding:20px 24px 24px;}
+    .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;}
+
+    /* FORM */
+    .form-row{display:grid;gap:14px;margin-bottom:14px;}
+    .form-row.cols2{grid-template-columns:1fr 1fr;}
+    .form-row.cols3{grid-template-columns:1fr 1fr 1fr;}
+    .form-group{display:flex;flex-direction:column;gap:5px;}
+    label{font-size:11px;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:.5px;}
+    input,select,textarea{padding:9px 12px;border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text);background:var(--card);outline:none;transition:border-color .18s;font-family:inherit;}
+    input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+    textarea{resize:vertical;min-height:70px;}
+    .form-section{margin-bottom:18px;}
+    .form-section-title{font-size:12px;font-weight:800;color:var(--text-m);text-transform:uppercase;letter-spacing:.6px;padding:8px 0 6px;border-bottom:1px solid var(--border);margin-bottom:12px;}
+
+    /* TABS (modal) */
+    .modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px;}
+    .modal-tab{padding:10px 18px;font-size:12px;font-weight:700;color:var(--text-s);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .18s;}
+    .modal-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+    .modal-tab-panel{display:none;}
+    .modal-tab-panel.active{display:block;}
+
+    /* TOGGLE */
+    .toggle-group{display:flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden;}
+    .toggle-btn{flex:1;padding:8px 12px;border:none;background:transparent;font-size:12px;font-weight:600;color:var(--text-m);cursor:pointer;transition:all .18s;}
+    .toggle-btn.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;}
+
+    /* RADIO */
+    .radio-group{display:flex;gap:12px;}
+    .radio-label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-m);cursor:pointer;}
+    .radio-label input[type=radio]{width:15px;height:15px;accent-color:var(--gold);}
+
+    /* SIMULATION TABLE */
+    .sim-table{width:100%;border-collapse:collapse;font-size:12px;}
+    .sim-table th{background:var(--card3);padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-m);}
+    .sim-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
+    .sim-table tr:last-child td{border-bottom:none;}
+    .sim-row-asset td{color:var(--blue);}
+    .sim-row-hotel td{color:var(--green);}
+    .sim-row-op td{color:var(--purple);}
+    .sim-row-sb td{color:var(--gold2);}
+    .sim-row-total{font-weight:800;}
+    .sim-sep{height:4px;background:var(--card3);}
+
+    /* LIQUIDACION */
+    .liq-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;height:100%;}
+    .liq-sidebar{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;overflow-y:auto;max-height:calc(100vh - 200px);}
+    .liq-proj-item{padding:10px 12px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-m);transition:all .18s;margin-bottom:4px;border:1px solid transparent;}
+    .liq-proj-item:hover{background:var(--card2);}
+    .liq-proj-item.active{background:rgba(200,153,104,.13);color:var(--gold);border-color:rgba(200,153,104,.3);}
+    .liq-main{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;overflow-y:auto;max-height:calc(100vh - 200px);}
+
+    /* HISTORY TABLE */
+    .hist-table{width:100%;border-collapse:collapse;font-size:12px;}
+    .hist-table th{background:var(--card3);padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-m);}
+    .hist-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
+    .hist-table tr:hover td{background:var(--card2);}
+    .hist-table .q-row td{background:rgba(200,153,104,.05);}
+
+    /* RESULT CARD */
+    .result-card{background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-top:14px;}
+    .result-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
+    .result-row:last-child{border-bottom:none;}
+    .result-row.total{font-weight:800;font-size:14px;margin-top:4px;padding-top:8px;}
+    .debt-badge{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px;}
+
+    /* BUSINESS PLAN */
+    .bp-controls{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px;}
+    .bp-controls .form-group{min-width:160px;}
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
+    .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+    .kpi-val{font-size:18px;font-weight:800;color:var(--gold);}
+    .kpi-lbl{font-size:10px;color:var(--text-s);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+    .kpi-card.payback .kpi-val{font-size:16px;color:var(--blue);}
+
+    /* STACKED BAR */
+    .bar-chart{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+    .bar-row{display:flex;align-items:center;gap:10px;}
+    .bar-lbl{font-size:11px;font-weight:600;color:var(--text-m);width:50px;text-align:right;flex-shrink:0;}
+    .bar-track{flex:1;height:24px;border-radius:6px;overflow:hidden;display:flex;background:var(--card3);}
+    .bar-seg{height:100%;transition:width .4s;}
+    .bar-seg-asset{background:var(--blue);}
+    .bar-seg-gastos{background:#94a3b8;}
+    .bar-seg-hotel{background:var(--green);}
+    .bar-seg-op{background:var(--purple);}
+    .bar-seg-sb{background:var(--gold);}
+    .bar-total{font-size:11px;font-weight:700;color:var(--text-m);width:70px;flex-shrink:0;}
+    .bar-legend{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+    .bar-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--text-m);}
+    .bar-legend-dot{width:10px;height:10px;border-radius:2px;}
+
+    /* TOAST */
+    #toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+    .toast{padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideIn .25s ease;max-width:320px;}
+    .toast.ok{background:linear-gradient(135deg,#10B981,#059669);}
+    .toast.err{background:linear-gradient(135deg,#EF4444,#DC2626);}
+    @keyframes slideIn{from{transform:translateX(60px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+    /* EMPTY STATE */
+    .empty{text-align:center;padding:48px 20px;color:var(--text-s);}
+    .empty-icon{font-size:48px;margin-bottom:12px;}
+    .empty-msg{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--text-m);}
+    .empty-sub{font-size:12px;}
+
+    /* RESPONSIVE SIDEBAR */
+    @media(max-width:700px){
+      .app-body{flex-direction:column;}
+      .sidebar{width:100%;flex-direction:row;height:auto;overflow-x:auto;padding:8px 10px;border-right:none;border-bottom:1px solid var(--border2);}
+      .sidebar-item{white-space:nowrap;font-size:11px;padding:7px 10px;}
+      .main{padding:14px;}
+      .liq-layout{grid-template-columns:1fr;}
+      .form-row.cols2,.form-row.cols3{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr-brand">
+    <svg class="hdr-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="50" rx="46" ry="46" fill="#1a1410" stroke="#C89968" stroke-width="2"/>
+      <ellipse cx="50" cy="50" rx="30" ry="30" fill="none" stroke="#C89968" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="50" cy="50" r="7" fill="#C89968"/>
+      <line x1="50" y1="4" x2="50" y2="20" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+      <line x1="50" y1="80" x2="50" y2="96" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+      <line x1="4" y1="50" x2="20" y2="50" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+      <line x1="80" y1="50" x2="96" y2="50" stroke="#C89968" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <div class="hdr-brand-text">
+      <span class="hdr-brand-name">SoulBaric</span>
+      <span class="hdr-brand-sub">Inversiones · Costa del Sol</span>
+    </div>
+  </div>
+  <nav>
+    <a href="home.html">🏠 Inicio</a>
+    <a href="index.html">📐 Calculadora</a>
+    <a href="crm.html">👥 CRM</a>
+    <a href="inversores.html" class="active">💼 Inversiones</a>
+  </nav>
+</header>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-item active" onclick="showSection('inversores')" id="nav-inversores">
+      <span class="sidebar-icon">👤</span>Inversores
+    </div>
+    <div class="sidebar-item" onclick="showSection('proyectos')" id="nav-proyectos">
+      <span class="sidebar-icon">📁</span>Proyectos
+    </div>
+    <div class="sidebar-item" onclick="showSection('liquidaciones')" id="nav-liquidaciones">
+      <span class="sidebar-icon">🧾</span>Liquidaciones
+    </div>
+    <div class="sidebar-item" onclick="showSection('businessplan')" id="nav-businessplan">
+      <span class="sidebar-icon">📊</span>Business Plan
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══ SECTION: INVERSORES ═══ -->
+    <section id="sec-inversores" class="section active">
+      <div class="toolbar">
+        <h2>👤 Inversores</h2>
+        <input class="search-input" type="text" id="inv-search" placeholder="Buscar inversor…" oninput="renderInversores()">
+        <button class="btn-primary" onclick="openModalInversor()">+ Nuevo Inversor</button>
+      </div>
+      <div class="stats-bar" id="inv-stats"></div>
+      <div class="inv-grid" id="inv-grid"></div>
+    </section>
+
+    <!-- ═══ SECTION: PROYECTOS ═══ -->
+    <section id="sec-proyectos" class="section">
+      <div class="toolbar">
+        <h2>📁 Proyectos de Inversión</h2>
+        <button class="btn-primary" onclick="openModalProyecto()">+ Nuevo Proyecto</button>
+      </div>
+      <div class="proj-grid" id="proj-grid"></div>
+    </section>
+
+    <!-- ═══ SECTION: LIQUIDACIONES ═══ -->
+    <section id="sec-liquidaciones" class="section">
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;">🧾 Liquidaciones</h2>
+      <div class="liq-layout">
+        <div class="liq-sidebar" id="liq-proj-list">
+          <div style="font-size:10px;font-weight:700;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Proyectos</div>
+        </div>
+        <div class="liq-main" id="liq-main">
+          <div class="empty">
+            <div class="empty-icon">🧾</div>
+            <div class="empty-msg">Selecciona un proyecto</div>
+            <div class="empty-sub">para registrar liquidaciones mensuales</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SECTION: BUSINESS PLAN ═══ -->
+    <section id="sec-businessplan" class="section">
+      <div class="toolbar">
+        <h2>📊 Business Plan</h2>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label>Proyecto</label>
+        <select id="bp-proj-select" onchange="renderBusinessPlan()" style="margin-top:5px;width:280px;">
+          <option value="">— Seleccionar proyecto —</option>
+        </select>
+      </div>
+      <div id="bp-content" style="display:none;">
+        <div class="bp-controls">
+          <div class="form-group">
+            <label>Años proyección</label>
+            <select id="bp-years" onchange="renderBusinessPlan()">
+              <option value="3">3 años</option>
+              <option value="5" selected>5 años</option>
+              <option value="7">7 años</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Crecimiento anual %</label>
+            <input type="number" id="bp-growth" value="5" min="0" max="100" oninput="renderBusinessPlan()">
+          </div>
+          <div class="form-group">
+            <label>Ocupación media %</label>
+            <input type="number" id="bp-ocupacion" value="70" min="1" max="100" oninput="renderBusinessPlan()">
+          </div>
+        </div>
+        <div class="kpi-grid" id="bp-kpis"></div>
+        <div class="card" id="bp-table-wrap"></div>
+        <div class="card" style="margin-top:16px;" id="bp-chart-wrap"></div>
+      </div>
+      <div id="bp-empty" class="empty">
+        <div class="empty-icon">📊</div>
+        <div class="empty-msg">Selecciona un proyecto para ver su Business Plan</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══ MODAL: INVERSOR ═══ -->
+<div class="modal" id="modal-inversor">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-inv-title">Nuevo Inversor</span>
+      <button class="modal-close" onclick="closeModal('modal-inversor')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="inv-id">
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="inv-nombre" placeholder="Carlos Martínez" required>
+        </div>
+        <div class="form-group">
+          <label>Empresa</label>
+          <input type="text" id="inv-empresa" placeholder="CM Inversiones SL">
+        </div>
+      </div>
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>NIF / CIF</label>
+          <input type="text" id="inv-nif" placeholder="B12345678">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="inv-email" placeholder="carlos@empresa.es">
+        </div>
+      </div>
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" id="inv-telefono" placeholder="612 345 678">
+        </div>
+        <div class="form-group">
+          <label>Tipo de Inversor</label>
+          <select id="inv-tipo">
+            <option value="asset">📷 Inversor Cámara (Asset)</option>
+            <option value="operativo">⚙️ Inversor Operativo</option>
+            <option value="full">💎 Inversor Completo (Full)</option>
+            <option value="location">🏨 Location Partner</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Notas</label>
+          <textarea id="inv-notas" placeholder="Observaciones sobre el inversor…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-inversor')">Cancelar</button>
+      <button class="btn-primary" onclick="saveInversor()">Guardar Inversor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PROYECTO ═══ -->
+<div class="modal" id="modal-proyecto">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-proj-title">Nuevo Proyecto</span>
+      <button class="modal-close" onclick="closeModal('modal-proyecto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="proj-id">
+      <div class="modal-tabs">
+        <div class="modal-tab active" onclick="switchProjTab('config')">⚙️ Configuración</div>
+        <div class="modal-tab" onclick="switchProjTab('mesa')">🤝 Mesa de Inversión</div>
+        <div class="modal-tab" onclick="switchProjTab('sim')">📊 Simulación</div>
+      </div>
+
+      <!-- TAB: CONFIGURACIÓN -->
+      <div class="modal-tab-panel active" id="pt-config">
+        <div class="form-row cols2">
+          <div class="form-group">
+            <label>Nombre del Proyecto *</label>
+            <input type="text" id="proj-nombre" placeholder="Ej: SoulBaric Marbella Club" required>
+          </div>
+          <div class="form-group">
+            <label>Candidato CRM vinculado</label>
+            <select id="proj-candidato">
+              <option value="">— Sin vincular —</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group">
+            <label>Fecha de Inicio</label>
+            <input type="date" id="proj-fecha">
+          </div>
+          <div class="form-group">
+            <label>Estado</label>
+            <select id="proj-estado">
+              <option value="activo">Activo</option>
+              <option value="pausado">Pausado</option>
+              <option value="finalizado">Finalizado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Modelo de Inversión</label>
+            <div class="toggle-group" style="margin-top:4px;">
+              <button class="toggle-btn active" id="toggle-m1" onclick="setModelo(1)">🤝 Modelo 1 — Partnership</button>
+              <button class="toggle-btn" id="toggle-m2" onclick="setModelo(2)">🏨 Modelo 2 — Hotel Owned</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-row cols2">
+          <div class="form-group">
+            <label>Facturación mensual estimada (€)</label>
+            <input type="number" id="proj-factu" min="0" step="100" placeholder="15000" oninput="updateSimulacion()">
+          </div>
+          <div class="form-group">
+            <label>Sesiones/mes estimadas</label>
+            <input type="number" id="proj-sesiones" min="0" placeholder="80">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: MESA DE INVERSIÓN -->
+      <div class="modal-tab-panel" id="pt-mesa">
+        <!-- Modelo 1 fields -->
+        <div id="mesa-m1">
+          <div class="form-section">
+            <div class="form-section-title" style="color:var(--blue);">📷 Inversor Cámara (Asset)</div>
+            <div class="form-row cols2">
+              <div class="form-group">
+                <label>Inversor cámara</label>
+                <select id="m1-asset-inv" onchange="updateSimulacion()">
+                  <option value="soulbaric_propio">SoulBaric (fondos propios)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Inversión total cámara (€)</label>
+                <input type="number" id="m1-asset-total" min="0" step="100" placeholder="25000" oninput="updateSimulacion()">
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:10px;">
+              <label>Mecanismo de retorno</label>
+              <div class="radio-group" style="margin-top:6px;">
+                <label class="radio-label">
+                  <input type="radio" name="m1-mecanismo" value="fijo" checked onchange="toggleMecanismo()"> Fijo mensual €
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="m1-mecanismo" value="pct" onchange="toggleMecanismo()"> % Facturación neta
+                </label>
+              </div>
+            </div>
+            <div class="form-row cols2">
+              <div class="form-group" id="m1-ret-fijo-wrap">
+                <label>Retorno fijo mensual (€)</label>
+                <input type="number" id="m1-ret-fijo" min="0" step="50" placeholder="800" oninput="updateSimulacion()">
+              </div>
+              <div class="form-group" id="m1-ret-pct-wrap" style="display:none;">
+                <label>% sobre facturación neta</label>
+                <input type="number" id="m1-ret-pct" min="0" max="100" step="0.5" placeholder="8" oninput="updateSimulacion()">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">💰 Gastos Fijos</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Gastos fijos mensuales (€)</label>
+                <input type="number" id="m1-gastos" min="0" step="50" placeholder="1200" oninput="updateSimulacion()">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title" style="color:var(--green);">🏨 Location Partner (Hotel)</div>
+            <div class="form-row cols2">
+              <div class="form-group">
+                <label>Location Partner</label>
+                <select id="m1-hotel-inv" onchange="updateSimulacion()">
+                  <option value="">— Sin location partner —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>% sobre facturación neta trimestral</label>
+                <input type="number" id="m1-hotel-pct" min="0" max="40" step="0.5" placeholder="20" oninput="updateSimulacion()">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title" style="color:var(--purple);">⚙️ Inversor Operativo</div>
+            <div class="form-row cols2">
+              <div class="form-group">
+                <label>Inversor operativo</label>
+                <select id="m1-op-inv" onchange="updateSimulacion()">
+                  <option value="ninguno">Ninguno</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Inversión total operativa (€)</label>
+                <input type="number" id="m1-op-total" min="0" step="100" placeholder="10000" oninput="updateSimulacion()">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>% sobre margen post-hotel trimestral</label>
+                <input type="number" id="m1-op-pct" min="0" max="100" step="0.5" placeholder="30" oninput="updateSimulacion()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modelo 2 fields -->
+        <div id="mesa-m2" style="display:none;">
+          <div class="form-section">
+            <div class="form-section-title" style="color:var(--green);">🏨 Hotel Propietario</div>
+            <div class="form-row cols2">
+              <div class="form-group">
+                <label>Location Partner (hotel propietario)</label>
+                <select id="m2-hotel-inv">
+                  <option value="">— Seleccionar hotel —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>% comisión SoulBaric sobre facturación neta mensual</label>
+                <input type="number" id="m2-pct" min="0" max="100" step="0.5" placeholder="35" oninput="updateSimulacion()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Notas del acuerdo</label>
+              <textarea id="m2-notas" placeholder="Detalles del acuerdo con el hotel…"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: SIMULACIÓN -->
+      <div class="modal-tab-panel" id="pt-sim">
+        <div id="sim-content"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-proyecto')">Cancelar</button>
+      <button class="btn-primary" onclick="saveProyecto()">Guardar Proyecto</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: LIQUIDACION ═══ -->
+<div class="modal" id="modal-liquidacion">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Editar Liquidación</span>
+      <button class="modal-close" onclick="closeModal('modal-liquidacion')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-liq-content"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-liquidacion')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════
+const LS_INV    = 'soulbaric_inversores';
+const LS_PROY   = 'soulbaric_inv_proyectos';
+const LS_LIQUID = 'soulbaric_inv_liquidaciones';
+
+function getInversores() { try { return JSON.parse(localStorage.getItem(LS_INV)||'[]'); } catch(e){ return []; } }
+function saveInversores(d) { localStorage.setItem(LS_INV, JSON.stringify(d)); }
+function getInvProyectos() { try { return JSON.parse(localStorage.getItem(LS_PROY)||'[]'); } catch(e){ return []; } }
+function saveInvProyectos(d) { localStorage.setItem(LS_PROY, JSON.stringify(d)); }
+function getLiquidaciones() { try { return JSON.parse(localStorage.getItem(LS_LIQUID)||'[]'); } catch(e){ return []; } }
+function saveLiquidaciones(d) { localStorage.setItem(LS_LIQUID, JSON.stringify(d)); }
+function getCRMCandidatos() { try { return JSON.parse(localStorage.getItem('soulbaric_candidatos')||'[]'); } catch(e){ return []; } }
+
+function uuid() { return 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function fmt(n) { return new Intl.NumberFormat('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n||0)+'€'; }
+function fmtK(n) { const v=n||0; return Math.abs(v)>=1000 ? (v/1000).toFixed(1)+'k€' : fmt(v); }
+function escH(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// ═══════════════════════════════════════════════
+// DEMO DATA
+// ═══════════════════════════════════════════════
+const DEMO_INVERSORES = [
+  { id:'inv001', nombre:'Carlos Martínez', empresa:'CM Inversiones SL', nif:'B12345678', email:'carlos@cminv.es', telefono:'612345678', tipo:'asset', notas:'Inversor en hardware fotónico. Horizonte 5 años.' },
+  { id:'inv002', nombre:'Ana López', empresa:'', nif:'12345678A', email:'ana.lopez@gmail.com', telefono:'623456789', tipo:'operativo', notas:'Inversora en operativa. Conoce el sector wellness.' },
+  { id:'inv003', nombre:'Marbella Club Hotel', empresa:'Marbella Club SL', nif:'B29123456', email:'gm@marbellaclub.com', telefono:'952777300', tipo:'location', notas:'Location Partner premium. Acuerdo marco 5 años.' },
+];
+
+const DEMO_PROYECTOS = [
+  {
+    id:'proj001',
+    nombre:'SoulBaric Marbella Club',
+    candidatoId:'',
+    modelo:1,
+    fechaInicio:'2024-06-01',
+    estado:'activo',
+    factuMensual:18000,
+    sesiones:95,
+    assetInversor:{ inversorId:'inv001', totalInversion:28000, mecanismo:'fijo', retornoFijo:900, retornoPct:0 },
+    gastosFijosMes:1500,
+    hotelComision:{ inversorId:'inv003', nombre:'Marbella Club Hotel', pct:22 },
+    inversorOperativo:{ inversorId:'inv002', totalInversion:12000, pctMargen:30 },
+    deudaAcumuladaAsset:0
+  }
+];
+
+function initDemoData() {
+  if (!localStorage.getItem(LS_INV)) saveInversores(DEMO_INVERSORES);
+  if (!localStorage.getItem(LS_PROY)) saveInvProyectos(DEMO_PROYECTOS);
+}
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+function toast(msg, isErr=false) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast ' + (isErr ? 'err' : 'ok');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.style.opacity='0', 2800);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+let currentSection = 'inversores';
+
+function showSection(name) {
+  currentSection = name;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  const sec = document.getElementById('sec-'+name);
+  const nav = document.getElementById('nav-'+name);
+  if (sec) sec.classList.add('active');
+  if (nav) nav.classList.add('active');
+
+  if (name === 'inversores') renderInversores();
+  if (name === 'proyectos') renderProyectos();
+  if (name === 'liquidaciones') renderLiquidaciones();
+  if (name === 'businessplan') { populateBPSelect(); renderBusinessPlan(); }
+}
+
+// ═══════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.addEventListener('click', e => {
+  ['modal-inversor','modal-proyecto','modal-liquidacion'].forEach(id => {
+    const m = document.getElementById(id);
+    if (e.target === m) closeModal(id);
+  });
+});
+
+// ═══════════════════════════════════════════════
+// INVERSORES — RENDER
+// ═══════════════════════════════════════════════
+function tipoLabel(tipo) {
+  const map = { asset:'📷 Cámara', operativo:'⚙️ Operativo', full:'💎 Completo', location:'🏨 Location' };
+  return map[tipo] || tipo;
+}
+function tipoBadgeClass(tipo) {
+  const map = { asset:'badge-asset', operativo:'badge-operativo', full:'badge-full', location:'badge-location' };
+  return map[tipo] || 'badge-full';
+}
+function initials(nombre) {
+  return (nombre||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function calcInversorMetrics(inv) {
+  const proyectos = getInvProyectos();
+  const liquidaciones = getLiquidaciones();
+  let totalInv = 0, totalRec = 0;
+  proyectos.forEach(p => {
+    if (p.assetInversor && p.assetInversor.inversorId === inv.id) totalInv += (p.assetInversor.totalInversion||0);
+    if (p.inversorOperativo && p.inversorOperativo.inversorId === inv.id) totalInv += (p.inversorOperativo.totalInversion||0);
+    // Calculate recovered from liquidaciones
+    const liqsP = liquidaciones.filter(l => l.proyId === p.id);
+    liqsP.forEach(l => {
+      if (p.assetInversor && p.assetInversor.inversorId === inv.id) totalRec += (l.retornoPagado||0);
+      if (p.inversorOperativo && p.inversorOperativo.inversorId === inv.id) totalRec += (l.pagoOp||0);
+    });
+  });
+  const roi = totalInv > 0 ? ((totalRec / totalInv) * 100).toFixed(1) : '—';
+  return { totalInv, totalRec, roi };
+}
+
+function renderInversores() {
+  const q = (document.getElementById('inv-search').value||'').toLowerCase();
+  let invs = getInversores();
+  if (q) invs = invs.filter(i => (i.nombre+i.empresa+i.tipo).toLowerCase().includes(q));
+
+  // Stats
+  const all = getInversores();
+  const totalCap = all.reduce((s,i) => { const m=calcInversorMetrics(i); return s+m.totalInv; }, 0);
+  const totalRec = all.reduce((s,i) => { const m=calcInversorMetrics(i); return s+m.totalRec; }, 0);
+  const rois = all.map(i => { const m=calcInversorMetrics(i); return m.totalInv>0 ? (m.totalRec/m.totalInv)*100 : 0; });
+  const avgRoi = rois.length ? (rois.reduce((a,b)=>a+b,0)/rois.length).toFixed(1) : '0.0';
+
+  document.getElementById('inv-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${all.length}</div><div class="stat-lbl">Total Inversores</div></div>
+    <div class="stat-card"><div class="stat-val">${fmtK(totalCap)}</div><div class="stat-lbl">Capital Total</div></div>
+    <div class="stat-card"><div class="stat-val">${fmtK(totalRec)}</div><div class="stat-lbl">Capital Recuperado</div></div>
+    <div class="stat-card"><div class="stat-val">${avgRoi}%</div><div class="stat-lbl">Rendimiento Medio</div></div>
+  `;
+
+  if (!invs.length) {
+    document.getElementById('inv-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">👤</div><div class="empty-msg">Sin inversores</div><div class="empty-sub">Crea el primer inversor con el botón superior</div></div>`;
+    return;
+  }
+
+  document.getElementById('inv-grid').innerHTML = invs.map(inv => {
+    const m = calcInversorMetrics(inv);
+    return `<div class="inv-card">
+      <div class="inv-card-header">
+        <div class="inv-avatar">${escH(initials(inv.nombre))}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="inv-name">${escH(inv.nombre)}</div>
+          <div class="inv-empresa">${escH(inv.empresa||'—')}</div>
+        </div>
+        <span class="badge ${tipoBadgeClass(inv.tipo)}">${tipoLabel(inv.tipo)}</span>
+      </div>
+      ${inv.notas ? `<div style="font-size:11px;color:var(--text-s);margin-bottom:10px;line-height:1.5;">${escH(inv.notas.length>80?inv.notas.slice(0,80)+'…':inv.notas)}</div>` : ''}
+      <div class="inv-metrics">
+        <div><div class="inv-metric-val">${fmtK(m.totalInv)}</div><div class="inv-metric-lbl">Invertido</div></div>
+        <div><div class="inv-metric-val">${fmtK(m.totalRec)}</div><div class="inv-metric-lbl">Recuperado</div></div>
+        <div><div class="inv-metric-val">${m.roi}%</div><div class="inv-metric-lbl">ROI</div></div>
+      </div>
+      <div class="inv-card-actions">
+        <button class="btn-ghost" onclick="openModalInversor('${escH(inv.id)}')">✏️ Editar</button>
+        <button class="btn-danger" onclick="deleteInversor('${escH(inv.id)}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// INVERSORES — MODAL
+// ═══════════════════════════════════════════════
+function openModalInversor(id) {
+  const inv = id ? getInversores().find(i=>i.id===id) : null;
+  document.getElementById('modal-inv-title').textContent = inv ? 'Editar Inversor' : 'Nuevo Inversor';
+  document.getElementById('inv-id').value = inv ? inv.id : '';
+  document.getElementById('inv-nombre').value = inv ? inv.nombre : '';
+  document.getElementById('inv-empresa').value = inv ? inv.empresa : '';
+  document.getElementById('inv-nif').value = inv ? inv.nif : '';
+  document.getElementById('inv-email').value = inv ? inv.email : '';
+  document.getElementById('inv-telefono').value = inv ? inv.telefono : '';
+  document.getElementById('inv-tipo').value = inv ? inv.tipo : 'asset';
+  document.getElementById('inv-notas').value = inv ? inv.notas : '';
+  openModal('modal-inversor');
+}
+
+function saveInversor() {
+  const nombre = document.getElementById('inv-nombre').value.trim();
+  if (!nombre) { toast('El nombre es obligatorio', true); return; }
+  const id = document.getElementById('inv-id').value;
+  const invs = getInversores();
+  const obj = {
+    id: id || uuid(),
+    nombre,
+    empresa: document.getElementById('inv-empresa').value.trim(),
+    nif: document.getElementById('inv-nif').value.trim(),
+    email: document.getElementById('inv-email').value.trim(),
+    telefono: document.getElementById('inv-telefono').value.trim(),
+    tipo: document.getElementById('inv-tipo').value,
+    notas: document.getElementById('inv-notas').value.trim(),
+  };
+  if (id) {
+    const idx = invs.findIndex(i=>i.id===id);
+    if (idx>=0) invs[idx]=obj;
+  } else {
+    invs.push(obj);
+  }
+  saveInversores(invs);
+  closeModal('modal-inversor');
+  renderInversores();
+  toast(id ? 'Inversor actualizado' : 'Inversor creado');
+}
+
+function deleteInversor(id) {
+  if (!confirm('¿Eliminar este inversor? Esta acción no se puede deshacer.')) return;
+  const invs = getInversores().filter(i=>i.id!==id);
+  saveInversores(invs);
+  renderInversores();
+  toast('Inversor eliminado');
+}
+
+// ═══════════════════════════════════════════════
+// PROYECTOS — RENDER
+// ═══════════════════════════════════════════════
+function estadoBadge(e) {
+  const map = { activo:'badge-activo', pausado:'badge-pausado', finalizado:'badge-finalizado' };
+  const lbl = { activo:'Activo', pausado:'Pausado', finalizado:'Finalizado' };
+  return `<span class="badge ${map[e]||''}">${lbl[e]||e}</span>`;
+}
+
+function getPartnerName(inv) {
+  if (!inv) return '—';
+  if (inv.inversorId) {
+    const found = getInversores().find(i=>i.id===inv.inversorId);
+    if (found) return found.empresa || found.nombre;
+  }
+  return inv.nombre || '—';
+}
+
+function renderProyectos() {
+  const proyectos = getInvProyectos();
+  if (!proyectos.length) {
+    document.getElementById('proj-grid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📁</div><div class="empty-msg">Sin proyectos de inversión</div><div class="empty-sub">Crea el primer proyecto con el botón superior</div></div>`;
+    return;
+  }
+  document.getElementById('proj-grid').innerHTML = proyectos.map(p => {
+    const modelBadge = p.modelo===1
+      ? '<span class="badge badge-m1">🤝 Modelo 1 · Partnership</span>'
+      : '<span class="badge badge-m2">🏨 Modelo 2 · Hotel Owned</span>';
+    const partnerName = p.modelo===1
+      ? (p.hotelComision ? getPartnerName(p.hotelComision) : '—')
+      : (p.locationPartner ? getPartnerName(p.locationPartner) : '—');
+    const deuda = p.deudaAcumuladaAsset||0;
+    return `<div class="proj-card">
+      <div class="proj-card-name">${escH(p.nombre)}</div>
+      <div class="proj-card-partner">🏨 ${escH(partnerName)}</div>
+      <div class="proj-card-badges">
+        ${modelBadge}
+        ${estadoBadge(p.estado)}
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;">
+        <div>
+          <div class="proj-card-rev">${fmtK(p.factuMensual||0)}</div>
+          <div class="proj-card-rev-lbl">/ mes estimado</div>
+        </div>
+        ${deuda>0 ? `<div class="debt-badge" style="font-size:11px;padding:5px 10px;">⚠️ Deuda: ${fmt(deuda)}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost" onclick="openModalProyecto('${escH(p.id)}')">✏️ Editar</button>
+        <button class="btn-ghost" onclick="showSection('liquidaciones');selectLiqProyecto('${escH(p.id)}')">🧾 Liquidar</button>
+        <button class="btn-danger" onclick="deleteProyecto('${escH(p.id)}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// PROYECTOS — MODAL
+// ═══════════════════════════════════════════════
+let _currentModelo = 1;
+
+function setModelo(n) {
+  _currentModelo = n;
+  document.getElementById('toggle-m1').classList.toggle('active', n===1);
+  document.getElementById('toggle-m2').classList.toggle('active', n===2);
+  document.getElementById('mesa-m1').style.display = n===1 ? '' : 'none';
+  document.getElementById('mesa-m2').style.display = n===2 ? '' : 'none';
+  updateSimulacion();
+}
+
+function switchProjTab(name) {
+  document.querySelectorAll('#modal-proyecto .modal-tab').forEach((t,i) => {
+    const names = ['config','mesa','sim'];
+    t.classList.toggle('active', names[i]===name);
+  });
+  document.querySelectorAll('#modal-proyecto .modal-tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('pt-'+name).classList.add('active');
+  if (name==='sim') updateSimulacion();
+}
+
+function populateInversorSelects() {
+  const invs = getInversores();
+  const assetOpts = `<option value="soulbaric_propio">SoulBaric (fondos propios)</option>` +
+    invs.filter(i=>i.tipo==='asset'||i.tipo==='full').map(i=>`<option value="${escH(i.id)}">${escH(i.nombre)}${i.empresa?' — '+escH(i.empresa):''}</option>`).join('');
+  const opOpts = `<option value="ninguno">Ninguno</option>` +
+    invs.filter(i=>i.tipo==='operativo'||i.tipo==='full').map(i=>`<option value="${escH(i.id)}">${escH(i.nombre)}${i.empresa?' — '+escH(i.empresa):''}</option>`).join('');
+  const locationOpts = `<option value="">— Sin location partner —</option>` +
+    invs.filter(i=>i.tipo==='location').map(i=>`<option value="${escH(i.id)}">${escH(i.empresa||i.nombre)}</option>`).join('');
+
+  document.getElementById('m1-asset-inv').innerHTML = assetOpts;
+  document.getElementById('m1-op-inv').innerHTML = opOpts;
+  document.getElementById('m1-hotel-inv').innerHTML = locationOpts;
+  document.getElementById('m2-hotel-inv').innerHTML = locationOpts;
+
+  // CRM candidates
+  const cands = getCRMCandidatos();
+  const candOpts = `<option value="">— Sin vincular —</option>` +
+    cands.map(c=>`<option value="${escH(c.id||c.empresa)}">${escH(c.empresa||c.nombre||c.id)}</option>`).join('');
+  document.getElementById('proj-candidato').innerHTML = candOpts;
+}
+
+function toggleMecanismo() {
+  const val = document.querySelector('input[name="m1-mecanismo"]:checked').value;
+  document.getElementById('m1-ret-fijo-wrap').style.display = val==='fijo' ? '' : 'none';
+  document.getElementById('m1-ret-pct-wrap').style.display = val==='pct' ? '' : 'none';
+  updateSimulacion();
+}
+
+function openModalProyecto(id) {
+  populateInversorSelects();
+  const p = id ? getInvProyectos().find(x=>x.id===id) : null;
+  document.getElementById('modal-proj-title').textContent = p ? 'Editar Proyecto' : 'Nuevo Proyecto';
+  document.getElementById('proj-id').value = p ? p.id : '';
+  document.getElementById('proj-nombre').value = p ? p.nombre : '';
+  document.getElementById('proj-candidato').value = p ? (p.candidatoId||'') : '';
+  document.getElementById('proj-fecha').value = p ? (p.fechaInicio||'') : '';
+  document.getElementById('proj-estado').value = p ? (p.estado||'activo') : 'activo';
+  document.getElementById('proj-factu').value = p ? (p.factuMensual||'') : '';
+  document.getElementById('proj-sesiones').value = p ? (p.sesiones||'') : '';
+
+  // Set model
+  setModelo(p ? (p.modelo||1) : 1);
+
+  // Populate M1 fields
+  if (p && p.modelo===1 && p.assetInversor) {
+    document.getElementById('m1-asset-inv').value = p.assetInversor.inversorId||'soulbaric_propio';
+    document.getElementById('m1-asset-total').value = p.assetInversor.totalInversion||'';
+    const mec = p.assetInversor.mecanismo||'fijo';
+    document.querySelector(`input[name="m1-mecanismo"][value="${mec}"]`).checked = true;
+    document.getElementById('m1-ret-fijo').value = p.assetInversor.retornoFijo||'';
+    document.getElementById('m1-ret-pct').value = p.assetInversor.retornoPct||'';
+  } else {
+    document.getElementById('m1-asset-inv').value = 'soulbaric_propio';
+    document.getElementById('m1-asset-total').value = '';
+    document.querySelector('input[name="m1-mecanismo"][value="fijo"]').checked = true;
+    document.getElementById('m1-ret-fijo').value = '';
+    document.getElementById('m1-ret-pct').value = '';
+  }
+  toggleMecanismo();
+
+  if (p && p.gastosFijosMes !== undefined) {
+    document.getElementById('m1-gastos').value = p.gastosFijosMes||'';
+  } else {
+    document.getElementById('m1-gastos').value = '';
+  }
+
+  if (p && p.hotelComision) {
+    document.getElementById('m1-hotel-inv').value = p.hotelComision.inversorId||'';
+    document.getElementById('m1-hotel-pct').value = p.hotelComision.pct||'';
+  } else {
+    document.getElementById('m1-hotel-inv').value = '';
+    document.getElementById('m1-hotel-pct').value = '';
+  }
+
+  if (p && p.inversorOperativo) {
+    document.getElementById('m1-op-inv').value = p.inversorOperativo.inversorId||'ninguno';
+    document.getElementById('m1-op-total').value = p.inversorOperativo.totalInversion||'';
+    document.getElementById('m1-op-pct').value = p.inversorOperativo.pctMargen||'';
+  } else {
+    document.getElementById('m1-op-inv').value = 'ninguno';
+    document.getElementById('m1-op-total').value = '';
+    document.getElementById('m1-op-pct').value = '';
+  }
+
+  // M2 fields
+  if (p && p.modelo===2) {
+    if (p.locationPartner) document.getElementById('m2-hotel-inv').value = p.locationPartner.inversorId||'';
+    document.getElementById('m2-pct').value = p.soulbaricPct||'';
+    document.getElementById('m2-notas').value = p.m2notas||'';
+  } else {
+    document.getElementById('m2-hotel-inv').value = '';
+    document.getElementById('m2-pct').value = '';
+    document.getElementById('m2-notas').value = '';
+  }
+
+  // Switch to first tab
+  switchProjTab('config');
+  openModal('modal-proyecto');
+  updateSimulacion();
+}
+
+function saveProyecto() {
+  const nombre = document.getElementById('proj-nombre').value.trim();
+  if (!nombre) { toast('El nombre del proyecto es obligatorio', true); return; }
+  const id = document.getElementById('proj-id').value;
+  const proyectos = getInvProyectos();
+  const existing = id ? proyectos.find(p=>p.id===id) : null;
+
+  const mecanismo = document.querySelector('input[name="m1-mecanismo"]:checked').value;
+  const hotelInvId = document.getElementById('m1-hotel-inv').value;
+  const hotelInv = hotelInvId ? getInversores().find(i=>i.id===hotelInvId) : null;
+  const opInvId = document.getElementById('m1-op-inv').value;
+  const m2HotelId = document.getElementById('m2-hotel-inv').value;
+  const m2HotelInv = m2HotelId ? getInversores().find(i=>i.id===m2HotelId) : null;
+
+  const obj = {
+    id: id || uuid(),
+    nombre,
+    candidatoId: document.getElementById('proj-candidato').value,
+    modelo: _currentModelo,
+    fechaInicio: document.getElementById('proj-fecha').value,
+    estado: document.getElementById('proj-estado').value,
+    factuMensual: parseFloat(document.getElementById('proj-factu').value)||0,
+    sesiones: parseFloat(document.getElementById('proj-sesiones').value)||0,
+    // M1
+    assetInversor: _currentModelo===1 ? {
+      inversorId: document.getElementById('m1-asset-inv').value,
+      totalInversion: parseFloat(document.getElementById('m1-asset-total').value)||0,
+      mecanismo,
+      retornoFijo: parseFloat(document.getElementById('m1-ret-fijo').value)||0,
+      retornoPct: parseFloat(document.getElementById('m1-ret-pct').value)||0,
+    } : null,
+    gastosFijosMes: _currentModelo===1 ? (parseFloat(document.getElementById('m1-gastos').value)||0) : 0,
+    hotelComision: _currentModelo===1 && hotelInvId ? {
+      inversorId: hotelInvId,
+      nombre: hotelInv ? (hotelInv.empresa||hotelInv.nombre) : '',
+      pct: parseFloat(document.getElementById('m1-hotel-pct').value)||0,
+    } : null,
+    inversorOperativo: _currentModelo===1 && opInvId && opInvId!=='ninguno' ? {
+      inversorId: opInvId,
+      totalInversion: parseFloat(document.getElementById('m1-op-total').value)||0,
+      pctMargen: parseFloat(document.getElementById('m1-op-pct').value)||0,
+    } : null,
+    // M2
+    locationPartner: _currentModelo===2 && m2HotelId ? {
+      inversorId: m2HotelId,
+      nombre: m2HotelInv ? (m2HotelInv.empresa||m2HotelInv.nombre) : '',
+    } : null,
+    soulbaricPct: _currentModelo===2 ? (parseFloat(document.getElementById('m2-pct').value)||0) : 0,
+    m2notas: _currentModelo===2 ? document.getElementById('m2-notas').value.trim() : '',
+    // preserve debt
+    deudaAcumuladaAsset: existing ? (existing.deudaAcumuladaAsset||0) : 0,
+  };
+
+  if (id) {
+    const idx = proyectos.findIndex(p=>p.id===id);
+    if (idx>=0) proyectos[idx]=obj;
+  } else {
+    proyectos.push(obj);
+  }
+  saveInvProyectos(proyectos);
+  closeModal('modal-proyecto');
+  renderProyectos();
+  populateBPSelect();
+  renderLiquidaciones();
+  toast(id ? 'Proyecto actualizado' : 'Proyecto creado');
+}
+
+function deleteProyecto(id) {
+  if (!confirm('¿Eliminar este proyecto? Se perderán todas las liquidaciones asociadas.')) return;
+  saveInvProyectos(getInvProyectos().filter(p=>p.id!==id));
+  saveLiquidaciones(getLiquidaciones().filter(l=>l.proyId!==id));
+  renderProyectos();
+  toast('Proyecto eliminado');
+}
+
+// ═══════════════════════════════════════════════
+// SIMULACIÓN (Modal Proyecto)
+// ═══════════════════════════════════════════════
+function getSimProy() {
+  const mecanismo = document.querySelector('input[name="m1-mecanismo"]:checked').value;
+  const hotelInvId = document.getElementById('m1-hotel-inv').value;
+  const hotelInv = hotelInvId ? getInversores().find(i=>i.id===hotelInvId) : null;
+  const opInvId = document.getElementById('m1-op-inv').value;
+  const m2HotelId = document.getElementById('m2-hotel-inv').value;
+  const m2HotelInv = m2HotelId ? getInversores().find(i=>i.id===m2HotelId) : null;
+  return {
+    modelo: _currentModelo,
+    factuMensual: parseFloat(document.getElementById('proj-factu').value)||0,
+    assetInversor: {
+      inversorId: document.getElementById('m1-asset-inv').value,
+      mecanismo,
+      retornoFijo: parseFloat(document.getElementById('m1-ret-fijo').value)||0,
+      retornoPct: parseFloat(document.getElementById('m1-ret-pct').value)||0,
+    },
+    gastosFijosMes: parseFloat(document.getElementById('m1-gastos').value)||0,
+    hotelComision: hotelInvId ? {
+      inversorId: hotelInvId,
+      nombre: hotelInv ? (hotelInv.empresa||hotelInv.nombre) : '',
+      pct: parseFloat(document.getElementById('m1-hotel-pct').value)||0,
+    } : null,
+    inversorOperativo: opInvId && opInvId!=='ninguno' ? {
+      inversorId: opInvId,
+      pctMargen: parseFloat(document.getElementById('m1-op-pct').value)||0,
+    } : null,
+    soulbaricPct: parseFloat(document.getElementById('m2-pct').value)||0,
+    locationPartner: m2HotelId ? {
+      inversorId: m2HotelId,
+      nombre: m2HotelInv ? (m2HotelInv.empresa||m2HotelInv.nombre) : '',
+    } : null,
+  };
+}
+
+function updateSimulacion() {
+  const cont = document.getElementById('sim-content');
+  if (!cont) return;
+  const p = getSimProy();
+  if (!p.factuMensual) {
+    cont.innerHTML = `<div class="empty"><div class="empty-icon">📊</div><div class="empty-msg">Introduce la facturación mensual estimada en Configuración</div></div>`;
+    return;
+  }
+  if (p.modelo===1) {
+    cont.innerHTML = renderSimM1(p);
+  } else {
+    cont.innerHTML = renderSimM2(p);
+  }
+}
+
+function renderSimM1(p) {
+  const fN = p.factuMensual;
+  const mesR = calcMes1(p, fN, 0);
+  const q3 = { factuNeta:fN, margenMes:mesR.margenMes };
+  const qR = calcTrimestre1(p, [q3,q3,q3]);
+  const sbMes = qR.benefSB / 3;
+
+  const assetNombre = p.assetInversor.inversorId==='soulbaric_propio' ? 'SoulBaric (fondos propios)' :
+    (getInversores().find(i=>i.id===p.assetInversor.inversorId)||{}).nombre||'Inversor Asset';
+  const hotelNombre = p.hotelComision ? p.hotelComision.nombre||'Hotel' : '—';
+  const opNombre = p.inversorOperativo ?
+    ((getInversores().find(i=>i.id===p.inversorOperativo.inversorId)||{}).nombre||'Inversor Op') : '—';
+
+  return `
+    <div style="font-size:11px;font-weight:700;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Modelo 1 — Partnership · Base mensual: ${fmt(fN)}</div>
+    <table class="sim-table">
+      <thead><tr><th>Concepto</th><th>Mensual</th><th>Trimestral</th><th>Anual</th></tr></thead>
+      <tbody>
+        <tr class="sim-row-asset"><td>📷 ${escH(assetNombre)} (Asset)</td><td>${fmt(mesR.retornoPagado)}</td><td>${fmt(mesR.retornoPagado*3)}</td><td>${fmt(mesR.retornoPagado*12)}</td></tr>
+        <tr><td style="color:var(--text-s);">⚙️ Gastos Fijos</td><td>${fmt(mesR.gastosFijos)}</td><td>${fmt(mesR.gastosFijos*3)}</td><td>${fmt(mesR.gastosFijos*12)}</td></tr>
+        <tr style="font-weight:700;"><td>= Margen operativo</td><td>${fmt(mesR.margenMes)}</td><td>${fmt(mesR.margenMes*3)}</td><td>${fmt(mesR.margenMes*12)}</td></tr>
+        <tr class="sim-sep"><td colspan="4"></td></tr>
+        <tr class="sim-row-hotel"><td>🏨 ${escH(hotelNombre)} (${p.hotelComision?p.hotelComision.pct:0}% s/fact.trim)</td><td>${fmt(qR.pagoHotel/3)}</td><td>${fmt(qR.pagoHotel)}</td><td>${fmt(qR.pagoHotel*4)}</td></tr>
+        ${p.inversorOperativo?`<tr class="sim-row-op"><td>⚙️ ${escH(opNombre)} (${p.inversorOperativo.pctMargen}% s/margen)</td><td>${fmt(qR.pagoOp/3)}</td><td>${fmt(qR.pagoOp)}</td><td>${fmt(qR.pagoOp*4)}</td></tr>`:''}
+        <tr class="sim-row-sb sim-row-total"><td>✦ SoulBaric Beneficio</td><td>${fmt(sbMes)}</td><td>${fmt(qR.benefSB)}</td><td>${fmt(qR.benefSB*4)}</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding:10px;background:var(--card2);border-radius:8px;font-size:11px;color:var(--text-s);">
+      ℹ️ Simulación basada en facturación constante. El % hotel se aplica sobre facturación neta trimestral. El % operativo sobre margen post-hotel trimestral.
+    </div>`;
+}
+
+function renderSimM2(p) {
+  const fN = p.factuMensual;
+  const r = calcMes2(p, fN);
+  const hotelNombre = p.locationPartner ? p.locationPartner.nombre||'Hotel' : 'Hotel propietario';
+  return `
+    <div style="font-size:11px;font-weight:700;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Modelo 2 — Hotel Owned · Base mensual: ${fmt(fN)}</div>
+    <table class="sim-table">
+      <thead><tr><th>Concepto</th><th>Mensual</th><th>Trimestral</th><th>Anual</th></tr></thead>
+      <tbody>
+        <tr class="sim-row-sb sim-row-total"><td>✦ SoulBaric (${p.soulbaricPct}%)</td><td>${fmt(r.comisionSB)}</td><td>${fmt(r.comisionSB*3)}</td><td>${fmt(r.comisionSB*12)}</td></tr>
+        <tr class="sim-row-hotel"><td>🏨 ${escH(hotelNombre)}</td><td>${fmt(r.retenidoHotel)}</td><td>${fmt(r.retenidoHotel*3)}</td><td>${fmt(r.retenidoHotel*12)}</td></tr>
+      </tbody>
+    </table>`;
+}
+
+// ═══════════════════════════════════════════════
+// WATERFALL CALCULATIONS
+// ═══════════════════════════════════════════════
+function calcMes1(proy, factuNeta, deudaPrevia) {
+  let retornoTeorico = 0;
+  if (proy.assetInversor && proy.assetInversor.inversorId !== 'soulbaric_propio') {
+    retornoTeorico = proy.assetInversor.mecanismo === 'fijo'
+      ? (proy.assetInversor.retornoFijo || 0)
+      : factuNeta * (proy.assetInversor.retornoPct || 0) / 100;
+  }
+  const totalConDeuda = retornoTeorico + (deudaPrevia||0);
+  const retornoPagado = Math.min(factuNeta, totalConDeuda);
+  const deudaNueva = Math.max(0, totalConDeuda - retornoPagado);
+  const gastosFijos = proy.gastosFijosMes || 0;
+  const margenMes = factuNeta - retornoPagado - gastosFijos;
+  return { factuNeta, retornoTeorico, retornoPagado, deudaNueva, gastosFijos, margenMes };
+}
+
+function calcTrimestre1(proy, meses3) {
+  const factuQ = meses3.reduce((s,m)=>s+m.factuNeta,0);
+  const margenQ = meses3.reduce((s,m)=>s+(m.margenMes||0),0);
+  const pctHotel = (proy.hotelComision && proy.hotelComision.pct) ? proy.hotelComision.pct : 0;
+  const pagoHotel = factuQ * pctHotel / 100;
+  const baseOp = Math.max(0, margenQ - pagoHotel);
+  const pctOp = (proy.inversorOperativo && proy.inversorOperativo.pctMargen) ? proy.inversorOperativo.pctMargen : 0;
+  const pagoOp = baseOp * pctOp / 100;
+  const benefSB = baseOp - pagoOp;
+  return { factuQ, margenQ, pagoHotel, baseOp, pagoOp, benefSB };
+}
+
+function calcMes2(proy, factuNeta) {
+  const pct = proy.soulbaricPct || 0;
+  const comisionSB = factuNeta * pct / 100;
+  return { factuNeta, comisionSB, retenidoHotel: factuNeta - comisionSB };
+}
+
+// ═══════════════════════════════════════════════
+// LIQUIDACIONES
+// ═══════════════════════════════════════════════
+let _liqProjId = null;
+
+function renderLiquidaciones() {
+  const proyectos = getInvProyectos();
+  const list = document.getElementById('liq-proj-list');
+  list.innerHTML = `<div style="font-size:10px;font-weight:700;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Proyectos</div>`;
+  if (!proyectos.length) {
+    list.innerHTML += `<div class="empty-sub" style="font-size:11px;color:var(--text-s);">Sin proyectos</div>`;
+    return;
+  }
+  proyectos.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'liq-proj-item' + (_liqProjId===p.id ? ' active' : '');
+    item.textContent = p.nombre;
+    item.onclick = () => selectLiqProyecto(p.id);
+    list.appendChild(item);
+  });
+  if (_liqProjId) renderLiqMain(_liqProjId);
+}
+
+function selectLiqProyecto(id) {
+  _liqProjId = id;
+  renderLiquidaciones();
+  renderLiqMain(id);
+}
+
+function renderLiqMain(proyId) {
+  const proy = getInvProyectos().find(p=>p.id===proyId);
+  if (!proy) return;
+  const liqs = getLiquidaciones().filter(l=>l.proyId===proyId).sort((a,b)=>{
+    if (a.year!==b.year) return a.year-b.year;
+    return a.mes-b.mes;
+  });
+  const deuda = proy.deudaAcumuladaAsset||0;
+  const modelBadge = proy.modelo===1
+    ? '<span class="badge badge-m1">🤝 Modelo 1</span>'
+    : '<span class="badge badge-m2">🏨 Modelo 2</span>';
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+
+  document.getElementById('liq-main').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+      <h3 style="font-size:15px;font-weight:800;color:var(--text);">${escH(proy.nombre)}</h3>
+      ${modelBadge}
+      ${deuda>0 ? `<span class="debt-badge">⚠️ Deuda acumulada: ${fmt(deuda)}</span>` : '<span style="font-size:12px;color:var(--green);font-weight:700;">✅ Sin deuda</span>'}
+    </div>
+
+    <div class="card2" style="margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:800;color:var(--text-m);margin-bottom:12px;">📝 Registrar liquidación mensual</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+        <div class="form-group" style="min-width:90px;">
+          <label>Año</label>
+          <input type="number" id="liq-year" value="${currentYear}" min="2020" max="2040" style="width:90px;">
+        </div>
+        <div class="form-group" style="min-width:110px;">
+          <label>Mes</label>
+          <select id="liq-mes" style="width:110px;">
+            ${MESES.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group" style="min-width:170px;">
+          <label>Facturación neta del mes (€)</label>
+          <input type="number" id="liq-factu" min="0" step="100" placeholder="15000" style="width:170px;">
+        </div>
+        <button class="btn-primary" onclick="calcLiquidacion('${escH(proyId)}')">Calcular</button>
+      </div>
+      <div id="liq-result-wrap"></div>
+    </div>
+
+    ${liqs.length ? `
+    <div style="font-size:12px;font-weight:800;color:var(--text-m);margin-bottom:10px;">📋 Historial</div>
+    ${renderHistorial(proy, liqs)}
+    ` : `<div class="empty" style="padding:24px;"><div class="empty-icon">📋</div><div class="empty-msg">Sin liquidaciones registradas</div></div>`}
+  `;
+
+  // Set current month
+  document.getElementById('liq-mes').value = now.getMonth()+1;
+}
+
+function renderHistorial(proy, liqs) {
+  let html = `<div style="overflow-x:auto;"><table class="hist-table">
+    <thead><tr>
+      <th>Mes/Año</th><th>Fact. Neta</th>
+      <th style="color:var(--blue);">Ret. Asset</th>
+      <th>Gastos</th><th>Margen</th>
+      <th style="color:var(--red);">Deuda</th>
+      <th>Trim.</th>
+    </tr></thead><tbody>`;
+
+  let deudaRun = 0;
+  let qBuffer = [];
+
+  liqs.forEach((l, idx) => {
+    const isQ = (idx+1) % 3 === 0;
+    html += `<tr${isQ?' class="q-row"':''}>
+      <td><strong>${MESES[l.mes-1]} ${l.year}</strong></td>
+      <td>${fmt(l.factuNeta)}</td>
+      <td style="color:var(--blue);">${fmt(l.retornoPagado||0)}</td>
+      <td style="color:var(--text-s);">${fmt(l.gastosFijos||0)}</td>
+      <td>${fmt(l.margenMes||0)}</td>
+      <td style="color:${(l.deudaNueva||0)>0?'var(--red)':'var(--green)'};">${fmt(l.deudaNueva||0)}</td>
+      <td>${isQ?'🗓️ Q':''}</td>
+    </tr>`;
+    if (isQ && proy.modelo===1) {
+      qBuffer.push(l);
+      if (qBuffer.length>=3) {
+        const qRes = calcTrimestre1(proy, qBuffer.slice(-3));
+        html += `<tr style="background:rgba(200,153,104,0.06);">
+          <td colspan="7" style="padding:6px 10px;">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11px;">
+              <span style="color:var(--green);">🏨 Hotel: ${fmt(qRes.pagoHotel)}</span>
+              ${proy.inversorOperativo?`<span style="color:var(--purple);">⚙️ Op: ${fmt(qRes.pagoOp)}</span>`:''}
+              <span style="color:var(--gold2);">✦ SoulBaric: ${fmt(qRes.benefSB)}</span>
+            </div>
+          </td>
+        </tr>`;
+        qBuffer = [];
+      }
+    }
+  });
+
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function calcLiquidacion(proyId) {
+  const proy = getInvProyectos().find(p=>p.id===proyId);
+  if (!proy) return;
+  const factu = parseFloat(document.getElementById('liq-factu').value)||0;
+  if (!factu) { toast('Introduce la facturación neta del mes', true); return; }
+  const year = parseInt(document.getElementById('liq-year').value)||new Date().getFullYear();
+  const mes = parseInt(document.getElementById('liq-mes').value)||1;
+  const deudaActual = proy.deudaAcumuladaAsset||0;
+
+  let resultado, html;
+  if (proy.modelo===1) {
+    resultado = calcMes1(proy, factu, deudaActual);
+    // Check if this month completes a quarter
+    const liqs = getLiquidaciones().filter(l=>l.proyId===proyId);
+    const mesNumeral = (liqs.length % 3) + 1;
+    const isQ = mesNumeral === 3;
+    html = `
+      <div class="result-card">
+        <div style="font-size:12px;font-weight:800;color:var(--text-m);margin-bottom:10px;">Resultado — ${MESES[mes-1]} ${year}</div>
+        <div class="result-row"><span>Facturación neta</span><strong>${fmt(factu)}</strong></div>
+        <div class="result-row" style="color:var(--blue);"><span>📷 Retorno Asset Investor</span><span>- ${fmt(resultado.retornoPagado)}</span></div>
+        <div class="result-row" style="color:var(--text-s);"><span>⚙️ Gastos fijos</span><span>- ${fmt(resultado.gastosFijos)}</span></div>
+        <div class="result-row total"><span>= Margen mensual</span><strong>${fmt(resultado.margenMes)}</strong></div>
+        ${resultado.deudaNueva>0 ? `<div style="margin-top:8px;padding:8px;background:rgba(239,68,68,.07);border-radius:7px;font-size:11px;color:var(--red);">⚠️ Deuda nueva generada: ${fmt(resultado.deudaNueva)}</div>` : ''}
+        ${isQ ? `<div style="margin-top:8px;padding:8px;background:rgba(200,153,104,.07);border-radius:7px;font-size:11px;color:var(--text-m);">🗓️ Este mes cierra trimestre — se calcularán pagos trimestrales al guardar.</div>` : ''}
+        <button class="btn-primary" style="margin-top:14px;width:100%;" onclick="saveLiquidacion('${escH(proyId)}',${factu},${year},${mes})">💾 Guardar liquidación</button>
+      </div>`;
+  } else {
+    resultado = calcMes2(proy, factu);
+    html = `
+      <div class="result-card">
+        <div style="font-size:12px;font-weight:800;color:var(--text-m);margin-bottom:10px;">Resultado — ${MESES[mes-1]} ${year}</div>
+        <div class="result-row"><span>Facturación neta</span><strong>${fmt(factu)}</strong></div>
+        <div class="result-row" style="color:var(--gold2);"><span>✦ SoulBaric (${proy.soulbaricPct}%)</span><span>${fmt(resultado.comisionSB)}</span></div>
+        <div class="result-row" style="color:var(--green);"><span>🏨 Hotel (retiene)</span><span>${fmt(resultado.retenidoHotel)}</span></div>
+        <button class="btn-primary" style="margin-top:14px;width:100%;" onclick="saveLiquidacion('${escH(proyId)}',${factu},${year},${mes})">💾 Guardar liquidación</button>
+      </div>`;
+  }
+  document.getElementById('liq-result-wrap').innerHTML = html;
+}
+
+function saveLiquidacion(proyId, factu, year, mes) {
+  const proy = getInvProyectos().find(p=>p.id===proyId);
+  if (!proy) return;
+  const liqs = getLiquidaciones();
+
+  // Check for duplicate
+  const dup = liqs.find(l=>l.proyId===proyId && l.year===year && l.mes===mes);
+  if (dup) {
+    if (!confirm(`Ya existe una liquidación para ${MESES[mes-1]} ${year}. ¿Sobreescribir?`)) return;
+    liqs.splice(liqs.indexOf(dup), 1);
+  }
+
+  const deudaActual = proy.deudaAcumuladaAsset||0;
+  let liqObj = { id: uuid(), proyId, year, mes, factuNeta: factu };
+
+  if (proy.modelo===1) {
+    const r = calcMes1(proy, factu, deudaActual);
+    liqObj = { ...liqObj, retornoPagado: r.retornoPagado, gastosFijos: r.gastosFijos, margenMes: r.margenMes, deudaNueva: r.deudaNueva };
+    // Update debt in project
+    const proyectos = getInvProyectos();
+    const idx = proyectos.findIndex(p=>p.id===proyId);
+    if (idx>=0) {
+      proyectos[idx].deudaAcumuladaAsset = r.deudaNueva;
+      saveInvProyectos(proyectos);
+    }
+  } else {
+    const r = calcMes2(proy, factu);
+    liqObj = { ...liqObj, comisionSB: r.comisionSB, retenidoHotel: r.retenidoHotel };
+  }
+
+  // Check quarterly
+  const liqsProj = liqs.filter(l=>l.proyId===proyId);
+  const isQ = (liqsProj.length % 3) === 2; // after adding this one it will be 3rd
+  if (isQ && proy.modelo===1) {
+    const last3 = [...liqsProj.slice(-2), liqObj];
+    const qR = calcTrimestre1(proy, last3);
+    liqObj.isQuarter = true;
+    liqObj.pagoHotel = qR.pagoHotel;
+    liqObj.pagoOp = qR.pagoOp;
+    liqObj.benefSB = qR.benefSB;
+  }
+
+  liqs.push(liqObj);
+  saveLiquidaciones(liqs);
+  toast('Liquidación guardada');
+  renderLiqMain(proyId);
+}
+
+// ═══════════════════════════════════════════════
+// BUSINESS PLAN
+// ═══════════════════════════════════════════════
+function populateBPSelect() {
+  const proyectos = getInvProyectos();
+  const sel = document.getElementById('bp-proj-select');
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">— Seleccionar proyecto —</option>` +
+    proyectos.map(p=>`<option value="${escH(p.id)}">${escH(p.nombre)}</option>`).join('');
+  if (cur) sel.value = cur;
+}
+
+function renderBusinessPlan() {
+  const proyId = document.getElementById('bp-proj-select').value;
+  const content = document.getElementById('bp-content');
+  const empty = document.getElementById('bp-empty');
+  if (!proyId) { content.style.display='none'; empty.style.display='block'; return; }
+  const proy = getInvProyectos().find(p=>p.id===proyId);
+  if (!proy) return;
+  content.style.display='block';
+  empty.style.display='none';
+
+  const years = parseInt(document.getElementById('bp-years').value)||5;
+  const growth = (parseFloat(document.getElementById('bp-growth').value)||5) / 100;
+  const ocupacion = (parseFloat(document.getElementById('bp-ocupacion').value)||70) / 100;
+  const baseFactu = (proy.factuMensual||0) * ocupacion / 0.70 * ocupacion; // adjust for occupancy
+
+  let yearlyData = [];
+  let factuAno = proy.factuMensual * 12 * (ocupacion / 0.70);
+  for (let y=1; y<=years; y++) {
+    if (y>1) factuAno *= (1+growth);
+    const factuMes = factuAno / 12;
+    let assetAno=0, gastosAno=0, hotelAno=0, opAno=0, sbAno=0;
+
+    if (proy.modelo===1) {
+      for (let m=0; m<12; m++) {
+        const mr = calcMes1(proy, factuMes, 0);
+        assetAno += mr.retornoPagado;
+        gastosAno += mr.gastosFijos;
+      }
+      for (let q=0; q<4; q++) {
+        const qr = calcTrimestre1(proy, [{factuNeta:factuMes,margenMes:(factuMes-calcMes1(proy,factuMes,0).retornoPagado-calcMes1(proy,factuMes,0).gastosFijos)},{factuNeta:factuMes,margenMes:(factuMes-calcMes1(proy,factuMes,0).retornoPagado-calcMes1(proy,factuMes,0).gastosFijos)},{factuNeta:factuMes,margenMes:(factuMes-calcMes1(proy,factuMes,0).retornoPagado-calcMes1(proy,factuMes,0).gastosFijos)}]);
+        hotelAno += qr.pagoHotel;
+        opAno += qr.pagoOp;
+        sbAno += qr.benefSB;
+      }
+    } else {
+      for (let m=0; m<12; m++) {
+        const mr = calcMes2(proy, factuMes);
+        sbAno += mr.comisionSB;
+        hotelAno += mr.retenidoHotel;
+      }
+    }
+    yearlyData.push({ year:y, factuAno, assetAno, gastosAno, hotelAno, opAno, sbAno });
+  }
+
+  // KPIs
+  const totFact = yearlyData.reduce((s,d)=>s+d.factuAno,0);
+  const totAsset = yearlyData.reduce((s,d)=>s+d.assetAno,0);
+  const totHotel = yearlyData.reduce((s,d)=>s+d.hotelAno,0);
+  const totSB = yearlyData.reduce((s,d)=>s+d.sbAno,0);
+
+  // Payback Asset
+  let cumAsset=0, paybackAsset='—';
+  const totalAssetInv = proy.assetInversor ? proy.assetInversor.totalInversion||0 : 0;
+  if (totalAssetInv>0) {
+    for (let y=0;y<yearlyData.length;y++) {
+      cumAsset += yearlyData[y].assetAno;
+      if (cumAsset>=totalAssetInv) { paybackAsset=`Año ${yearlyData[y].year}`; break; }
+    }
+  } else { paybackAsset = 'N/A'; }
+
+  let cumOp=0, paybackOp='—';
+  const totalOpInv = proy.inversorOperativo ? proy.inversorOperativo.totalInversion||0 : 0;
+  if (totalOpInv>0) {
+    for (let y=0;y<yearlyData.length;y++) {
+      cumOp += yearlyData[y].opAno;
+      if (cumOp>=totalOpInv) { paybackOp=`Año ${yearlyData[y].year}`; break; }
+    }
+  } else { paybackOp = 'N/A'; }
+
+  document.getElementById('bp-kpis').innerHTML = `
+    <div class="kpi-card"><div class="kpi-val">${fmtK(totFact)}</div><div class="kpi-lbl">Facturación Total</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--blue);">${fmtK(totAsset)}</div><div class="kpi-lbl">Total Asset Investor</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--green);">${fmtK(totHotel)}</div><div class="kpi-lbl">Total Hotel</div></div>
+    <div class="kpi-card"><div class="kpi-val" style="color:var(--gold);">${fmtK(totSB)}</div><div class="kpi-lbl">Total SoulBaric</div></div>
+    <div class="kpi-card payback"><div class="kpi-val">${escH(paybackAsset)}</div><div class="kpi-lbl">Payback Asset Inv.</div></div>
+    <div class="kpi-card payback"><div class="kpi-val" style="color:var(--purple);">${escH(paybackOp)}</div><div class="kpi-lbl">Payback Inv. Op.</div></div>
+  `;
+
+  // Table
+  let tableHtml = `<div style="font-size:12px;font-weight:800;color:var(--text-m);margin-bottom:12px;">📋 Proyección Año a Año</div>
+    <div style="overflow-x:auto;"><table class="sim-table"><thead>
+      <tr><th>Año</th><th>Fact. Neta</th><th style="color:var(--blue);">Ret. Asset</th><th>Gastos Op</th><th style="color:var(--green);">Hotel</th><th style="color:var(--purple);">Inv. Op</th><th style="color:var(--gold2);">SoulBaric</th></tr>
+    </thead><tbody>`;
+  yearlyData.forEach(d => {
+    tableHtml += `<tr>
+      <td><strong>Año ${d.year}</strong></td>
+      <td>${fmtK(d.factuAno)}</td>
+      <td style="color:var(--blue);">${fmtK(d.assetAno)}</td>
+      <td style="color:var(--text-s);">${fmtK(d.gastosAno)}</td>
+      <td style="color:var(--green);">${fmtK(d.hotelAno)}</td>
+      <td style="color:var(--purple);">${fmtK(d.opAno)}</td>
+      <td style="color:var(--gold2);font-weight:800;">${fmtK(d.sbAno)}</td>
+    </tr>`;
+  });
+  tableHtml += '</tbody></table></div>';
+  document.getElementById('bp-table-wrap').innerHTML = tableHtml;
+
+  // Stacked bar chart
+  let chartHtml = `<div style="font-size:12px;font-weight:800;color:var(--text-m);margin-bottom:12px;">📊 Distribución de Ingresos</div>
+    <div class="bar-legend">
+      <div class="bar-legend-item"><div class="bar-legend-dot bar-seg-asset"></div>Asset Investor</div>
+      <div class="bar-legend-item"><div class="bar-legend-dot" style="background:#94a3b8;border-radius:2px;"></div>Gastos</div>
+      <div class="bar-legend-item"><div class="bar-legend-dot bar-seg-hotel"></div>Hotel</div>
+      <div class="bar-legend-item"><div class="bar-legend-dot bar-seg-op"></div>Inv. Operativo</div>
+      <div class="bar-legend-item"><div class="bar-legend-dot bar-seg-sb"></div>SoulBaric</div>
+    </div>
+    <div class="bar-chart">`;
+  yearlyData.forEach(d => {
+    const total = d.assetAno + d.gastosAno + d.hotelAno + d.opAno + d.sbAno;
+    if (!total) return;
+    const pAsset = (d.assetAno/total*100).toFixed(1);
+    const pGastos = (d.gastosAno/total*100).toFixed(1);
+    const pHotel = (d.hotelAno/total*100).toFixed(1);
+    const pOp = (d.opAno/total*100).toFixed(1);
+    const pSB = (100 - parseFloat(pAsset) - parseFloat(pGastos) - parseFloat(pHotel) - parseFloat(pOp)).toFixed(1);
+    chartHtml += `<div class="bar-row">
+      <div class="bar-lbl">Año ${d.year}</div>
+      <div class="bar-track">
+        <div class="bar-seg bar-seg-asset" style="width:${pAsset}%;" title="Asset: ${fmtK(d.assetAno)}"></div>
+        <div class="bar-seg" style="width:${pGastos}%;background:#94a3b8;" title="Gastos: ${fmtK(d.gastosAno)}"></div>
+        <div class="bar-seg bar-seg-hotel" style="width:${pHotel}%;" title="Hotel: ${fmtK(d.hotelAno)}"></div>
+        <div class="bar-seg bar-seg-op" style="width:${pOp}%;" title="Op: ${fmtK(d.opAno)}"></div>
+        <div class="bar-seg bar-seg-sb" style="width:${pSB}%;" title="SoulBaric: ${fmtK(d.sbAno)}"></div>
+      </div>
+      <div class="bar-total">${fmtK(d.factuAno)}</div>
+    </div>`;
+  });
+  chartHtml += '</div>';
+  document.getElementById('bp-chart-wrap').innerHTML = chartHtml;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+(function init() {
+  initDemoData();
+  renderInversores();
+  populateBPSelect();
+})();
+</script>
+</body>
+</html>
