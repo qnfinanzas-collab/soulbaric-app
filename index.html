@@ -728,7 +728,7 @@
             </div>
 
             <!-- Panel desplegable -->
-            <div id="crm-sel-panel" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:9999;background:#1a1410;border:1px solid rgba(200,153,104,0.4);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.7);flex-direction:column;">
+            <div id="crm-sel-panel" style="display:none;position:fixed;z-index:99999;background:#1a1410;border:1px solid rgba(200,153,104,0.4);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.7);flex-direction:column;">
 
               <!-- Asistente IA -->
               <div style="padding:7px 11px;background:linear-gradient(90deg,rgba(80,200,120,0.1),rgba(80,200,120,0.04));border-bottom:1px solid rgba(80,200,120,0.18);display:flex;align-items:center;gap:6px;">
@@ -4256,9 +4256,20 @@ function crmSelChip(tipo) {
 
 function crmSelOpen() {
   _SS.open = true;
-  const panel = document.getElementById('crm-sel-panel');
-  const arrow = document.getElementById('crm-sel-arrow');
+  const panel   = document.getElementById('crm-sel-panel');
+  const trigger = document.getElementById('crm-sel-trigger');
+  const arrow   = document.getElementById('crm-sel-arrow');
   if (!panel) return;
+
+  /* Posicionar el panel bajo el trigger usando fixed (evita overflow:hidden) */
+  if (trigger) {
+    const r = trigger.getBoundingClientRect();
+    panel.style.top    = (r.bottom + 4) + 'px';
+    panel.style.left   = r.left + 'px';
+    panel.style.width  = r.width + 'px';
+    panel.style.maxHeight = (window.innerHeight - r.bottom - 12) + 'px';
+  }
+
   panel.style.display = 'flex';
   if (arrow) arrow.style.transform = 'rotate(180deg)';
   const ai = document.getElementById('crm-sel-ai-text');
