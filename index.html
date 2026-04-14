@@ -4126,9 +4126,10 @@ function crmSelRender() {
     return '<div style="padding:5px 12px 2px;font-size:8px;color:rgba(200,153,104,0.4);text-transform:uppercase;letter-spacing:1px;font-weight:800;">' + label + '</div>';
   };
 
-  /* ── Recientes (solo sin query ni chip) ── */
+  /* ── Recientes: solo IDs que sean candidatos CRM (prefijo crm_) ── */
   if (!_SS.query && !_SS.chip) {
-    const rec = crmSelGetRecientes();
+    const crmIds = new Set(getCRMCandidatos().map(function(c){ return 'crm_' + c.id; }));
+    const rec = crmSelGetRecientes().filter(function(r){ return crmIds.has(r.id); });
     if (rec.length > 0) {
       parts.push(SEC('⏱ Recientes'));
       rec.forEach(function(r) {
@@ -4144,32 +4145,6 @@ function crmSelRender() {
         );
       });
     }
-  }
-
-  /* ── Mis empresas manuales ── */
-  const empresas = getEmpresas().filter(function(e) {
-    return !_SS.chip && fuzzyMatch(e.razonSocial || e.nombre || '', _SS.query);
-  });
-  if (empresas.length > 0) {
-    parts.push(SEC('🏢 Mis empresas'));
-    empresas.forEach(function(e) {
-      const nombre = e.razonSocial || e.nombre || '';
-      _SS.items.push(e.id);
-      const localesTxt = e.locales && e.locales.length
-        ? '<div style="font-size:9px;color:rgba(200,153,104,0.45);">' + e.locales.length + ' local' + (e.locales.length > 1 ? 'es' : '') + '</div>'
-        : '';
-      parts.push(
-        '<div class="crm-card-item" data-sidx="' + idx++ + '" data-sel-id="' + escH(e.id) + '" data-sel-nombre="' + escH(nombre) + '" data-sel-icon="🏢" onclick="crmSelSelectEl(this)">' +
-          '<div style="display:flex;align-items:center;gap:8px;">' +
-            '<span style="font-size:14px;">🏢</span>' +
-            '<div style="flex:1;min-width:0;">' +
-              '<div style="font-size:11px;color:#ddd;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escH(nombre) + '</div>' +
-              localesTxt +
-            '</div>' +
-          '</div>' +
-        '</div>'
-      );
-    });
   }
 
   /* ── Candidatos CRM ── */
