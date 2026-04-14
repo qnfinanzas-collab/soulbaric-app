@@ -4086,9 +4086,42 @@ function seleccionarEmpresa(id) {
       const est = document.getElementById('crm-estado-proyecto');
       if (est && !est.value) est.value = 'prospecto';
     }
+
+    // ── Auto-rellenar módulo Proyecto desde candidato ──
+    const p = c.proyecto || {};
+    if (p.horasDia || p.duracionSesion || p.costoOperativoMes) {
+      const sv = (id, val) => { const el = document.getElementById(id); if (el && val !== null && val !== undefined && val !== '') el.value = val; };
+      sv('hoursPerDay',         p.horasDia);
+      sv('daysPerWeek',         p.diasSemana);
+      sv('sessionDuration',     p.duracionSesion);
+      sv('daysPerMonth',        p.diasMes);
+      sv('operatingHoursStart', p.horarioInicio);
+      sv('operatingHoursEnd',   p.horarioFin);
+      sv('opCost',              p.costoOperativoMes);
+      sv('sessionPrice',        p.precioSesion);
+      // Si hay config de catálogo asignada, cargarla
+      if (p.configCatalogoId) {
+        const selCat = document.getElementById('config-catalogo-select');
+        if (selCat) { selCat.value = p.configCatalogoId; cargarConfiguracionCatalogo(p.configCatalogoId); }
+      } else if (p.precioNegociado) {
+        const elP = document.getElementById('chamberPriceNet');
+        if (elP && !elP.value) elP.value = p.precioNegociado;
+        calcGrossPrice();
+      }
+      autoCalcSessions();
+      const pScore = [p.configCatalogoId,p.precioSesion,p.horasDia,p.duracionSesion,p.diasMes,p.costoOperativoMes].filter(v=>v!==null&&v!==undefined&&v!=='').length;
+      mostrarToast(
+        pScore >= 5
+          ? '🟢 ' + c.empresa + ' · Todos los parámetros cargados automáticamente'
+          : '🟡 ' + c.empresa + ' · Parámetros parciales cargados — revisa el proyecto',
+        pScore >= 5 ? '#2e7d32' : '#e65100'
+      );
+    } else {
+      mostrarToast('✅ ' + c.empresa + ' cargado · ⚠️ Sin parámetros de proyecto — configúralos en CRM', '#e65100');
+    }
+
     crmUpdateMapa();
     crmAutoSave();
-    mostrarToast('✅ ' + c.empresa + ' cargado desde CRM', '#2e7d32');
     return;
   }
 

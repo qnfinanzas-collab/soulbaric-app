@@ -194,6 +194,25 @@ nav a.active{background:rgba(200,153,104,0.18);color:var(--gold);border:1px soli
 .field input[readonly]{color:var(--gold);font-weight:800;background:var(--card2);cursor:default;}
 .section-label{font-size:10px;font-weight:800;color:var(--text-s);text-transform:uppercase;letter-spacing:.8px;padding:12px 0 8px;border-bottom:1px solid var(--border);margin:4px 0 12px;grid-column:1/-1;}
 
+/* ── MODAL TABS ── */
+.modal-tabs-nav{display:flex;background:var(--dark);border-bottom:2px solid var(--border);overflow-x:auto;flex-shrink:0;scrollbar-width:none;}
+.modal-tabs-nav::-webkit-scrollbar{display:none;}
+.mtab{padding:9px 13px;border:none;background:transparent;color:rgba(200,153,104,0.45);font-size:10px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s;font-family:inherit;letter-spacing:.3px;display:flex;align-items:center;gap:4px;}
+.mtab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.mtab:hover:not(.active){color:rgba(200,153,104,0.8);}
+.mtab-cnt{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;border-radius:8px;background:rgba(200,153,104,0.18);color:var(--gold);font-size:9px;padding:0 4px;}
+.mtab-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.mtab-panel{display:none;}.mtab-panel.active{display:block;}
+
+/* ── MÓDULO PROYECTO — COMPLETITUD ── */
+.proj-meter{display:flex;align-items:center;gap:8px;padding:8px 20px 10px;background:rgba(200,153,104,0.04);border-bottom:1px solid var(--border);font-size:10px;margin:-20px -20px 16px;}
+.proj-bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.proj-bar-fill{height:100%;border-radius:3px;transition:width .35s,background .35s;}
+.proj-smart-btn{width:100%;padding:8px 12px;background:rgba(200,153,104,0.07);border:1px dashed rgba(200,153,104,0.35);border-radius:7px;color:var(--gold2);font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.proj-smart-btn:hover{background:rgba(200,153,104,0.16);border-color:var(--gold);border-style:solid;}
+.proj-cta-box{margin:14px -20px -20px;padding:12px 16px;background:rgba(80,200,120,0.07);border-top:1px solid rgba(80,200,120,0.2);}
+.proj-field-hint{font-size:9px;color:var(--text-s);margin-top:3px;line-height:1.4;}
+
 /* ── TOAST ── */
 #toast{position:fixed;bottom:24px;right:24px;background:#1C1714;border:1px solid rgba(200,153,104,0.4);border-radius:9px;padding:12px 20px;font-size:12px;font-weight:600;color:#f0ece6;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
 #toast.show{transform:translateY(0);opacity:1;}
@@ -1105,150 +1124,261 @@ Muchas gracias 🙏
       <span class="modal-title" id="modalCandidatoTitle">➕ Nuevo Candidato</span>
       <button class="modal-close" onclick="cerrarModalCandidato()">✕</button>
     </div>
+    <!-- ── TABS NAV ── -->
+    <div class="modal-tabs-nav">
+      <button class="mtab active" onclick="mTab('datos',this)">📋 Datos</button>
+      <button class="mtab" onclick="mTab('proyecto',this)">⚙️ Proyecto <span id="mtab-proj-dot" class="mtab-dot" style="background:#e0e0e0;display:none;"></span></button>
+      <button class="mtab" onclick="mTab('contactos',this)">👥 Contactos <span id="mtab-cnt-contactos" class="mtab-cnt" style="display:none;"></span></button>
+      <button class="mtab" onclick="mTab('comms',this)">📞 Comms</button>
+      <button class="mtab" onclick="mTab('seguimiento',this)">📅 Seguimiento <span id="mtab-cnt-seg" class="mtab-cnt" style="display:none;"></span></button>
+    </div>
+
     <div class="modal-body">
       <input type="hidden" id="cand-id">
-      <div class="form-grid">
 
-        <!-- ══ 1. COMUNICACIÓN (primer bloque visible) ══ -->
-        <div class="section-label">📨 Comunicación con el candidato</div>
-        <div class="field full">
-          <div class="comms-panel">
-            <div class="comms-tipo-row">
-              <span class="comms-sublabel">Tipo</span>
-              <button class="ctipo-btn active" id="ctipo-primercontacto" onclick="setCommsType('primercontacto')">🤝 Primer contacto</button>
-              <button class="ctipo-btn" id="ctipo-presupuesto" onclick="setCommsType('presupuesto')">📋 Presupuesto</button>
-              <button class="ctipo-btn" id="ctipo-seguimiento" onclick="setCommsType('seguimiento')">🔄 Seguimiento</button>
-            </div>
-            <div class="comms-canal-row">
-              <span class="comms-sublabel">Canal</span>
-              <button class="ccanal-btn active" id="ccanal-email" onclick="setCommsCanal('email')">✉️ Email</button>
-              <button class="ccanal-btn" id="ccanal-whatsapp" onclick="setCommsCanal('whatsapp')">💬 WhatsApp</button>
-            </div>
-            <button class="btn-generate-ai" id="btn-gen-msg" onclick="generarMensajeModal()">
-              <span id="gen-spin" style="display:none;">⏳</span>
-              🤖 Generar mensaje personalizado con IA
-            </button>
-            <div class="comms-preview" id="comms-preview-area">
-              <input type="text" class="comms-asunto-inp" id="comms-asunto" placeholder="Asunto del email...">
-              <textarea class="comms-body-ta" id="comms-body"></textarea>
-              <div class="comms-send-row">
-                <button class="btn-email-send" onclick="enviarCommsModal('email')">✉️ Abrir en Email</button>
-                <button class="btn-wa" onclick="enviarCommsModal('whatsapp')">💬 Abrir en WhatsApp</button>
-                <button class="btn-sec" onclick="logCommsComoSeguimiento()" style="font-size:10px;padding:6px 12px;">📝 Registrar</button>
-                <button class="btn-sec" onclick="abrirModalMensaje()" style="font-size:10px;padding:6px 12px;">🔍 Pantalla completa</button>
-              </div>
-            </div>
+      <!-- ══════════ TAB: DATOS ══════════ -->
+      <div class="mtab-panel active" id="tab-panel-datos">
+        <div class="form-grid">
+          <div class="section-label">Datos del contacto</div>
+          <div class="field"><label>Nombre contacto principal</label><input type="text" id="cand-nombre" placeholder="Nombre y apellidos"></div>
+          <div class="field"><label>Empresa / Establecimiento</label><input type="text" id="cand-empresa" placeholder="Nombre del establecimiento"></div>
+          <div class="field"><label>Tipo de cliente</label>
+            <select id="cand-tipo" onchange="updateProyectoSmartHint()">
+              <option value="hotel">🏨 Hotel 5★</option>
+              <option value="resort">🌴 Resort / Spa</option>
+              <option value="villa">🏠 Villa de Lujo</option>
+              <option value="promotor">🏗️ Promotor Inmobiliario</option>
+              <option value="distribuidor">🤝 Distribuidor</option>
+              <option value="clinica">⚕️ Clínica / Centro Médico</option>
+            </select>
           </div>
-        </div>
+          <div class="field"><label>Ubicación / Ciudad</label><input type="text" id="cand-ubicacion" placeholder="Marbella, Estepona, Benahavís..."></div>
+          <div class="field"><label>Email</label><input type="email" id="cand-email" placeholder="email@empresa.com"></div>
+          <div class="field"><label>Teléfono</label><input type="tel" id="cand-telefono" placeholder="+34 600 000 000"></div>
 
-        <!-- ══ 2. SEGUIMIENTO ══ -->
-        <div class="section-label">📞 Seguimiento comercial</div>
-        <div class="field full">
-          <div id="cand-seguimiento-list" class="seg-timeline"></div>
-          <button type="button" class="btn-seg-toggle" id="btn-seg-toggle" onclick="toggleSegForm()">➕ Registrar nueva actividad</button>
-          <div class="seg-add-box" id="seg-add-box-wrap" style="display:none;">
-            <div class="seg-add-title">📝 Nueva actividad</div>
-            <div class="form-grid">
-              <div class="field"><label>Tipo de actividad</label>
-                <select id="seg-tipo">
-                  <option value="llamada">📞 Llamada</option>
-                  <option value="email">✉️ Email</option>
-                  <option value="whatsapp">💬 WhatsApp</option>
-                  <option value="visita">🤝 Visita presencial</option>
-                  <option value="reunion">💼 Reunión</option>
-                  <option value="demo">🔬 Presentación / Demo</option>
-                  <option value="otro">📌 Otro</option>
-                </select>
-              </div>
-              <div class="field"><label>Fecha</label><input type="date" id="seg-fecha"></div>
-              <div class="field full"><label>Resumen de la actividad</label><textarea id="seg-resumen" placeholder="¿Qué pasó? Reacción del cliente, puntos clave tratados..." style="min-height:50px;"></textarea></div>
-              <div class="field"><label>Resultado</label>
-                <select id="seg-resultado">
-                  <option value="positivo">✅ Positivo — Avanza</option>
-                  <option value="pendiente">⏳ Pendiente respuesta</option>
-                  <option value="neutro">➡️ Neutro / En evaluación</option>
-                  <option value="negativo">❌ No interesado</option>
-                </select>
-              </div>
-              <div class="field"><label>Fecha próximo contacto</label><input type="date" id="seg-prox-fecha"></div>
-              <div class="field full"><label>Próximo paso</label><input type="text" id="seg-proximo" placeholder="Ej: Enviar ficha técnica, Confirmar demo, Agendar visita..."></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;">
-              <button type="button" class="btn-primary" onclick="addSeguimientoModal()" style="font-size:11px;">📝 Registrar actividad</button>
-              <button type="button" class="btn-sec" onclick="toggleSegForm()" style="font-size:11px;">Cancelar</button>
-            </div>
+          <div class="section-label">Interés comercial</div>
+          <div class="field"><label>Modelo de interés</label>
+            <select id="cand-modelo">
+              <option value="">— Sin definir —</option>
+            </select>
           </div>
-        </div>
-
-        <!-- ══ 3. DATOS DEL CONTACTO ══ -->
-        <div class="section-label">Datos del contacto</div>
-        <div class="field"><label>Nombre completo</label><input type="text" id="cand-nombre" placeholder="Nombre y apellidos"></div>
-        <div class="field"><label>Empresa / Establecimiento</label><input type="text" id="cand-empresa" placeholder="Nombre de la empresa"></div>
-        <div class="field"><label>Tipo de cliente</label>
-          <select id="cand-tipo">
-            <option value="hotel">🏨 Hotel 5★</option>
-            <option value="resort">🌴 Resort / Spa</option>
-            <option value="villa">🏠 Villa de Lujo</option>
-            <option value="promotor">🏗️ Promotor Inmobiliario</option>
-            <option value="distribuidor">🤝 Distribuidor</option>
-            <option value="clinica">⚕️ Clínica / Centro Médico</option>
-          </select>
-        </div>
-        <div class="field"><label>Ubicación / Ciudad</label><input type="text" id="cand-ubicacion" placeholder="Marbella, Estepona, Benahavís..."></div>
-        <div class="field"><label>Email</label><input type="email" id="cand-email" placeholder="email@empresa.com"></div>
-        <div class="field"><label>Teléfono</label><input type="tel" id="cand-telefono" placeholder="+34 600 000 000"></div>
-
-        <!-- ══ 4. INTERÉS COMERCIAL ══ -->
-        <div class="section-label">Interés comercial</div>
-        <div class="field"><label>Modelo de interés</label>
-          <select id="cand-modelo">
-            <option value="">— Sin definir —</option>
-          </select>
-        </div>
-        <div class="field"><label>Presupuesto orientativo (€)</label><input type="number" id="cand-presupuesto" placeholder="0"></div>
-        <div class="field"><label>Etapa del pipeline</label>
-          <select id="cand-etapa">
-            <option value="prospecto">🎯 Prospecto</option>
-            <option value="contactado">📞 Contactado</option>
-            <option value="interes">✨ Interés confirmado</option>
-            <option value="carta">📄 Carta de Intención</option>
-            <option value="viabilidad">🔍 Estudio Viabilidad</option>
-            <option value="cliente">✅ Cliente cerrado</option>
-          </select>
-        </div>
-        <div class="field"><label>Fuente del contacto</label>
-          <select id="cand-fuente">
-            <option value="Referido">Referido</option>
-            <option value="Redes sociales">Redes sociales</option>
-            <option value="Visita directa">Visita directa</option>
-            <option value="Feria / Evento">Feria / Evento</option>
-            <option value="Web">Web</option>
-            <option value="Otro">Otro</option>
-          </select>
-        </div>
-        <div class="field full"><label>Notas internas</label><textarea id="cand-notas" placeholder="Observaciones, próximos pasos, contexto..."></textarea></div>
-
-        <!-- ══ 5. CONTACTOS DEL ESTABLECIMIENTO ══ -->
-        <div class="section-label">Contactos del establecimiento</div>
-        <div class="field full">
-          <div id="cand-contactos-list"></div>
-          <div id="nc-form" class="nc-form-box" style="display:none;">
-            <div style="font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Nuevo contacto</div>
-            <div class="form-grid">
-              <div class="field"><label>Nombre completo</label><input type="text" id="nc-nombre" placeholder="Nombre y apellidos"></div>
-              <div class="field"><label>Cargo / Rol</label><input type="text" id="nc-cargo" placeholder="Director de Spa, CEO..."></div>
-              <div class="field"><label>Email</label><input type="email" id="nc-email" placeholder="email@empresa.com"></div>
-              <div class="field"><label>Teléfono / Móvil</label><input type="tel" id="nc-tel" placeholder="+34 600 000 000"></div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:10px;">
-              <button type="button" onclick="confirmarContacto()" class="btn-primary" style="font-size:10px;padding:6px 14px;">✅ Añadir contacto</button>
-              <button type="button" onclick="document.getElementById('nc-form').style.display='none'" class="btn-sec" style="font-size:10px;padding:6px 14px;">Cancelar</button>
-            </div>
+          <div class="field"><label>Presupuesto orientativo (€)</label><input type="number" id="cand-presupuesto" placeholder="0"></div>
+          <div class="field"><label>Etapa del pipeline</label>
+            <select id="cand-etapa">
+              <option value="prospecto">🎯 Prospecto</option>
+              <option value="contactado">📞 Contactado</option>
+              <option value="interes">✨ Interés confirmado</option>
+              <option value="carta">📄 Carta de Intención</option>
+              <option value="viabilidad">🔍 Estudio Viabilidad</option>
+              <option value="cliente">✅ Cliente cerrado</option>
+            </select>
           </div>
-          <button type="button" class="btn-sec" onclick="mostrarFormContacto()" style="font-size:10px;padding:5px 14px;margin-top:4px;">➕ Añadir contacto</button>
+          <div class="field"><label>Fuente del contacto</label>
+            <select id="cand-fuente">
+              <option value="Referido">Referido</option>
+              <option value="Redes sociales">Redes sociales</option>
+              <option value="Visita directa">Visita directa</option>
+              <option value="Feria / Evento">Feria / Evento</option>
+              <option value="Web">Web</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="field full"><label>Notas internas</label><textarea id="cand-notas" placeholder="Observaciones, próximos pasos, contexto..."></textarea></div>
         </div>
-
       </div>
+
+      <!-- ══════════ TAB: PROYECTO ══════════ -->
+      <div class="mtab-panel" id="tab-panel-proyecto">
+
+        <!-- Barra de completitud -->
+        <div class="proj-meter">
+          <span style="font-weight:700;color:var(--text-m);white-space:nowrap;" id="proj-complete-label">0 / 8 campos</span>
+          <div class="proj-bar-bg"><div class="proj-bar-fill" id="proj-bar-fill" style="width:0%;background:var(--border);"></div></div>
+          <span style="font-weight:800;min-width:30px;text-align:right;" id="proj-complete-pct">0%</span>
+        </div>
+
+        <div class="form-grid">
+          <!-- Smart defaults -->
+          <div class="field full">
+            <button type="button" class="proj-smart-btn" onclick="crmSetSmartDefaults()">
+              ⚡ Rellenar con valores típicos para este tipo de cliente
+            </button>
+          </div>
+
+          <!-- ── SECCIÓN A: CÁMARA ── -->
+          <div class="section-label">📷 Cámara asignada</div>
+
+          <div class="field full">
+            <label>Configuración del catálogo</label>
+            <select id="cand-config-catalogo" onchange="candConfigSelected(this.value);updateProyectoCompleteness()">
+              <option value="">— Sin configuración asignada —</option>
+            </select>
+            <div class="proj-field-hint">Selecciona la cámara del catálogo para este candidato</div>
+          </div>
+
+          <div class="field">
+            <label>💰 Precio sesión €/sesión (sin IVA)</label>
+            <input type="number" id="cand-precio-sesion" placeholder="120" min="0" step="5" oninput="updateProyectoCompleteness()">
+            <div class="proj-field-hint" id="proj-sesion-hint">Hotel 5★: €120-180 · Resort: €100-150 · Clínica: €80-130 · Villa: €60-120</div>
+          </div>
+
+          <div class="field">
+            <label>Precio equipo negociado € <span style="font-weight:400;font-size:9px;">(opcional)</span></label>
+            <input type="number" id="cand-precio-negociado" placeholder="Del catálogo" min="0" step="100" oninput="updateProyectoCompleteness()">
+            <div class="proj-field-hint">Solo si difiere del precio del catálogo</div>
+          </div>
+
+          <!-- ── SECCIÓN B: OPERATIVIDAD ── -->
+          <div class="section-label">⏰ Operatividad estimada</div>
+
+          <div class="field">
+            <label>Horas/día de operación</label>
+            <input type="number" id="cand-horas-dia" placeholder="8" min="1" max="24" step="0.5" oninput="updateProyectoCompleteness()">
+          </div>
+          <div class="field">
+            <label>Días/semana operativos</label>
+            <select id="cand-dias-semana" onchange="updateProyectoCompleteness()">
+              <option value="5">5 días</option>
+              <option value="6">6 días</option>
+              <option value="7">7 días</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Duración sesión (min)</label>
+            <input type="number" id="cand-duracion-sesion" placeholder="75" min="15" max="240" step="5" oninput="updateProyectoCompleteness()">
+          </div>
+          <div class="field">
+            <label>Días operativos/mes</label>
+            <input type="number" id="cand-dias-mes" placeholder="22" min="1" max="31" step="1" oninput="updateProyectoCompleteness()">
+          </div>
+          <div class="field">
+            <label>Horario inicio</label>
+            <input type="time" id="cand-horario-inicio" value="09:00" oninput="updateProyectoCompleteness()">
+          </div>
+          <div class="field">
+            <label>Horario fin</label>
+            <input type="time" id="cand-horario-fin" value="21:00" oninput="updateProyectoCompleteness()">
+          </div>
+          <div class="field full">
+            <label>💰 Coste operativo/mes €</label>
+            <input type="number" id="cand-coste-operativo" placeholder="1200" min="0" step="50" oninput="updateProyectoCompleteness()">
+            <div class="proj-field-hint">Personal · Electricidad · Mantenimiento · Consumibles</div>
+          </div>
+
+          <!-- CTA: aparece cuando ≥6/8 campos completados -->
+          <div class="field full">
+            <div class="proj-cta-box" id="proj-cta-box" style="display:none;border-radius:8px;padding:10px 14px;">
+              <div style="font-size:11px;font-weight:800;color:#2e7d32;margin-bottom:6px;">✅ Candidato listo para crear proyectos automáticamente</div>
+              <div style="font-size:10px;color:#388e3c;">Al seleccionarlo en Propuestas, todos los campos se rellenan solos.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══════════ TAB: CONTACTOS ══════════ -->
+      <div class="mtab-panel" id="tab-panel-contactos">
+        <div class="form-grid">
+          <div class="section-label">Contactos del establecimiento</div>
+          <div class="field full">
+            <div id="cand-contactos-list"></div>
+            <div id="nc-form" class="nc-form-box" style="display:none;">
+              <div style="font-size:10px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">Nuevo contacto</div>
+              <div class="form-grid">
+                <div class="field"><label>Nombre completo</label><input type="text" id="nc-nombre" placeholder="Nombre y apellidos"></div>
+                <div class="field"><label>Cargo / Rol</label><input type="text" id="nc-cargo" placeholder="Director de Spa, CEO..."></div>
+                <div class="field"><label>Email</label><input type="email" id="nc-email" placeholder="email@empresa.com"></div>
+                <div class="field"><label>Teléfono / Móvil</label><input type="tel" id="nc-tel" placeholder="+34 600 000 000"></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <button type="button" onclick="confirmarContacto()" class="btn-primary" style="font-size:10px;padding:6px 14px;">✅ Añadir contacto</button>
+                <button type="button" onclick="document.getElementById('nc-form').style.display='none'" class="btn-sec" style="font-size:10px;padding:6px 14px;">Cancelar</button>
+              </div>
+            </div>
+            <button type="button" class="btn-sec" onclick="mostrarFormContacto()" style="font-size:10px;padding:5px 14px;margin-top:4px;">➕ Añadir contacto</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ TAB: COMMS ══════════ -->
+      <div class="mtab-panel" id="tab-panel-comms">
+        <div class="form-grid">
+          <div class="section-label">📨 Comunicación con el candidato</div>
+          <div class="field full">
+            <div class="comms-panel">
+              <div class="comms-tipo-row">
+                <span class="comms-sublabel">Tipo</span>
+                <button class="ctipo-btn active" id="ctipo-primercontacto" onclick="setCommsType('primercontacto')">🤝 Primer contacto</button>
+                <button class="ctipo-btn" id="ctipo-presupuesto" onclick="setCommsType('presupuesto')">📋 Presupuesto</button>
+                <button class="ctipo-btn" id="ctipo-seguimiento" onclick="setCommsType('seguimiento')">🔄 Seguimiento</button>
+              </div>
+              <div class="comms-canal-row">
+                <span class="comms-sublabel">Canal</span>
+                <button class="ccanal-btn active" id="ccanal-email" onclick="setCommsCanal('email')">✉️ Email</button>
+                <button class="ccanal-btn" id="ccanal-whatsapp" onclick="setCommsCanal('whatsapp')">💬 WhatsApp</button>
+              </div>
+              <button class="btn-generate-ai" id="btn-gen-msg" onclick="generarMensajeModal()">
+                <span id="gen-spin" style="display:none;">⏳</span>
+                🤖 Generar mensaje personalizado con IA
+              </button>
+              <div class="comms-preview" id="comms-preview-area">
+                <input type="text" class="comms-asunto-inp" id="comms-asunto" placeholder="Asunto del email...">
+                <textarea class="comms-body-ta" id="comms-body"></textarea>
+                <div class="comms-send-row">
+                  <button class="btn-email-send" onclick="enviarCommsModal('email')">✉️ Abrir en Email</button>
+                  <button class="btn-wa" onclick="enviarCommsModal('whatsapp')">💬 Abrir en WhatsApp</button>
+                  <button class="btn-sec" onclick="logCommsComoSeguimiento()" style="font-size:10px;padding:6px 12px;">📝 Registrar</button>
+                  <button class="btn-sec" onclick="abrirModalMensaje()" style="font-size:10px;padding:6px 12px;">🔍 Pantalla completa</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ TAB: SEGUIMIENTO ══════════ -->
+      <div class="mtab-panel" id="tab-panel-seguimiento">
+        <div class="form-grid">
+          <div class="section-label">📞 Seguimiento comercial</div>
+          <div class="field full">
+            <div id="cand-seguimiento-list" class="seg-timeline"></div>
+            <button type="button" class="btn-seg-toggle" id="btn-seg-toggle" onclick="toggleSegForm()">➕ Registrar nueva actividad</button>
+            <div class="seg-add-box" id="seg-add-box-wrap" style="display:none;">
+              <div class="seg-add-title">📝 Nueva actividad</div>
+              <div class="form-grid">
+                <div class="field"><label>Tipo de actividad</label>
+                  <select id="seg-tipo">
+                    <option value="llamada">📞 Llamada</option>
+                    <option value="email">✉️ Email</option>
+                    <option value="whatsapp">💬 WhatsApp</option>
+                    <option value="visita">🤝 Visita presencial</option>
+                    <option value="reunion">💼 Reunión</option>
+                    <option value="demo">🔬 Presentación / Demo</option>
+                    <option value="otro">📌 Otro</option>
+                  </select>
+                </div>
+                <div class="field"><label>Fecha</label><input type="date" id="seg-fecha"></div>
+                <div class="field full"><label>Resumen de la actividad</label><textarea id="seg-resumen" placeholder="¿Qué pasó? Reacción del cliente, puntos clave tratados..." style="min-height:50px;"></textarea></div>
+                <div class="field"><label>Resultado</label>
+                  <select id="seg-resultado">
+                    <option value="positivo">✅ Positivo — Avanza</option>
+                    <option value="pendiente">⏳ Pendiente respuesta</option>
+                    <option value="neutro">➡️ Neutro / En evaluación</option>
+                    <option value="negativo">❌ No interesado</option>
+                  </select>
+                </div>
+                <div class="field"><label>Fecha próximo contacto</label><input type="date" id="seg-prox-fecha"></div>
+                <div class="field full"><label>Próximo paso</label><input type="text" id="seg-proximo" placeholder="Ej: Enviar ficha técnica, Confirmar demo, Agendar visita..."></div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <button type="button" class="btn-primary" onclick="addSeguimientoModal()" style="font-size:11px;">📝 Registrar actividad</button>
+                <button type="button" class="btn-sec" onclick="toggleSegForm()" style="font-size:11px;">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn-sec" onclick="cerrarModalCandidato()">Cancelar</button>
@@ -1537,6 +1667,14 @@ function renderCard(c){
         <span style="font-size:9px;color:#50c878;margin-left:3px;">${escH(proyAsoc[proyAsoc.length-1].nombre)}</span>
       </div>`
     :'';
+  // Badge parametrización módulo Proyecto
+  const proj=c.proyecto||{};
+  const pScore=[proj.configCatalogoId,proj.precioSesion,proj.horasDia,proj.duracionSesion,proj.diasMes,proj.costoOperativoMes].filter(v=>v!==null&&v!==undefined&&v!=='').length;
+  const paramBadge=pScore>=5
+    ?'<span style="font-size:8px;background:rgba(80,200,120,.12);color:#50c878;border:1px solid rgba(80,200,120,.25);border-radius:3px;padding:1px 5px;font-weight:800;">🟢 Listo</span>'
+    :pScore>=2
+    ?'<span style="font-size:8px;background:rgba(249,168,37,.1);color:#f9a825;border:1px solid rgba(249,168,37,.25);border-radius:3px;padding:1px 5px;font-weight:800;">🟡 Config.</span>'
+    :'';
   // Datos de contacto: usa principal si existe, si no usa los campos raíz del candidato
   const telDisplay  = (principal&&principal.telefono) || c.telefono || '';
   const emailDisplay= (principal&&principal.email)    || c.email    || '';
@@ -1544,7 +1682,10 @@ function renderCard(c){
   const nextEtapa=(()=>{const ni=ETAPAS.findIndex(e=>e.id===c.etapa);const ne=ni<ETAPAS.length-1?ETAPAS[ni+1]:null;return ne?`<button class="kand-btn kand-btn-avanzar" onclick="event.stopPropagation();avanzarEtapa('${c.id}')">→ ${ne.label}</button>`:''})();
   return `<div class="kand-card" onclick="abrirModalCandidato('${c.id}')">
 
-    <span class="kand-tipo" style="background:${tipo.color}22;color:${tipo.color};">${tipo.label}</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+      <span class="kand-tipo" style="background:${tipo.color}22;color:${tipo.color};">${tipo.label}</span>
+      ${paramBadge}
+    </div>
 
     <!-- 1. ESTABLECIMIENTO — nombre principal -->
     <div class="kand-estab">${escH(c.empresa||c.nombre)}</div>
@@ -1613,6 +1754,98 @@ function toggleSegForm(){
   }
 }
 
+/* ═══ MODAL TABS ═══ */
+function mTab(tab, btn) {
+  document.querySelectorAll('.mtab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.mtab').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('tab-panel-' + tab);
+  if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (tab === 'proyecto') { initCandConfigSelector(); updateProyectoCompleteness(); }
+}
+
+/* ═══ MÓDULO PROYECTO — FUNCIONES ═══ */
+
+const SMART_DEFAULTS = {
+  hotel:        { horasDia:10, diasSemana:'6', duracionSesion:75, diasMes:25, horarioInicio:'08:00', horarioFin:'22:00', costoOperativoMes:1800, precioSesion:150 },
+  resort:       { horasDia:10, diasSemana:'6', duracionSesion:75, diasMes:25, horarioInicio:'08:00', horarioFin:'22:00', costoOperativoMes:1800, precioSesion:140 },
+  villa:        { horasDia:6,  diasSemana:'5', duracionSesion:90, diasMes:20, horarioInicio:'09:00', horarioFin:'20:00', costoOperativoMes:600,  precioSesion:100 },
+  clinica:      { horasDia:8,  diasSemana:'5', duracionSesion:60, diasMes:22, horarioInicio:'09:00', horarioFin:'20:00', costoOperativoMes:1400, precioSesion:120 },
+  promotor:     { horasDia:8,  diasSemana:'5', duracionSesion:75, diasMes:22, horarioInicio:'09:00', horarioFin:'20:00', costoOperativoMes:1200, precioSesion:110 },
+  distribuidor: { horasDia:8,  diasSemana:'5', duracionSesion:75, diasMes:22, horarioInicio:'09:00', horarioFin:'20:00', costoOperativoMes:1000, precioSesion:100 },
+};
+
+function crmSetSmartDefaults() {
+  const tipo = document.getElementById('cand-tipo')?.value || 'hotel';
+  const d = SMART_DEFAULTS[tipo] || SMART_DEFAULTS.hotel;
+  const sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+  sv('cand-horas-dia',       d.horasDia);
+  sv('cand-dias-semana',     d.diasSemana);
+  sv('cand-duracion-sesion', d.duracionSesion);
+  sv('cand-dias-mes',        d.diasMes);
+  sv('cand-horario-inicio',  d.horarioInicio);
+  sv('cand-horario-fin',     d.horarioFin);
+  sv('cand-coste-operativo', d.costoOperativoMes);
+  if (!document.getElementById('cand-precio-sesion')?.value)
+    sv('cand-precio-sesion', d.precioSesion);
+  updateProyectoCompleteness();
+  toast('⚡ Valores típicos para ' + tipo + ' aplicados');
+}
+
+function updateProyectoSmartHint() { /* re-render hint when tipo changes */ }
+
+function initCandConfigSelector() {
+  const sel = document.getElementById('cand-config-catalogo');
+  if (!sel) return;
+  const raw = localStorage.getItem('soulbaric_configuraciones');
+  const prev = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
+  if (raw) {
+    try {
+      JSON.parse(raw).forEach(function(c) {
+        const opt = new Option((c.nombre || c.modeloNombre || c.id) + (c.plazas ? ' · ' + c.plazas + 'p' : ''), c.id);
+        sel.appendChild(opt);
+      });
+    } catch(e) {}
+  }
+  if (prev) sel.value = prev;
+}
+
+function candConfigSelected(id) {
+  if (!id) return;
+  const raw = localStorage.getItem('soulbaric_configuraciones');
+  if (!raw) return;
+  try {
+    const cfg = JSON.parse(raw).find(function(c){ return String(c.id) === String(id); });
+    if (!cfg) return;
+    const pn = document.getElementById('cand-precio-negociado');
+    if (pn && !pn.value && cfg.precioBase) pn.value = cfg.precioBase;
+  } catch(e) {}
+}
+
+function updateProyectoCompleteness() {
+  const ids = ['cand-config-catalogo','cand-precio-sesion','cand-horas-dia','cand-dias-semana',
+                'cand-duracion-sesion','cand-dias-mes','cand-horario-inicio','cand-horario-fin','cand-coste-operativo'];
+  const total = ids.length;
+  const filled = ids.filter(function(id) {
+    const el = document.getElementById(id);
+    return el && el.value && el.value.trim() !== '' && el.value !== '0';
+  }).length;
+  const pct = Math.round(filled / total * 100);
+
+  const label = document.getElementById('proj-complete-label');
+  const bar   = document.getElementById('proj-bar-fill');
+  const pctEl = document.getElementById('proj-complete-pct');
+  const cta   = document.getElementById('proj-cta-box');
+  const dot   = document.getElementById('mtab-proj-dot');
+
+  if (label) label.textContent = filled + ' / ' + total + ' campos';
+  if (bar)   { bar.style.width = pct + '%'; bar.style.background = pct >= 75 ? '#50c878' : pct >= 40 ? '#f9a825' : 'var(--gold)'; }
+  if (pctEl) { pctEl.textContent = pct + '%'; pctEl.style.color = pct >= 75 ? '#2e7d32' : pct >= 40 ? '#f57f17' : 'var(--gold)'; }
+  if (cta)   cta.style.display = pct >= 75 ? 'block' : 'none';
+  if (dot)   { dot.style.display = filled > 0 ? 'inline-block' : 'none'; dot.style.background = pct >= 75 ? '#50c878' : '#f9a825'; }
+}
+
 /* ═══ MODAL CANDIDATO ═══ */
 function abrirModalCandidato(id){
   // Fill model select
@@ -1638,16 +1871,41 @@ function abrirModalCandidato(id){
     document.getElementById('cand-notas').value=c.notas||'';
     editingContactos=JSON.parse(JSON.stringify(c.contactos||[]));
     editingSeguimiento=JSON.parse(JSON.stringify(c.seguimiento||[]));
+    // ── Módulo Proyecto ──
+    const p = c.proyecto || {};
+    const sv = (eid, val) => { const el = document.getElementById(eid); if (el && val !== undefined && val !== null && val !== '') el.value = val; };
+    sv('cand-config-catalogo',   p.configCatalogoId);
+    sv('cand-precio-sesion',     p.precioSesion);
+    sv('cand-precio-negociado',  p.precioNegociado);
+    sv('cand-horas-dia',         p.horasDia);
+    sv('cand-dias-semana',       p.diasSemana);
+    sv('cand-duracion-sesion',   p.duracionSesion);
+    sv('cand-dias-mes',          p.diasMes);
+    sv('cand-horario-inicio',    p.horarioInicio);
+    sv('cand-horario-fin',       p.horarioFin);
+    sv('cand-coste-operativo',   p.costoOperativoMes);
+    // Badges tabs
+    const cntSeg = document.getElementById('mtab-cnt-seg');
+    const cntCont = document.getElementById('mtab-cnt-contactos');
+    if (cntSeg)  { const n=(c.seguimiento||[]).length; cntSeg.textContent=n; cntSeg.style.display=n?'inline-flex':'none'; }
+    if (cntCont) { const n=(c.contactos||[]).length;   cntCont.textContent=n; cntCont.style.display=n?'inline-flex':'none'; }
   } else {
     document.getElementById('modalCandidatoTitle').textContent='➕ Nuevo Candidato';
     document.getElementById('cand-id').value='';
-    ['cand-nombre','cand-empresa','cand-ubicacion','cand-email','cand-telefono','cand-presupuesto','cand-notas'].forEach(id=>document.getElementById(id).value='');
+    ['cand-nombre','cand-empresa','cand-ubicacion','cand-email','cand-telefono','cand-presupuesto','cand-notas',
+     'cand-config-catalogo','cand-precio-sesion','cand-precio-negociado','cand-horas-dia',
+     'cand-duracion-sesion','cand-dias-mes','cand-coste-operativo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('cand-tipo').value='hotel';
     document.getElementById('cand-etapa').value='prospecto';
     document.getElementById('cand-fuente').value='Referido';
     document.getElementById('cand-modelo').value='';
+    document.getElementById('cand-horario-inicio').value='09:00';
+    document.getElementById('cand-horario-fin').value='21:00';
+    document.getElementById('cand-dias-semana').value='5';
     editingContactos=[];
     editingSeguimiento=[];
+    // Ocultar badges
+    ['mtab-cnt-seg','mtab-cnt-contactos'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
   }
   document.getElementById('nc-form').style.display='none';
   document.getElementById('seg-fecha').value=hoy;
@@ -1684,6 +1942,20 @@ function guardarCandidato(){
   const auto=!presBase&&modelo&&modelo.precioBase?modelo.precioBase*1.21:presBase;
   // Sync primary contact email/phone from contactos array
   const principal=editingContactos.find(c=>c.principal)||editingContactos[0]||null;
+  const vn = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+  const vnum = id => { const v=parseFloat(vn(id)); return isNaN(v)?null:v; };
+  const proyData = {
+    configCatalogoId:  vn('cand-config-catalogo') || null,
+    precioSesion:      vnum('cand-precio-sesion'),
+    precioNegociado:   vnum('cand-precio-negociado'),
+    horasDia:          vnum('cand-horas-dia'),
+    diasSemana:        vn('cand-dias-semana') ? parseInt(vn('cand-dias-semana')) : null,
+    duracionSesion:    vnum('cand-duracion-sesion'),
+    diasMes:           vnum('cand-dias-mes'),
+    horarioInicio:     vn('cand-horario-inicio') || null,
+    horarioFin:        vn('cand-horario-fin') || null,
+    costoOperativoMes: vnum('cand-coste-operativo'),
+  };
   const data={
     id:existId||uuid(),
     nombre,
@@ -1699,6 +1971,8 @@ function guardarCandidato(){
     notas:document.getElementById('cand-notas').value.trim(),
     contactos:editingContactos,
     seguimiento:editingSeguimiento,
+    proyecto:proyData,
+    proyectosAsociados:existId?(cands.find(c=>c.id===existId)||{}).proyectosAsociados||[]:[],
     fechaCreacion:existId?(cands.find(c=>c.id===existId)||{}).fechaCreacion||new Date().toISOString().split('T')[0]:new Date().toISOString().split('T')[0],
   };
   if(existId){const i=cands.findIndex(c=>c.id===existId);if(i>=0)cands[i]=data;else cands.push(data);}
