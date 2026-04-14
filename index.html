@@ -4052,6 +4052,7 @@ const _SS = {
 };
 
 function escAttr(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 /* Fuzzy match sin tildes */
 function fuzzyMatch(text, q) {
@@ -4297,8 +4298,8 @@ function crmSelToggle() { _SS.open ? crmSelClose() : crmSelOpen(); }
 
 function _crmSelOutside(e) {
   const wrap = document.getElementById('crm-smart-wrap');
-  if (wrap && !wrap.contains(e.target)) crmSelClose();
-  else document.addEventListener('click', _crmSelOutside);
+  const panel = document.getElementById('crm-sel-panel');
+  if (wrap && !wrap.contains(e.target) && panel && !panel.contains(e.target)) crmSelClose();
 }
 
 function crmSelSelect(id, nombre, icon) {
