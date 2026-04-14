@@ -3642,11 +3642,15 @@ function cargarConfiguracionCatalogo(id) {
   set('transportCost',    config.costeTransporte  || 0);
   set('installationCost', config.costeInstalacion || 0);
 
-  // Precio base: si existe y > 0 lo cargamos; si no, vaciamos y resaltamos el campo
+  // Precio parametrizado completo (base + complementos + logística), sin IVA
   const elPrecio = document.getElementById('chamberPriceNet');
   if (elPrecio) {
-    if (config.precioBase && config.precioBase > 0) {
-      elPrecio.value = config.precioBase;
+    const pBase = parseFloat(config.precioBase)        || 0;
+    const pComp = parseFloat(config.totalComplementos) || 0;
+    const pLog  = parseFloat(config.totalLogistica)    || 0;
+    const totalSinIVA = pBase + pComp + pLog;
+    if (totalSinIVA > 0) {
+      elPrecio.value = totalSinIVA.toFixed(2);
       elPrecio.style.border = '';
     } else {
       elPrecio.value = '';
@@ -4109,6 +4113,23 @@ function seleccionarEmpresa(id) {
         calcGrossPrice();
       }
       autoCalcSessions();
+
+      // ── Modalidad de adquisición ──
+      const modalidad = p.modalidad || 'inversion';
+      if (modalidad === 'compra') {
+        // Compra directa: sin participación en ingresos
+        const elIPct = document.getElementById('investPct');
+        if (elIPct) { elIPct.value = 0; }
+        updateAmortCalc && updateAmortCalc();
+        setTimeout(function() {
+          mostrarToast('🛒 ' + c.empresa + ' · Compra directa — sin participación en ingresos (investPct = 0%)', '#1565c0');
+        }, 1200);
+      } else if (modalidad === 'leasing') {
+        setTimeout(function() {
+          mostrarToast('📅 ' + c.empresa + ' · Leasing / Renting — revisa la cuota mensual en Coste Operativo', '#7b1fa2');
+        }, 1200);
+      }
+
       const pScore = [p.configCatalogoId,p.precioSesion,p.horasDia,p.duracionSesion,p.diasMes,p.costoOperativoMes].filter(v=>v!==null&&v!==undefined&&v!=='').length;
       mostrarToast(
         pScore >= 5

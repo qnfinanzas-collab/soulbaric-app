@@ -1205,6 +1205,30 @@ Muchas gracias 🙏
             </button>
           </div>
 
+          <!-- ── MODALIDAD DE ADQUISICIÓN ── -->
+          <div class="section-label">🤝 Modalidad de adquisición</div>
+          <div class="field full">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" id="modal-btn-inversion" onclick="setCandModalidad('inversion')"
+                style="flex:1;min-width:140px;padding:10px 8px;border-radius:8px;border:2px solid var(--gold);background:rgba(200,153,104,0.12);font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--gold2);transition:all .2s;">
+                🤝 Inversión compartida<br><span style="font-weight:400;font-size:9px;opacity:.8;">SoulBaric aporta equipo · % ingresos</span>
+              </button>
+              <button type="button" id="modal-btn-compra" onclick="setCandModalidad('compra')"
+                style="flex:1;min-width:140px;padding:10px 8px;border-radius:8px;border:2px solid var(--border);background:var(--card2);font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--text-m);transition:all .2s;">
+                🛒 Compra directa<br><span style="font-weight:400;font-size:9px;opacity:.8;">Cliente adquiere el equipo</span>
+              </button>
+              <button type="button" id="modal-btn-leasing" onclick="setCandModalidad('leasing')"
+                style="flex:1;min-width:140px;padding:10px 8px;border-radius:8px;border:2px solid var(--border);background:var(--card2);font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;color:var(--text-m);transition:all .2s;">
+                📅 Leasing / Renting<br><span style="font-weight:400;font-size:9px;opacity:.8;">Financiación en cuotas</span>
+              </button>
+            </div>
+            <input type="hidden" id="cand-modalidad" value="inversion">
+            <!-- Nota contextual según modalidad -->
+            <div id="cand-modalidad-nota" style="margin-top:8px;padding:7px 10px;border-radius:6px;font-size:10px;background:rgba(200,153,104,0.07);border-left:3px solid var(--gold);line-height:1.5;">
+              🤝 <strong>Inversión compartida:</strong> SoulBaric instala y mantiene el equipo. El cliente opera y cede un porcentaje de los ingresos por sesión acordado en contrato.
+            </div>
+          </div>
+
           <!-- ── SECCIÓN A: CÁMARA ── -->
           <div class="section-label">📷 Cámara asignada</div>
 
@@ -1214,6 +1238,8 @@ Muchas gracias 🙏
               <option value="">— Sin configuración asignada —</option>
             </select>
             <div class="proj-field-hint">Selecciona la cámara del catálogo para este candidato</div>
+            <!-- Desglose de precio de la configuración -->
+            <div id="cand-config-precio-info" style="display:none;margin-top:8px;padding:8px 10px;background:#f7f5f2;border:1px solid var(--border);border-radius:6px;font-size:10px;line-height:1.8;"></div>
           </div>
 
           <div class="field">
@@ -1225,7 +1251,7 @@ Muchas gracias 🙏
           <div class="field">
             <label>Precio equipo negociado € <span style="font-weight:400;font-size:9px;">(opcional)</span></label>
             <input type="number" id="cand-precio-negociado" placeholder="Del catálogo" min="0" step="100" oninput="updateProyectoCompleteness()">
-            <div class="proj-field-hint">Solo si difiere del precio del catálogo</div>
+            <div class="proj-field-hint">Solo si se ha negociado un precio diferente al del catálogo</div>
           </div>
 
           <!-- ── SECCIÓN B: OPERATIVIDAD ── -->
@@ -1812,15 +1838,54 @@ function initCandConfigSelector() {
 }
 
 function candConfigSelected(id) {
-  if (!id) return;
+  const info = document.getElementById('cand-config-precio-info');
+  if (!id) { if (info) info.style.display = 'none'; return; }
   const raw = localStorage.getItem('soulbaric_configuraciones');
   if (!raw) return;
   try {
     const cfg = JSON.parse(raw).find(function(c){ return String(c.id) === String(id); });
     if (!cfg) return;
+    const base  = cfg.precioBase        || 0;
+    const comp  = cfg.totalComplementos || 0;
+    const log   = cfg.totalLogistica    || 0;
+    const iva   = cfg.ivaRate           != null ? cfg.ivaRate : 21;
+    const sinIVA = base + comp + log;
+    const conIVA = sinIVA * (1 + iva / 100);
+    if (info) {
+      info.style.display = 'block';
+      info.innerHTML =
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">' +
+          '<span style="color:var(--text-m);">📷 Base: <strong>' + fmt(base) + '</strong></span>' +
+          (comp ? '<span style="color:var(--text-m);">+ Compl: <strong>' + fmt(comp) + '</strong></span>' : '') +
+          (log  ? '<span style="color:var(--text-m);">+ Log: <strong>' + fmt(log) + '</strong></span>' : '') +
+          '<span style="border-left:1px solid var(--border);padding-left:6px;color:var(--text);">Sin IVA: <strong style="color:#2e7d32;">' + fmt(sinIVA) + '</strong></span>' +
+          '<span style="color:var(--text);">Con IVA (' + iva + '%): <strong style="color:var(--gold2);">' + fmt(conIVA) + '</strong></span>' +
+        '</div>';
+    }
+    // Auto-fill precio negociado only if empty
     const pn = document.getElementById('cand-precio-negociado');
-    if (pn && !pn.value && cfg.precioBase) pn.value = cfg.precioBase;
+    if (pn && !pn.value) pn.value = sinIVA.toFixed(2);
   } catch(e) {}
+}
+
+function setCandModalidad(tipo) {
+  const notas = {
+    inversion: '🤝 <strong>Inversión compartida:</strong> SoulBaric instala y mantiene el equipo. El cliente opera y cede un porcentaje de los ingresos por sesión acordado en contrato.',
+    compra:    '🛒 <strong>Compra directa:</strong> El cliente adquiere el equipo a precio de venta. SoulBaric factura el hardware y proporciona formación e instalación. Sin participación en ingresos.',
+    leasing:   '📅 <strong>Leasing / Renting:</strong> El cliente financia el equipo en cuotas mensuales. La cuota se suma al coste operativo mensual. Sin participación en ingresos de SoulBaric.'
+  };
+  const styles = {
+    active:   'border:2px solid var(--gold);background:rgba(200,153,104,0.12);color:var(--gold2);',
+    inactive: 'border:2px solid var(--border);background:var(--card2);color:var(--text-m);'
+  };
+  ['inversion','compra','leasing'].forEach(function(t) {
+    const btn = document.getElementById('modal-btn-' + t);
+    if (btn) btn.style.cssText = btn.style.cssText.replace(/border:[^;]+;background:[^;]+;color:[^;]+;/g, '') + (t === tipo ? styles.active : styles.inactive);
+  });
+  const hidden = document.getElementById('cand-modalidad');
+  if (hidden) hidden.value = tipo;
+  const nota = document.getElementById('cand-modalidad-nota');
+  if (nota) nota.innerHTML = notas[tipo] || '';
 }
 
 function updateProyectoCompleteness() {
@@ -1884,6 +1949,8 @@ function abrirModalCandidato(id){
     sv('cand-horario-inicio',    p.horarioInicio);
     sv('cand-horario-fin',       p.horarioFin);
     sv('cand-coste-operativo',   p.costoOperativoMes);
+    setCandModalidad(p.modalidad || 'inversion');
+    if (p.configCatalogoId) { candConfigSelected(p.configCatalogoId); }
     // Badges tabs
     const cntSeg = document.getElementById('mtab-cnt-seg');
     const cntCont = document.getElementById('mtab-cnt-contactos');
@@ -1902,6 +1969,8 @@ function abrirModalCandidato(id){
     document.getElementById('cand-horario-inicio').value='09:00';
     document.getElementById('cand-horario-fin').value='21:00';
     document.getElementById('cand-dias-semana').value='5';
+    setCandModalidad('inversion');
+    const infoEl = document.getElementById('cand-config-precio-info'); if(infoEl) infoEl.style.display='none';
     editingContactos=[];
     editingSeguimiento=[];
     // Ocultar badges
@@ -1955,6 +2024,7 @@ function guardarCandidato(){
     horarioInicio:     vn('cand-horario-inicio') || null,
     horarioFin:        vn('cand-horario-fin') || null,
     costoOperativoMes: vnum('cand-coste-operativo'),
+    modalidad:         vn('cand-modalidad') || 'inversion',
   };
   const data={
     id:existId||uuid(),
