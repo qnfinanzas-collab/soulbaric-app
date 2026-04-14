@@ -2213,6 +2213,47 @@ function deleteProspecto(id) {
 // ═══════════════════════════════════════════════
 (function init() {
   initDemoData();
+
+  // ── Detectar importación desde Calculadora ──────────────────────────
+  if (window.location.search.includes('nuevo_proyecto=1')) {
+    var raw = localStorage.getItem('soulbaric_temp_inv_proyecto');
+    if (raw) {
+      localStorage.removeItem('soulbaric_temp_inv_proyecto');
+      showSection('proyectos');
+      populateBPSelect();
+      setTimeout(function() {
+        populateInversorSelects();
+        var d;
+        try { d = JSON.parse(raw); } catch(e) { d = {}; }
+
+        // Limpiar modal y abrir en blanco pre-rellenado
+        document.getElementById('modal-proj-title').textContent = '💼 Nuevo Proyecto — importado de Calculadora';
+        document.getElementById('proj-id').value = '';
+        document.getElementById('proj-nombre').value = d.nombre || '';
+        document.getElementById('proj-candidato').value = d.candidatoId || '';
+        document.getElementById('proj-fecha').value = d.fechaInicio || '';
+        document.getElementById('proj-estado').value = 'activo';
+        document.getElementById('proj-factu').value = d.factuMensual || '';
+        document.getElementById('proj-sesiones').value = d.sesiones || '';
+        setModelo(1);
+        if (d.assetInversor) {
+          document.getElementById('m1-asset-inv').value = d.assetInversor.inversorId || 'soulbaric_propio';
+          document.getElementById('m1-asset-total').value = d.assetInversor.totalInversion || '';
+          var mecRadio = document.querySelector('input[name="m1-mecanismo"][value="pct"]');
+          if (mecRadio) { mecRadio.checked = true; }
+          document.getElementById('m1-ret-pct').value = d.assetInversor.retornoPct || '';
+        }
+        document.getElementById('m1-gastos').value = d.gastosFijosMes || '';
+        toggleMecanismo();
+        switchProjTab('config');
+        openModal('modal-proyecto');
+        updateSimulacion();
+        toast('✅ Propuesta importada — revisa los datos y asigna inversores antes de guardar');
+      }, 400);
+      return;
+    }
+  }
+
   // Aterrizar siempre en Proyectos — es la sección principal de trabajo
   showSection('proyectos');
   populateBPSelect();

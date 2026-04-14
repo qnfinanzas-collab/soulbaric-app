@@ -1466,6 +1466,7 @@
     <div id="save-project-container" style="display:none;">
       <input type="text" id="projectName" placeholder="Ej: Resort Sol - 2P" style="width:100%;padding:6px;margin-bottom:6px;border:1px solid var(--border);border-radius:5px;font-size:11px;">
       <button class="btn btn-success" onclick="saveProject()">💾 GUARDAR PROYECTO</button>
+      <button class="btn" style="background:linear-gradient(135deg,#1a1410,#2a1f14);color:#C89968;border:1px solid rgba(200,153,104,.55);margin-top:6px;width:100%;font-size:11px;font-weight:700;letter-spacing:.3px;" onclick="convertToInvestmentProject()">💼 Crear Proyecto de Inversión</button>
     </div>
 
   </aside>
@@ -2824,6 +2825,64 @@ function saveProject() {
   document.getElementById('projectName').value = '';
   renderProyectosInline();
   mostrarToast('✅ Proyecto "' + projectName + '" guardado', '#2e7d32');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONVERTIR PROPUESTA → PROYECTO DE INVERSIÓN
+// ══════════════════════════════════════════════════════════════════════
+function convertToInvestmentProject() {
+  var s = buildScenario();
+  var candidatoId = window.crmSelectedCandidatoId || '';
+  var companyName = vs('crm-razon-social') || vs('locationType') || 'Nuevo Proyecto';
+
+  // Media mensual facturación neta (año 1)
+  var avgFactuMes = 0;
+  if (s.monthlyData && s.monthlyData.length) {
+    avgFactuMes = Math.round(s.monthlyData.reduce(function(t,m){ return t+m.billingNet; },0) / 12);
+  }
+
+  // Sesiones estimadas (promedio ocupación × max sesiones/mes)
+  var avgOcc = monthlyOccupancy.reduce(function(a,b){ return a+b; },0) / 12 / 100;
+  var sesEstimadas = Math.round((s.sessionsPerMonth || 0) * avgOcc);
+
+  // Objeto proyecto temporal
+  var tempProyecto = {
+    nombre: companyName + ' — Proyecto Inversión',
+    candidatoId: candidatoId,
+    modelo: 1,
+    fechaInicio: new Date().toISOString().slice(0,10),
+    estado: 'activo',
+    factuMensual: avgFactuMes,
+    sesiones: sesEstimadas,
+    assetInversor: {
+      inversorId: 'soulbaric_propio',
+      totalInversion: Math.round(s.investAmount || 0),
+      mecanismo: 'pct',
+      retornoFijo: 0,
+      retornoPct: v('investPct') || 0
+    },
+    gastosFijosMes: v('opCost') || 0,
+    hotelComision: null,
+    inversorOperativo: null
+  };
+
+  localStorage.setItem('soulbaric_temp_inv_proyecto', JSON.stringify(tempProyecto));
+
+  // Actualizar etapa CRM → viabilidad (paso previo a cliente/activo)
+  if (candidatoId) {
+    try {
+      var cands = JSON.parse(localStorage.getItem('soulbaric_candidatos') || '[]');
+      var idx = cands.findIndex(function(c){ return c.id === candidatoId; });
+      if (idx >= 0 && cands[idx].etapa !== 'cliente') {
+        cands[idx].etapa = 'viabilidad';
+        localStorage.setItem('soulbaric_candidatos', JSON.stringify(cands));
+        mostrarToast('🔗 CRM: ' + companyName + ' avanzado a Viabilidad', '#4a7c59');
+      }
+    } catch(e) {}
+  }
+
+  setTimeout(function(){ mostrarToast('💼 Abriendo módulo de inversiones…', '#1a1410'); }, 400);
+  setTimeout(function(){ window.location.href = 'inversores.html?nuevo_proyecto=1'; }, 900);
 }
 
 function duplicateProject(idx) {
