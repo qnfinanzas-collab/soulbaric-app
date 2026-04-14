@@ -214,6 +214,30 @@
     .empty-msg{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--text-m);}
     .empty-sub{font-size:12px;}
 
+    /* PIPELINE / CAPTACIÓN */
+    .pipeline-wrap{overflow-x:auto;padding-bottom:16px;}
+    .pipeline{display:flex;gap:14px;min-width:max-content;}
+    .pipe-col{width:230px;flex-shrink:0;}
+    .pipe-col-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px 10px 0 0;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;border:1px solid transparent;border-bottom:none;}
+    .pipe-col-body{border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:8px;min-height:180px;display:flex;flex-direction:column;gap:8px;background:var(--card2);}
+    .pipe-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:12px;box-shadow:0 1px 6px rgba(0,0,0,.05);transition:box-shadow .2s;}
+    .pipe-card:hover{box-shadow:0 3px 14px rgba(200,153,104,.12);}
+    .pipe-card-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+    .pipe-card-empresa{font-size:10px;color:var(--text-s);margin-bottom:7px;}
+    .pipe-card-footer{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+    .pipe-card-footer button{padding:4px 9px;font-size:10px;font-weight:600;border-radius:6px;border:1px solid var(--border2);background:transparent;cursor:pointer;color:var(--text-m);font-family:inherit;transition:all .15s;}
+    .pipe-card-footer button:hover{background:var(--card2);}
+    .pipe-card-footer .btn-advance{background:rgba(16,185,129,.08);color:#059669;border-color:rgba(16,185,129,.3);}
+    .pipe-card-footer .btn-advance:hover{background:rgba(16,185,129,.15);}
+    .pipe-card-footer .btn-convert{background:rgba(200,153,104,.1);color:var(--gold2);border-color:rgba(200,153,104,.35);font-weight:800;}
+    .pipe-card-footer .btn-convert:hover{background:rgba(200,153,104,.18);}
+    .pipe-empty{text-align:center;padding:24px 12px;color:var(--text-s);font-size:11px;}
+    .pipe-stats{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+    .pipe-stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+    .pipe-stat-val{font-size:18px;font-weight:800;color:var(--gold);}
+    .pipe-stat-lbl{font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+    .funnel-arrow{text-align:center;color:var(--border2);font-size:16px;padding:0 2px;line-height:1;display:flex;align-items:center;}
+
     /* RESPONSIVE SIDEBAR */
     @media(max-width:700px){
       .app-body{flex-direction:column;}
@@ -260,6 +284,9 @@
     <div class="sidebar-item active" onclick="showSection('inversores')" id="nav-inversores">
       <span class="sidebar-icon">👤</span>Inversores
     </div>
+    <div class="sidebar-item" onclick="showSection('captacion')" id="nav-captacion">
+      <span class="sidebar-icon">🎯</span>Captación
+    </div>
     <div class="sidebar-item" onclick="showSection('proyectos')" id="nav-proyectos">
       <span class="sidebar-icon">📁</span>Proyectos
     </div>
@@ -283,6 +310,23 @@
       </div>
       <div class="stats-bar" id="inv-stats"></div>
       <div class="inv-grid" id="inv-grid"></div>
+    </section>
+
+    <!-- ═══ SECTION: CAPTACIÓN ═══ -->
+    <section id="sec-captacion" class="section">
+      <div class="toolbar">
+        <h2>🎯 Pipeline de Captación</h2>
+        <button class="btn-ghost" onclick="generarDossierGeneral()" style="font-size:11px;">📄 Dossier para prospecto</button>
+        <button class="btn-primary" onclick="openModalProspecto()">+ Nuevo Prospecto</button>
+      </div>
+      <!-- Contexto rápido -->
+      <div style="background:rgba(200,153,104,.07);border:1px solid rgba(200,153,104,.25);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:11px;color:var(--text-m);line-height:1.7;">
+        🔴 <strong>Captación urgente:</strong> Sigue aquí el avance de cada inversor potencial desde el primer contacto hasta que firma. Cuando lleguen a <span style="color:#059669;font-weight:700;">Comprometido</span>, conviértelos con un clic en Inversores activos.
+      </div>
+      <div class="pipe-stats" id="pipe-stats"></div>
+      <div class="pipeline-wrap">
+        <div class="pipeline" id="pipeline-board"></div>
+      </div>
     </section>
 
     <!-- ═══ SECTION: PROYECTOS ═══ -->
@@ -430,6 +474,118 @@
     <div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('modal-inversor')">Cancelar</button>
       <button class="btn-primary" onclick="saveInversor()">Guardar Inversor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PROSPECTO ═══ -->
+<div class="modal" id="modal-prospecto">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-prosp-title">Nuevo Prospecto</span>
+      <button class="modal-close" onclick="closeModal('modal-prospecto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="prosp-id">
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="prosp-nombre" placeholder="Carlos Martínez">
+        </div>
+        <div class="form-group">
+          <label>Empresa</label>
+          <input type="text" id="prosp-empresa" placeholder="CM Capital SL">
+        </div>
+      </div>
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="prosp-email" placeholder="carlos@empresa.es">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" id="prosp-telefono" placeholder="612 345 678">
+        </div>
+      </div>
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>Tipo de Inversor Potencial</label>
+          <select id="prosp-tipo">
+            <option value="asset">📷 Inversor Cámara (Asset)</option>
+            <option value="operativo">⚙️ Inversor Operativo</option>
+            <option value="full">💎 Inversor Completo (Full)</option>
+            <option value="location">🏨 Location Partner</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Capital disponible estimado (€)</label>
+          <input type="number" id="prosp-capital" min="0" step="1000" placeholder="30000">
+        </div>
+      </div>
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>Etapa actual</label>
+          <select id="prosp-etapa">
+            <option value="contactado">📞 Contactado</option>
+            <option value="interesado">🔍 Interesado</option>
+            <option value="presentacion">📊 Presentación enviada</option>
+            <option value="negociando">🤝 Negociando</option>
+            <option value="comprometido">✅ Comprometido</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Origen del contacto</label>
+          <select id="prosp-origen">
+            <option value="">— Seleccionar —</option>
+            <option value="referido">👥 Referido</option>
+            <option value="evento">🎪 Evento / Networking</option>
+            <option value="linkedin">💼 LinkedIn</option>
+            <option value="web">🌐 Web / Inbound</option>
+            <option value="llamada">📞 Llamada fría</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row cols2">
+        <div class="form-group">
+          <label>Proyecto de interés</label>
+          <select id="prosp-proyecto">
+            <option value="">— Sin definir —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha de contacto</label>
+          <input type="date" id="prosp-fecha">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Notas / seguimiento</label>
+          <textarea id="prosp-notas" placeholder="Observaciones, próximos pasos, historial de conversación…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal('modal-prospecto')">Cancelar</button>
+      <button class="btn-primary" onclick="saveProspecto()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PICK PROJECT FOR DOSSIER ═══ -->
+<div class="modal" id="modal-pick-proj">
+  <div class="modal-box" style="max-width:360px;">
+    <div class="modal-header">
+      <span class="modal-title">📄 Dossier para Prospecto</span>
+      <button class="modal-close" onclick="closeModal('modal-pick-proj')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <p style="font-size:12px;color:var(--text-m);margin-bottom:14px;">Selecciona el proyecto base del dossier:</p>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>Proyecto</label>
+        <select id="pick-proj-sel" style="margin-top:5px;"></select>
+      </div>
+      <button class="btn-primary" style="width:100%;" onclick="submitPickProj()">Elegir tipo de inversor ▶</button>
     </div>
   </div>
 </div>
@@ -650,6 +806,7 @@
 const LS_INV    = 'soulbaric_inversores';
 const LS_PROY   = 'soulbaric_inv_proyectos';
 const LS_LIQUID = 'soulbaric_inv_liquidaciones';
+const LS_PROSP  = 'soulbaric_prospectos';
 
 function getInversores() { try { return JSON.parse(localStorage.getItem(LS_INV)||'[]'); } catch(e){ return []; } }
 function saveInversores(d) { localStorage.setItem(LS_INV, JSON.stringify(d)); }
@@ -657,6 +814,8 @@ function getInvProyectos() { try { return JSON.parse(localStorage.getItem(LS_PRO
 function saveInvProyectos(d) { localStorage.setItem(LS_PROY, JSON.stringify(d)); }
 function getLiquidaciones() { try { return JSON.parse(localStorage.getItem(LS_LIQUID)||'[]'); } catch(e){ return []; } }
 function saveLiquidaciones(d) { localStorage.setItem(LS_LIQUID, JSON.stringify(d)); }
+function getProspectos() { try { return JSON.parse(localStorage.getItem(LS_PROSP)||'[]'); } catch(e){ return []; } }
+function saveProspectos(d) { localStorage.setItem(LS_PROSP, JSON.stringify(d)); }
 function getCRMCandidatos() { try { return JSON.parse(localStorage.getItem('soulbaric_candidatos')||'[]'); } catch(e){ return []; } }
 
 function uuid() { return 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
@@ -693,9 +852,17 @@ const DEMO_PROYECTOS = [
   }
 ];
 
+const DEMO_PROSPECTOS = [
+  { id:'prosp001', nombre:'Javier Romero', empresa:'Romero Capital', email:'javier@romerocap.es', telefono:'634512890', tipo:'asset', capitalDisponible:35000, etapa:'interesado', origen:'referido', proyectoId:'', fechaContacto:'2026-03-10', fechaActualizacion:'2026-03-10', notas:'Conocido de Ana López. Interesado en financiar la cámara. Pide más info sobre retorno fijo vs variable.' },
+  { id:'prosp002', nombre:'Patricia Suárez', empresa:'PS Inversiones', email:'patricia@psinv.com', telefono:'619234561', tipo:'full', capitalDisponible:55000, etapa:'presentacion', origen:'evento', proyectoId:'proj001', fechaContacto:'2026-03-22', fechaActualizacion:'2026-04-02', notas:'Asistió al evento de wellness en Marbella. Muy interesada. Tiene el dossier. Pendiente 2ª reunión.' },
+  { id:'prosp003', nombre:'Roberto Campos', empresa:'', email:'roberto.campos@gmail.com', telefono:'648901234', tipo:'operativo', capitalDisponible:15000, etapa:'contactado', origen:'linkedin', proyectoId:'', fechaContacto:'2026-04-05', fechaActualizacion:'2026-04-05', notas:'Contacto frío LinkedIn. Perfil wellness investor. Primer mensaje enviado sin respuesta todavía.' },
+  { id:'prosp004', nombre:'Marina Vidal', empresa:'Vidal & Partners', email:'marina@vidalpartners.es', telefono:'612098765', tipo:'location', capitalDisponible:0, etapa:'negociando', origen:'referido', proyectoId:'proj001', fechaContacto:'2026-02-15', fechaActualizacion:'2026-04-10', notas:'Hotel en Estepona. Interesada en Modelo 2 (Hotel Owned). Pendiente reunión con dirección general. Muy avanzado.' },
+];
+
 function initDemoData() {
   if (!localStorage.getItem(LS_INV)) saveInversores(DEMO_INVERSORES);
   if (!localStorage.getItem(LS_PROY)) saveInvProyectos(DEMO_PROYECTOS);
+  if (!localStorage.getItem(LS_PROSP)) saveProspectos(DEMO_PROSPECTOS);
 }
 
 // ═══════════════════════════════════════════════
@@ -726,6 +893,7 @@ function showSection(name) {
   if (nav) nav.classList.add('active');
 
   if (name === 'inversores') renderInversores();
+  if (name === 'captacion') renderCaptacion();
   if (name === 'proyectos') renderProyectos();
   if (name === 'liquidaciones') renderLiquidaciones();
   if (name === 'businessplan') { populateBPSelect(); renderBusinessPlan(); }
@@ -738,7 +906,7 @@ function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 document.addEventListener('click', e => {
-  ['modal-inversor','modal-proyecto','modal-liquidacion'].forEach(id => {
+  ['modal-inversor','modal-proyecto','modal-liquidacion','modal-prospecto','modal-pick-proj','modal-dossier-sel'].forEach(id => {
     const m = document.getElementById(id);
     if (e.target === m) closeModal(id);
   });
@@ -1823,6 +1991,221 @@ function renderBusinessPlan() {
   });
   chartHtml += '</div>';
   document.getElementById('bp-chart-wrap').innerHTML = chartHtml;
+}
+
+// ═══════════════════════════════════════════════
+// CAPTACIÓN — PIPELINE
+// ═══════════════════════════════════════════════
+const PIPE_STAGES = [
+  { id:'contactado',   label:'Contactado',   icon:'📞', color:'#64748b', bg:'rgba(100,116,139,.1)',  border:'rgba(100,116,139,.3)'  },
+  { id:'interesado',   label:'Interesado',   icon:'🔍', color:'#2563EB', bg:'rgba(59,130,246,.1)',   border:'rgba(59,130,246,.3)'   },
+  { id:'presentacion', label:'Presentación', icon:'📊', color:'#d97706', bg:'rgba(217,119,6,.1)',    border:'rgba(217,119,6,.3)'    },
+  { id:'negociando',   label:'Negociando',   icon:'🤝', color:'#7C3AED', bg:'rgba(139,92,246,.1)',  border:'rgba(139,92,246,.3)'   },
+  { id:'comprometido', label:'Comprometido', icon:'✅', color:'#059669', bg:'rgba(16,185,129,.1)',  border:'rgba(16,185,129,.3)'   },
+];
+
+const ORIGEN_LABELS = { referido:'👥 Referido', evento:'🎪 Evento', linkedin:'💼 LinkedIn', web:'🌐 Web', llamada:'📞 Llamada fría', otro:'Otro' };
+
+function renderCaptacion() {
+  const prospectos = getProspectos();
+
+  // ── Stats ──
+  const total = prospectos.length;
+  const capTotal = prospectos.reduce(function(s,p){ return s+(p.capitalDisponible||0); },0);
+  const comprometidos = prospectos.filter(function(p){ return p.etapa==='comprometido'; }).length;
+  const enPresentacion = prospectos.filter(function(p){ return p.etapa==='presentacion'; }).length;
+  const interesados = prospectos.filter(function(p){ return p.etapa==='interesado'; }).length;
+  const tasaConv = total > 0 ? Math.round(comprometidos/total*100) : 0;
+
+  document.getElementById('pipe-stats').innerHTML =
+    '<div class="pipe-stat"><div class="pipe-stat-val">'+total+'</div><div class="pipe-stat-lbl">Total prospectos</div></div>' +
+    '<div class="pipe-stat"><div class="pipe-stat-val" style="color:#2563EB;">'+interesados+'</div><div class="pipe-stat-lbl">Interesados</div></div>' +
+    '<div class="pipe-stat"><div class="pipe-stat-val" style="color:#d97706;">'+enPresentacion+'</div><div class="pipe-stat-lbl">En presentación</div></div>' +
+    '<div class="pipe-stat"><div class="pipe-stat-val" style="color:#059669;">'+comprometidos+'</div><div class="pipe-stat-lbl">Comprometidos</div></div>' +
+    '<div class="pipe-stat"><div class="pipe-stat-val">'+fmtK(capTotal)+'</div><div class="pipe-stat-lbl">Capital potencial</div></div>' +
+    '<div class="pipe-stat"><div class="pipe-stat-val" style="color:var(--gold);">'+tasaConv+'%</div><div class="pipe-stat-lbl">Tasa conversión</div></div>';
+
+  // ── Kanban board ──
+  const board = document.getElementById('pipeline-board');
+  board.innerHTML = PIPE_STAGES.map(function(stage, stageIdx) {
+    const cards = prospectos.filter(function(p){ return p.etapa === stage.id; });
+    const isLast  = stageIdx === PIPE_STAGES.length - 1;
+    const isFirst = stageIdx === 0;
+
+    const cardsHtml = cards.length ? cards.map(function(p) {
+      const tipoIcon = { asset:'📷', operativo:'⚙️', full:'💎', location:'🏨' }[p.tipo] || '❓';
+      const tipoClass = tipoBadgeClass(p.tipo);
+      const proyNombre = p.proyectoId
+        ? (function(){ var pr=getInvProyectos().find(function(x){return x.id===p.proyectoId;}); return pr?pr.nombre:'—'; })()
+        : '';
+      const notaCorta = p.notas && p.notas.length > 80 ? p.notas.slice(0,80)+'…' : (p.notas||'');
+      const btnRetroceder = !isFirst
+        ? '<button onclick="moverProspecto(\''+p.id+'\',-1)" title="Retroceder etapa">◀</button>'
+        : '';
+      const btnAvanzar = !isLast
+        ? '<button class="btn-advance" onclick="moverProspecto(\''+p.id+'\',1)">Avanzar ▶</button>'
+        : '';
+      const btnConvertir = stage.id === 'comprometido'
+        ? '<button class="btn-convert" onclick="convertirProspecto(\''+p.id+'\')">🚀 Convertir</button>'
+        : '';
+      const btnDossier = (stage.id === 'presentacion' || stage.id === 'negociando' || stage.id === 'comprometido')
+        ? '<button onclick="dossierDesdeProspecto(\''+p.id+'\')" title="Generar dossier personalizado">📄</button>'
+        : '';
+
+      return '<div class="pipe-card">' +
+        '<div class="pipe-card-name">'+escH(p.nombre)+'</div>' +
+        '<div class="pipe-card-empresa">'+escH(p.empresa||'Particular')+'</div>' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">' +
+          '<span class="badge '+tipoClass+'" style="font-size:9px;">'+tipoIcon+' '+escH(tipoLabel(p.tipo))+'</span>' +
+          (p.capitalDisponible ? '<span style="font-size:10px;color:var(--text-s);">'+fmtK(p.capitalDisponible)+'</span>' : '') +
+        '</div>' +
+        (proyNombre ? '<div style="font-size:10px;color:var(--text-s);margin-bottom:5px;">📁 '+escH(proyNombre)+'</div>' : '') +
+        (p.origen ? '<div style="font-size:9px;color:var(--text-s);margin-bottom:5px;">'+escH(ORIGEN_LABELS[p.origen]||p.origen)+'</div>' : '') +
+        (notaCorta ? '<div style="font-size:10px;color:var(--text-s);line-height:1.4;border-top:1px solid var(--border);padding-top:6px;margin-top:4px;">'+escH(notaCorta)+'</div>' : '') +
+        '<div class="pipe-card-footer">' +
+          btnRetroceder + btnAvanzar + btnConvertir + btnDossier +
+          '<button onclick="openModalProspecto(\''+p.id+'\')" title="Editar">✏️</button>' +
+          '<button onclick="deleteProspecto(\''+p.id+'\')" style="color:var(--red);" title="Eliminar">🗑</button>' +
+        '</div>' +
+      '</div>';
+    }).join('') : '<div class="pipe-empty">Sin prospectos</div>';
+
+    return '<div class="pipe-col">' +
+      '<div class="pipe-col-header" style="background:'+stage.bg+';border-color:'+stage.border+';color:'+stage.color+';">' +
+        '<span>'+stage.icon+' '+stage.label+'</span>' +
+        '<span style="background:'+stage.color+';color:#fff;border-radius:10px;padding:2px 9px;font-size:11px;font-weight:800;">'+cards.length+'</span>' +
+      '</div>' +
+      '<div class="pipe-col-body">'+cardsHtml+'</div>' +
+    '</div>';
+  }).join('');
+}
+
+function moverProspecto(id, dir) {
+  var prosp = getProspectos();
+  var idx = prosp.findIndex(function(p){ return p.id===id; });
+  if (idx < 0) return;
+  var stageIdx = PIPE_STAGES.findIndex(function(s){ return s.id===prosp[idx].etapa; });
+  var newIdx = stageIdx + dir;
+  if (newIdx < 0 || newIdx >= PIPE_STAGES.length) return;
+  prosp[idx].etapa = PIPE_STAGES[newIdx].id;
+  prosp[idx].fechaActualizacion = new Date().toISOString().slice(0,10);
+  saveProspectos(prosp);
+  renderCaptacion();
+  toast('Prospecto → ' + PIPE_STAGES[newIdx].icon + ' ' + PIPE_STAGES[newIdx].label);
+}
+
+function convertirProspecto(id) {
+  var prosp = getProspectos();
+  var p = prosp.find(function(x){ return x.id===id; });
+  if (!p) return;
+  if (!confirm('¿Convertir a '+p.nombre+' en Inversor activo?\nSe creará automáticamente en la sección Inversores.')) return;
+  // Create inversor from prospecto data
+  var invs = getInversores();
+  var newInv = {
+    id: uuid(),
+    nombre: p.nombre,
+    empresa: p.empresa || '',
+    nif: '',
+    email: p.email || '',
+    telefono: p.telefono || '',
+    tipo: p.tipo || 'asset',
+    notas: (p.notas || '') + (p.proyectoId ? '\n[Proyecto: '+( getInvProyectos().find(function(pr){return pr.id===p.proyectoId;})||{}).nombre+']' : ''),
+  };
+  invs.push(newInv);
+  saveInversores(invs);
+  // Remove from pipeline
+  saveProspectos(prosp.filter(function(x){ return x.id!==id; }));
+  toast('🚀 '+p.nombre+' convertido en Inversor activo');
+  showSection('inversores');
+}
+
+function dossierDesdeProspecto(prospId) {
+  var p = getProspectos().find(function(x){ return x.id===prospId; });
+  if (!p) return;
+  if (p.proyectoId) {
+    abrirSelectorDossier(p.proyectoId);
+  } else {
+    toast('Vincula un proyecto a este prospecto para generar el dossier personalizado', true);
+    openModalProspecto(prospId);
+  }
+}
+
+function generarDossierGeneral() {
+  var proyectos = getInvProyectos();
+  if (!proyectos.length) { toast('Primero crea un proyecto de inversión', true); return; }
+  if (proyectos.length === 1) { abrirSelectorDossier(proyectos[0].id); return; }
+  // Multiple projects — show picker
+  document.getElementById('pick-proj-sel').innerHTML = proyectos.map(function(pr){
+    return '<option value="'+escH(pr.id)+'">'+escH(pr.nombre)+'</option>';
+  }).join('');
+  openModal('modal-pick-proj');
+}
+
+function submitPickProj() {
+  var id = document.getElementById('pick-proj-sel').value;
+  closeModal('modal-pick-proj');
+  if (id) abrirSelectorDossier(id);
+}
+
+function openModalProspecto(id) {
+  var p = id ? getProspectos().find(function(x){ return x.id===id; }) : null;
+  document.getElementById('modal-prosp-title').textContent = p ? 'Editar Prospecto' : 'Nuevo Prospecto';
+  document.getElementById('prosp-id').value = p ? p.id : '';
+  document.getElementById('prosp-nombre').value = p ? p.nombre : '';
+  document.getElementById('prosp-empresa').value = p ? (p.empresa||'') : '';
+  document.getElementById('prosp-email').value = p ? (p.email||'') : '';
+  document.getElementById('prosp-telefono').value = p ? (p.telefono||'') : '';
+  document.getElementById('prosp-tipo').value = p ? (p.tipo||'asset') : 'asset';
+  document.getElementById('prosp-capital').value = p ? (p.capitalDisponible||'') : '';
+  document.getElementById('prosp-etapa').value = p ? (p.etapa||'contactado') : 'contactado';
+  document.getElementById('prosp-origen').value = p ? (p.origen||'') : '';
+  document.getElementById('prosp-fecha').value = p ? (p.fechaContacto||'') : new Date().toISOString().slice(0,10);
+  document.getElementById('prosp-notas').value = p ? (p.notas||'') : '';
+  // Project select
+  var proyectos = getInvProyectos();
+  document.getElementById('prosp-proyecto').innerHTML = '<option value="">— Sin definir —</option>' +
+    proyectos.map(function(pr){ return '<option value="'+escH(pr.id)+'">'+escH(pr.nombre)+'</option>'; }).join('');
+  if (p && p.proyectoId) document.getElementById('prosp-proyecto').value = p.proyectoId;
+  openModal('modal-prospecto');
+}
+
+function saveProspecto() {
+  var nombre = document.getElementById('prosp-nombre').value.trim();
+  if (!nombre) { toast('El nombre es obligatorio', true); return; }
+  var id = document.getElementById('prosp-id').value;
+  var prosp = getProspectos();
+  var obj = {
+    id: id || uuid(),
+    nombre: nombre,
+    empresa: document.getElementById('prosp-empresa').value.trim(),
+    email: document.getElementById('prosp-email').value.trim(),
+    telefono: document.getElementById('prosp-telefono').value.trim(),
+    tipo: document.getElementById('prosp-tipo').value,
+    capitalDisponible: parseFloat(document.getElementById('prosp-capital').value)||0,
+    etapa: document.getElementById('prosp-etapa').value,
+    origen: document.getElementById('prosp-origen').value,
+    proyectoId: document.getElementById('prosp-proyecto').value,
+    fechaContacto: document.getElementById('prosp-fecha').value,
+    fechaActualizacion: new Date().toISOString().slice(0,10),
+    notas: document.getElementById('prosp-notas').value.trim(),
+  };
+  if (id) {
+    var idx = prosp.findIndex(function(x){ return x.id===id; });
+    if (idx >= 0) prosp[idx] = obj; else prosp.push(obj);
+  } else {
+    prosp.push(obj);
+  }
+  saveProspectos(prosp);
+  closeModal('modal-prospecto');
+  renderCaptacion();
+  toast(id ? 'Prospecto actualizado' : 'Prospecto añadido al pipeline');
+}
+
+function deleteProspecto(id) {
+  if (!confirm('¿Eliminar este prospecto del pipeline?')) return;
+  saveProspectos(getProspectos().filter(function(p){ return p.id!==id; }));
+  renderCaptacion();
+  toast('Prospecto eliminado');
 }
 
 // ═══════════════════════════════════════════════
