@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoulBaric Marbella — Dossier Económico Confidencial</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    background: #f5f3f0;
+    color: #2a2a2a;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── FIXED TOP NAV ── */
+  .topnav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #0a0a0a;
+    border-bottom: 1px solid rgba(212,175,55,.15);
+    padding: 13px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .topnav-brand { font-family: 'Georgia', serif; font-size: 15px; font-weight: 700; color: #d4af37; }
+  .topnav-right { display: flex; gap: 10px; align-items: center; }
+  .topnav-btn {
+    background: transparent; border: 1px solid rgba(212,175,55,.25); color: rgba(245,243,240,.5);
+    padding: 6px 14px; font-size: 11px; font-weight: 600; border-radius: 4px; cursor: pointer;
+    text-decoration: none; letter-spacing: .3px; transition: all .15s;
+  }
+  .topnav-btn:hover { border-color: #d4af37; color: #d4af37; }
+  .confidential-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #d4af37; background: rgba(212,175,55,.1); border: 1px solid rgba(212,175,55,.3);
+    padding: 4px 12px; border-radius: 20px;
+  }
+
+  /* ── LEFT SIDEBAR ── */
+  .layout { display: flex; padding-top: 54px; min-height: 100vh; }
+  .sidebar {
+    width: 220px; flex-shrink: 0; position: sticky; top: 54px; height: calc(100vh - 54px);
+    background: #0a0a0a; border-right: 1px solid rgba(212,175,55,.08);
+    overflow-y: auto; padding: 24px 0;
+  }
+  .sidebar-section { padding: 6px 20px; }
+  .sidebar-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(212,175,55,.4); margin-bottom: 8px; margin-top: 16px; padding: 0 4px; }
+  .sidebar-link {
+    display: block; padding: 7px 10px; font-size: 12px; color: rgba(245,243,240,.45);
+    text-decoration: none; border-radius: 6px; margin-bottom: 2px; transition: all .15s;
+    border-left: 2px solid transparent;
+  }
+  .sidebar-link:hover { color: #d4af37; background: rgba(212,175,55,.06); }
+  .sidebar-link.active { color: #d4af37; border-left-color: #d4af37; background: rgba(212,175,55,.08); }
+
+  /* ── MAIN CONTENT ── */
+  .main { flex: 1; padding: 48px 60px 80px; max-width: 960px; }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(160deg, #0a0a0a 0%, #0f1e30 60%, #0a0a0a 100%);
+    border-radius: 16px; padding: 60px 52px; margin-bottom: 48px; position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(212,175,55,.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-conf { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #d4af37; background: rgba(212,175,55,.12); border: 1px solid rgba(212,175,55,.25); padding: 4px 14px; border-radius: 20px; margin-bottom: 24px; position: relative; z-index: 1; }
+  .cover-title { font-family: 'Georgia', serif; font-size: 38px; font-weight: 700; color: #f5f3f0; line-height: 1.15; margin-bottom: 10px; position: relative; z-index: 1; }
+  .cover-title span { color: #d4af37; }
+  .cover-sub { font-size: 14px; color: rgba(245,243,240,.4); position: relative; z-index: 1; margin-bottom: 28px; }
+  .cover-meta { display: flex; gap: 32px; position: relative; z-index: 1; flex-wrap: wrap; }
+  .cover-meta-item { }
+  .cover-meta-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(245,243,240,.3); margin-bottom: 2px; }
+  .cover-meta-value { font-size: 13px; color: rgba(245,243,240,.7); font-weight: 600; }
+
+  /* ── SECTION HEADERS ── */
+  .sec { margin-bottom: 52px; }
+  .sec-anchor { display: block; position: relative; top: -80px; visibility: hidden; }
+  .sec-tag { font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #b8962e; margin-bottom: 8px; }
+  .sec-title { font-family: 'Georgia', serif; font-size: 26px; font-weight: 700; color: #1a1410; margin-bottom: 6px; }
+  .sec-title span { color: #b8962e; }
+  .sec-desc { font-size: 13px; color: #6b5c4e; margin-bottom: 20px; line-height: 1.65; }
+  .divider-gold { width: 40px; height: 2px; background: linear-gradient(90deg, #d4af37, transparent); margin-bottom: 24px; }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+  thead tr { background: #1a1410; }
+  thead th { color: rgba(245,243,240,.75); font-weight: 700; letter-spacing: .5px; text-transform: uppercase; font-size: 10px; padding: 10px 14px; text-align: left; }
+  tbody tr { border-bottom: 1px solid #e8e6e3; }
+  tbody tr:hover { background: rgba(212,175,55,.04); }
+  tbody td { padding: 10px 14px; color: #2a2a2a; }
+  .td-gold { color: #b8962e; font-weight: 700; }
+  .td-green { color: #059669; font-weight: 700; }
+  .td-blue { color: #1d4ed8; font-weight: 700; }
+  tbody tr:nth-child(even) { background: rgba(0,0,0,.02); }
+  tbody tr:nth-child(even):hover { background: rgba(212,175,55,.04); }
+
+  /* ── STAT GRIDS ── */
+  .stat-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .stat-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-cell { background: #fff; border: 1px solid #e8e6e3; border-radius: 10px; padding: 16px 14px; }
+  .stat-cell-dark { background: #1a1410; border: 1px solid rgba(212,175,55,.2); border-radius: 10px; padding: 16px 14px; }
+  .stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #9e8e7e; margin-bottom: 4px; }
+  .stat-label-light { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: rgba(245,243,240,.35); margin-bottom: 4px; }
+  .stat-value { font-family: 'Georgia', serif; font-size: 22px; font-weight: 700; color: #1a1410; }
+  .stat-value-gold { font-family: 'Georgia', serif; font-size: 22px; font-weight: 700; color: #d4af37; }
+  .stat-value-green { font-family: 'Georgia', serif; font-size: 22px; font-weight: 700; color: #059669; }
+  .stat-sub { font-size: 10px; color: #9e8e7e; margin-top: 2px; }
+  .stat-sub-light { font-size: 10px; color: rgba(245,243,240,.35); margin-top: 2px; }
+
+  /* ── PROJECTION YEAR CARDS ── */
+  .year-cards { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 20px; }
+  .year-card { border-radius: 10px; padding: 16px 12px; position: relative; overflow: hidden; }
+  .year-card-1 { background: #fff; border: 1px solid #e8e6e3; }
+  .year-card-2 { background: rgba(212,175,55,.04); border: 1px solid rgba(212,175,55,.2); }
+  .year-card-3 { background: rgba(212,175,55,.08); border: 2px solid #d4af37; }
+  .year-card-4 { background: rgba(16,185,129,.04); border: 1px solid rgba(16,185,129,.2); }
+  .year-card-5 { background: rgba(16,185,129,.08); border: 1px solid rgba(16,185,129,.3); }
+  .year-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; color: #9e8e7e; }
+  .year-year { font-family: 'Georgia', serif; font-size: 18px; font-weight: 700; color: #1a1410; margin-bottom: 2px; }
+  .year-inst { font-size: 11px; color: #6b5c4e; margin-bottom: 10px; }
+  .year-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,.05); font-size: 11px; }
+  .year-row:last-child { border-bottom: none; }
+  .year-row-label { color: #9e8e7e; }
+  .year-row-value { font-weight: 700; color: #1a1410; }
+  .year-row-value.green { color: #059669; }
+  .year-row-value.gold { color: #b8962e; }
+
+  /* ── SCENARIO TABS ── */
+  .scenario-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .s-tab { padding: 7px 16px; font-size: 11px; font-weight: 700; border-radius: 6px; cursor: pointer; border: 1px solid #e8e6e3; background: #fff; color: #6b5c4e; transition: all .15s; }
+  .s-tab.active { background: #1a1410; color: #d4af37; border-color: #1a1410; }
+  .scenario-body { display: none; }
+  .scenario-body.active { display: block; }
+
+  /* ── SENSITIVITY TABLE ── */
+  .sens-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .sens-table th { background: #1a1410; color: rgba(245,243,240,.7); padding: 10px 14px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .5px; }
+  .sens-table td { padding: 10px 14px; border-bottom: 1px solid #e8e6e3; }
+  .sens-table tr:nth-child(even) td { background: rgba(0,0,0,.02); }
+  .impact-positive { color: #059669; font-weight: 700; }
+  .impact-negative { color: #dc2626; font-weight: 700; }
+
+  /* ── EXIT CARDS ── */
+  .exit-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+  .exit-card { border-radius: 12px; padding: 22px 18px; }
+  .exit-base { background: #fff; border: 1px solid #e8e6e3; border-top: 3px solid #d4af37; }
+  .exit-accel { background: #fff; border: 1px solid #e8e6e3; border-top: 3px solid #10B981; }
+  .exit-acq { background: #fff; border: 1px solid #e8e6e3; border-top: 3px solid #3B82F6; }
+  .exit-tag { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .exit-tag-gold { color: #b8962e; }
+  .exit-tag-green { color: #059669; }
+  .exit-tag-blue { color: #1d4ed8; }
+  .exit-title { font-family: 'Georgia', serif; font-size: 15px; font-weight: 700; color: #1a1410; margin-bottom: 10px; line-height: 1.3; }
+  .exit-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f0ede8; font-size: 11px; }
+  .exit-row:last-child { border-bottom: none; }
+  .exit-row-label { color: #9e8e7e; }
+  .exit-row-value { font-weight: 700; color: #1a1410; }
+  .exit-irr { font-family: 'Georgia', serif; font-size: 32px; font-weight: 700; margin-top: 12px; }
+  .exit-irr-gold { color: #b8962e; }
+  .exit-irr-green { color: #059669; }
+  .exit-irr-blue { color: #1d4ed8; }
+  .exit-irr-label { font-size: 10px; color: #9e8e7e; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ── KPI CARDS ── */
+  .kpi-group { margin-bottom: 24px; }
+  .kpi-group-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #b8962e; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(212,175,55,.2); }
+  .kpi-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0; border-bottom: 1px solid #e8e6e3; padding: 8px 0; font-size: 12px; }
+  .kpi-row:first-child { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #9e8e7e; }
+  .kpi-metric { color: #2a2a2a; }
+  .kpi-target { font-weight: 700; color: #059669; }
+  .kpi-freq { color: #9e8e7e; }
+
+  /* ── RETURN TIMELINE ── */
+  .timeline-row {
+    display: grid; grid-template-columns: 80px 1fr 1fr 1fr; gap: 0;
+    border-bottom: 1px solid #e8e6e3; padding: 10px 0;
+    align-items: center; font-size: 12px;
+  }
+  .timeline-row.header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #9e8e7e; padding-bottom: 8px; }
+  .tl-year { font-family: 'Georgia', serif; font-size: 18px; font-weight: 700; color: #1a1410; }
+  .tl-capital { font-weight: 700; color: #1d4ed8; }
+  .tl-interest { font-weight: 700; color: #b8962e; }
+  .tl-total { font-weight: 800; color: #1a1410; font-family: 'Georgia', serif; font-size: 15px; }
+  .tl-total.green { color: #059669; }
+
+  /* ── CAPEX BARS ── */
+  .capex-item { margin-bottom: 10px; }
+  .capex-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+  .capex-label { color: #2a2a2a; }
+  .capex-amount { font-weight: 700; color: #1a1410; }
+  .capex-bar-bg { background: #e8e6e3; border-radius: 4px; height: 6px; }
+  .capex-bar { background: linear-gradient(90deg, #d4af37, #b8962e); border-radius: 4px; height: 6px; transition: width .5s ease; }
+
+  /* ── PRINT ── */
+  @media print {
+    .topnav, .sidebar { display: none !important; }
+    .layout { padding-top: 0; }
+    .main { padding: 40px; max-width: 100%; }
+    .sec { page-break-inside: avoid; }
+    .cover { page-break-after: always; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    .sidebar { display: none; }
+    .main { padding: 32px 24px 60px; }
+    .year-cards { grid-template-columns: repeat(2,1fr); }
+    .exit-cards { grid-template-columns: 1fr; }
+    .stat-grid-4 { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<nav class="topnav">
+  <div class="topnav-brand">SoulBaric® — Dossier Económico</div>
+  <div class="topnav-right">
+    <span class="confidential-badge">Confidencial</span>
+    <a href="pitch-deck.html" class="topnav-btn">← Pitch Deck</a>
+    <button class="topnav-btn" onclick="window.print()">🖨 Imprimir PDF</button>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navegación</div>
+      <a href="#cover" class="sidebar-link active">Portada</a>
+      <div class="sidebar-label">Análisis</div>
+      <a href="#unit-econ" class="sidebar-link">01 Unit Economics</a>
+      <a href="#projections" class="sidebar-link">02 Proyecciones 5 Años</a>
+      <a href="#return-model" class="sidebar-link">03 Modelo de Retorno</a>
+      <a href="#sensitivity" class="sidebar-link">04 Sensibilidad</a>
+      <a href="#exit" class="sidebar-link">05 Escenarios de Exit</a>
+      <a href="#capex" class="sidebar-link">06 CAPEX por Fase</a>
+      <a href="#kpis" class="sidebar-link">07 KPIs de Control</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- COVER -->
+    <a class="sec-anchor" id="cover"></a>
+    <div class="cover">
+      <div class="cover-conf">Confidencial — Solo para Inversores Autorizados</div>
+      <h1 class="cover-title">SoulBaric <span>Marbella</span><br>Dossier Económico Completo</h1>
+      <p class="cover-sub">Proyecciones financieras · Modelo de retorno · Escenarios de exit</p>
+      <div class="cover-meta">
+        <div class="cover-meta-item"><div class="cover-meta-label">Fecha</div><div class="cover-meta-value">Abril 2026</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">Inversión total</div><div class="cover-meta-value">€1.200.000</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">TIR estimada</div><div class="cover-meta-value">35–42%</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">MOIC</div><div class="cover-meta-value">1.56x (5 años)</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">Gestión</div><div class="cover-meta-value">Finanzas QuickNex QN</div></div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── SECCIÓN 1: UNIT ECONOMICS ─────────────────── -->
+    <a class="sec-anchor" id="unit-econ"></a>
+    <div class="sec">
+      <div class="sec-tag">01 — Unit Economics</div>
+      <h2 class="sec-title">Modelo por <span>Instalación</span></h2>
+      <p class="sec-desc">Análisis detallado de revenues y márgenes por cabina instalada. Ejemplo base: Cabina 4 plazas en resort premium, escenario base (65% ocupación).</p>
+      <div class="divider-gold"></div>
+
+      <h3 style="font-family:Georgia,serif;font-size:15px;color:#1a1410;margin-bottom:12px;">Configuraciones de Cabina</h3>
+      <table>
+        <thead><tr><th>Modelo</th><th>Urbano</th><th>Wellness</th><th>Resort</th><th>Lujo</th><th>Inversión (resort)</th></tr></thead>
+        <tbody>
+          <tr><td>1 Plaza · Individual</td><td>€60/ses.</td><td>€75/ses.</td><td class="td-gold">€95/ses.</td><td>€130/ses.</td><td>€85.000</td></tr>
+          <tr><td>2 Plazas · Duo</td><td>€110/ses.</td><td>€140/ses.</td><td class="td-gold">€180/ses.</td><td>€250/ses.</td><td>€105.000</td></tr>
+          <tr><td>4 Plazas · Premium</td><td>€200/ses.</td><td>€250/ses.</td><td class="td-gold">€320/ses.</td><td>€450/ses.</td><td>€120.000</td></tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-family:Georgia,serif;font-size:15px;color:#1a1410;margin-bottom:12px;margin-top:24px;">Escenarios de Ocupación</h3>
+      <div class="scenario-tabs">
+        <div class="s-tab" onclick="switchScenario('conservador')">Conservador (45%)</div>
+        <div class="s-tab active" onclick="switchScenario('base')">Base (65%)</div>
+        <div class="s-tab" onclick="switchScenario('optimista')">Optimista (82%)</div>
+      </div>
+
+      <div id="sc-conservador" class="scenario-body">
+        <div class="stat-grid-4">
+          <div class="stat-cell"><div class="stat-label">Ocupación</div><div class="stat-value">45%</div><div class="stat-sub">3 ses./día</div></div>
+          <div class="stat-cell"><div class="stat-label">Facturación bruta año 1</div><div class="stat-value" style="font-size:16px;">€85.800</div><div class="stat-sub">Cabina 4 pl., resort</div></div>
+          <div class="stat-cell"><div class="stat-label">Margen neto/año</div><div class="stat-value-green" style="font-size:16px;">€25.740</div><div class="stat-sub">~30%</div></div>
+          <div class="stat-cell"><div class="stat-label">Crecimiento anual</div><div class="stat-value">6%</div></div>
+        </div>
+      </div>
+
+      <div id="sc-base" class="scenario-body active">
+        <div class="stat-grid-4">
+          <div class="stat-cell"><div class="stat-label">Ocupación</div><div class="stat-value">65%</div><div class="stat-sub">4 ses./día</div></div>
+          <div class="stat-cell"><div class="stat-label">Facturación bruta año 1</div><div class="stat-value" style="font-size:16px;">€156.000</div><div class="stat-sub">Cabina 4 pl., resort</div></div>
+          <div class="stat-cell"><div class="stat-label">Margen neto/año</div><div class="stat-value-green" style="font-size:16px;">€36.000–60.000</div><div class="stat-sub">30–50%</div></div>
+          <div class="stat-cell"><div class="stat-label">Crecimiento anual</div><div class="stat-value">12%</div></div>
+        </div>
+      </div>
+
+      <div id="sc-optimista" class="scenario-body">
+        <div class="stat-grid-4">
+          <div class="stat-cell"><div class="stat-label">Ocupación</div><div class="stat-value">82%</div><div class="stat-sub">6 ses./día</div></div>
+          <div class="stat-cell"><div class="stat-label">Facturación bruta año 1</div><div class="stat-value" style="font-size:16px;">€236.736</div><div class="stat-sub">Cabina 4 pl., resort</div></div>
+          <div class="stat-cell"><div class="stat-label">Margen neto/año</div><div class="stat-value-green" style="font-size:16px;">€71.020</div><div class="stat-sub">~50%</div></div>
+          <div class="stat-cell"><div class="stat-label">Crecimiento anual</div><div class="stat-value">18%</div></div>
+        </div>
+      </div>
+
+      <h3 style="font-family:Georgia,serif;font-size:15px;color:#1a1410;margin-bottom:12px;margin-top:20px;">Cálculo Detallado — Cabina 4 Plazas · Resort · Escenario Base</h3>
+      <table>
+        <thead><tr><th>Partida</th><th>Cálculo</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td>Precio sesión (base)</td><td>€200 (mid-point resort)</td><td class="td-gold">€200/sesión</td></tr>
+          <tr><td>Sesiones netas/día</td><td>4 sesiones × 65% ocupación</td><td>2,6 sesiones/día</td></tr>
+          <tr><td>Facturación bruta/día</td><td>€200 × 2,6 sesiones</td><td class="td-gold">€520/día</td></tr>
+          <tr><td>Días operativos anuales</td><td>300 días</td><td>300 días</td></tr>
+          <tr><td><strong>Facturación bruta año 1</strong></td><td>€520 × 300 días</td><td class="td-gold"><strong>€156.000</strong></td></tr>
+          <tr><td>Costes operativos</td><td>Energía + mantenimiento</td><td>€40–60/sesión</td></tr>
+          <tr><td>Personal asignado</td><td>Prorateo de staff</td><td>€20–30/sesión</td></tr>
+          <tr><td>Hotel / facility fee</td><td>% de revenue o fee fijo</td><td>€40–60/sesión</td></tr>
+          <tr><td><strong>Margen neto operador</strong></td><td>~30–50% margen</td><td class="td-green"><strong>€60–100/sesión</strong></td></tr>
+          <tr><td><strong>Margen anual estimado</strong></td><td>Year 1 · Escenario base</td><td class="td-green"><strong>€36.000–60.000</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ─────────────────── SECCIÓN 2: PROYECCIONES 5 AÑOS ─────────────────── -->
+    <a class="sec-anchor" id="projections"></a>
+    <div class="sec">
+      <div class="sec-tag">02 — Proyecciones Financieras</div>
+      <h2 class="sec-title">5 años de <span>crecimiento escalonado</span></h2>
+      <p class="sec-desc">Fase 1 (año 1): 2 instalaciones pilot. Fase 2 (años 2–3): escala a 8 instalaciones. Años 4–5: estabilización con ingreso residual para inversores.</p>
+      <div class="divider-gold"></div>
+
+      <div class="year-cards">
+        <div class="year-card year-card-1">
+          <div class="year-label">Año 1 · Pilot</div>
+          <div class="year-year">2026</div>
+          <div class="year-inst">2 instalaciones</div>
+          <div class="year-row"><span class="year-row-label">Facturación</span><span class="year-row-value gold">€312K</span></div>
+          <div class="year-row"><span class="year-row-label">EBITDA</span><span class="year-row-value green">€218K</span></div>
+          <div class="year-row"><span class="year-row-label">Ret. Inversor</span><span class="year-row-value gold">€96K</span></div>
+        </div>
+        <div class="year-card year-card-2">
+          <div class="year-label">Año 2 · Escala</div>
+          <div class="year-year">2027</div>
+          <div class="year-inst">4 instalaciones</div>
+          <div class="year-row"><span class="year-row-label">Facturación</span><span class="year-row-value gold">€699K</span></div>
+          <div class="year-row"><span class="year-row-label">EBITDA</span><span class="year-row-value green">€489K</span></div>
+          <div class="year-row"><span class="year-row-label">Ret. Inversor</span><span class="year-row-value gold">€216K</span></div>
+        </div>
+        <div class="year-card year-card-3">
+          <div class="year-label">Año 3 · Full Ramp</div>
+          <div class="year-year">2028</div>
+          <div class="year-inst">8 instalaciones ★</div>
+          <div class="year-row"><span class="year-row-label">Facturación</span><span class="year-row-value gold">€1,56M</span></div>
+          <div class="year-row"><span class="year-row-label">EBITDA</span><span class="year-row-value green">€1,09M</span></div>
+          <div class="year-row"><span class="year-row-label">Ret. Inversor</span><span class="year-row-value gold">€432K</span></div>
+        </div>
+        <div class="year-card year-card-4">
+          <div class="year-label">Año 4 · Estabilidad</div>
+          <div class="year-year">2029</div>
+          <div class="year-inst">8 inst. · Capital 100% ✓</div>
+          <div class="year-row"><span class="year-row-label">Facturación</span><span class="year-row-value gold">€1,75M</span></div>
+          <div class="year-row"><span class="year-row-label">EBITDA</span><span class="year-row-value green">€1,23M</span></div>
+          <div class="year-row"><span class="year-row-label">Ret. Inversor</span><span class="year-row-value gold">€148K</span></div>
+        </div>
+        <div class="year-card year-card-5">
+          <div class="year-label">Año 5 · Residual</div>
+          <div class="year-year">2030</div>
+          <div class="year-inst">8 inst. · Residual income</div>
+          <div class="year-row"><span class="year-row-label">Facturación</span><span class="year-row-value gold">€1,97M</span></div>
+          <div class="year-row"><span class="year-row-label">EBITDA</span><span class="year-row-value green">€1,38M</span></div>
+          <div class="year-row"><span class="year-row-label">Ret. Inversor</span><span class="year-row-value gold">€166K</span></div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Año</th><th>Instalaciones</th><th>Facturación Bruta</th><th>Costes Operativos</th><th>EBITDA</th><th>CAPEX Adicional</th><th>Retorno Inversor</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Año 1</strong> — Pilot</td><td>2</td><td>€312.000</td><td>€93.600</td><td class="td-green">€218.400</td><td>—</td><td class="td-gold">€96.000</td></tr>
+          <tr><td><strong>Año 2</strong> — Escalado</td><td>4</td><td>€698.880</td><td>€209.664</td><td class="td-green">€489.216</td><td>€200.000</td><td class="td-gold">€216.000</td></tr>
+          <tr><td><strong>Año 3</strong> — Full Ramp</td><td>8</td><td>€1.564.185</td><td>€469.256</td><td class="td-green">€1.094.929</td><td>€200.000</td><td class="td-gold">€432.000</td></tr>
+          <tr><td><strong>Año 4</strong> — Estabilidad</td><td>8</td><td>€1.752.687</td><td>€525.806</td><td class="td-green">€1.226.881</td><td>—</td><td class="td-gold">€147.840</td></tr>
+          <tr><td><strong>Año 5</strong> — Residual</td><td>8</td><td>€1.967.009</td><td>€590.103</td><td class="td-green">€1.376.906</td><td>—</td><td class="td-gold">€165.609</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ─────────────────── SECCIÓN 3: MODELO DE RETORNO ─────────────────── -->
+    <a class="sec-anchor" id="return-model"></a>
+    <div class="sec">
+      <div class="sec-tag">03 — Modelo de Retorno al Inversor</div>
+      <h2 class="sec-title">Estructura de pagos <span>&amp; capital recovery</span></h2>
+      <p class="sec-desc">Inversión total: €1.200.000. Años 1–3: amortización lineal + interés fijo. Años 4–5: participación residual en ingresos operativos.</p>
+      <div class="divider-gold"></div>
+
+      <div class="stat-grid-2" style="margin-bottom:24px;">
+        <div style="background:#1a1410;border:1px solid rgba(212,175,55,.2);border-radius:12px;padding:22px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#d4af37;margin-bottom:14px;font-weight:700;">Años 1–3 · Amortización + Interés Fijo</div>
+          <div style="font-size:12px;color:rgba(245,243,240,.55);margin-bottom:14px;">Amortización lineal del capital (33%/año) más 15% anual sobre capital pendiente.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+            <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.12);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:9px;color:rgba(245,243,240,.35);margin-bottom:4px;">AÑO 1</div><div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#d4af37;">€580K</div><div style="font-size:9px;color:rgba(245,243,240,.3);">€400K cap + €180K int.</div></div>
+            <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.12);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:9px;color:rgba(245,243,240,.35);margin-bottom:4px;">AÑO 2</div><div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#d4af37;">€520K</div><div style="font-size:9px;color:rgba(245,243,240,.3);">€400K cap + €120K int.</div></div>
+            <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.12);border-radius:8px;padding:12px;text-align:center;"><div style="font-size:9px;color:rgba(245,243,240,.35);margin-bottom:4px;">AÑO 3</div><div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#d4af37;">€460K</div><div style="font-size:9px;color:rgba(245,243,240,.3);">€400K cap + €60K int.</div></div>
+          </div>
+        </div>
+        <div style="background:#1a1410;border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:22px;">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#10B981;margin-bottom:14px;font-weight:700;">Años 4–5 · Ingreso Residual Variable</div>
+          <div style="font-size:12px;color:rgba(245,243,240,.55);margin-bottom:14px;">Capital 100% recuperado. Participación en ingresos operativos netos del portafolio.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:14px;"><div style="font-size:9px;color:rgba(245,243,240,.35);margin-bottom:4px;">AÑO 4</div><div style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:#10B981;">€147.840</div><div style="font-size:10px;color:rgba(245,243,240,.3);">1,5% × €9.856.000 NOA</div></div>
+            <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:8px;padding:14px;"><div style="font-size:9px;color:rgba(245,243,240,.35);margin-bottom:4px;">AÑO 5</div><div style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:#10B981;">€165.609</div><div style="font-size:10px;color:rgba(245,243,240,.3);">1,5% × €11.040.600 NOA</div></div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-family:Georgia,serif;font-size:15px;color:#1a1410;margin-bottom:12px;">Flujo Total a 5 Años</h3>
+      <table>
+        <thead><tr><th>Concepto</th><th>Detalle</th><th>Importe</th></tr></thead>
+        <tbody>
+          <tr><td>Capital inicial devuelto</td><td>Amortización lineal años 1–3</td><td class="td-blue">€1.200.000</td></tr>
+          <tr><td>Interés fijo total</td><td>15% sobre capital pendiente × 3 años</td><td class="td-gold">€360.000</td></tr>
+          <tr><td>Ingreso residual años 4–5</td><td>1,5% NOA durante 2 años</td><td class="td-green">€313.449</td></tr>
+          <tr><td><strong>Total ingreso inversor a 5 años</strong></td><td></td><td><strong style="font-size:15px;color:#1a1410;">€1.873.449</strong></td></tr>
+          <tr><td>TIR estimada</td><td>Escenario base</td><td class="td-gold"><strong>35–42%</strong></td></tr>
+          <tr><td>MOIC</td><td>Multiple on Invested Capital</td><td class="td-gold"><strong>1,56x</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ─────────────────── SECCIÓN 4: SENSIBILIDAD ─────────────────── -->
+    <a class="sec-anchor" id="sensitivity"></a>
+    <div class="sec">
+      <div class="sec-tag">04 — Análisis de Sensibilidad</div>
+      <h2 class="sec-title">Impacto de <span>variables clave</span></h2>
+      <p class="sec-desc">Evaluación del impacto de cambios en las principales variables operativas sobre el retorno al inversor.</p>
+      <div class="divider-gold"></div>
+      <table class="sens-table">
+        <thead><tr><th>Variable</th><th>Rango Analizado</th><th>Impacto en TIR</th><th>Impacto Retorno Año 1</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ocupación</strong></td><td>-15% a +15%</td><td><span class="impact-negative">-8%</span> / <span class="impact-positive">+12%</span></td><td><span class="impact-negative">-€48K</span> / <span class="impact-positive">+€96K</span></td></tr>
+          <tr><td><strong>Precio de Sesión</strong></td><td>-10% a +10%</td><td><span class="impact-negative">-6%</span> / <span class="impact-positive">+8%</span></td><td><span class="impact-negative">-€32K</span> / <span class="impact-positive">+€32K</span></td></tr>
+          <tr><td><strong>N.º de Instalaciones</strong></td><td>6 vs. 10 instalaciones</td><td><span class="impact-negative">-12%</span> / <span class="impact-positive">+18%</span></td><td colspan="1"><span class="impact-negative">-€288K</span> / <span class="impact-positive">+€288K</span> (año 3)</td></tr>
+          <tr><td><strong>Tasa de Crecimiento</strong></td><td>6% a 18% anual</td><td><span class="impact-negative">-5%</span> / <span class="impact-positive">+8%</span></td><td><span class="impact-negative">-€200K</span> / <span class="impact-positive">+€400K</span> (año 5)</td></tr>
+        </tbody>
+      </table>
+      <div style="background:#fff;border:1px solid #e8e6e3;border-left:3px solid #d4af37;border-radius:8px;padding:16px;font-size:12px;color:#6b5c4e;line-height:1.65;">
+        <strong style="color:#1a1410;">Nota de sensibilidad —</strong> Incluso en el escenario conservador (-15% ocupación, -10% precio), el modelo mantiene un TIR &gt;22% y recuperación de capital completa en 4 años. La variable de mayor impacto es el número de instalaciones activas.
+      </div>
+    </div>
+
+    <!-- ─────────────────── SECCIÓN 5: EXIT ─────────────────── -->
+    <a class="sec-anchor" id="exit"></a>
+    <div class="sec">
+      <div class="sec-tag">05 — Escenarios de Exit y Valoración</div>
+      <h2 class="sec-title">Tres rutas <span>de liquidez</span></h2>
+      <p class="sec-desc">Múltiples de valoración basados en comparables de mercado en el segmento wellness premium.</p>
+      <div class="divider-gold"></div>
+      <div class="exit-cards">
+        <div class="exit-card exit-base">
+          <div class="exit-tag exit-tag-gold">Base Case · Conservador</div>
+          <div class="exit-title">Hold 3–5 años · 8 instalaciones</div>
+          <div class="exit-row"><span class="exit-row-label">EBITDA año 3</span><span class="exit-row-value">€1.094.929</span></div>
+          <div class="exit-row"><span class="exit-row-label">Múltiple aplicado</span><span class="exit-row-value">8x EBITDA</span></div>
+          <div class="exit-row"><span class="exit-row-label">Enterprise value</span><span class="exit-row-value">€8.759.432</span></div>
+          <div class="exit-row"><span class="exit-row-label">Stake inversor</span><span class="exit-row-value">20%</span></div>
+          <div class="exit-row"><span class="exit-row-label">Exit value</span><span class="exit-row-value td-gold">€1.751.886</span></div>
+          <div class="exit-irr exit-irr-gold">42%</div>
+          <div class="exit-irr-label">TIR total hold</div>
+        </div>
+        <div class="exit-card exit-accel">
+          <div class="exit-tag exit-tag-green">Upside · Salida Acelerada Año 2</div>
+          <div class="exit-title">Adquisición temprana por hotel group tier-1</div>
+          <div class="exit-row"><span class="exit-row-label">EBITDA año 2</span><span class="exit-row-value">€489.216</span></div>
+          <div class="exit-row"><span class="exit-row-label">Múltiple aplicado</span><span class="exit-row-value">10x EBITDA premium</span></div>
+          <div class="exit-row"><span class="exit-row-label">Enterprise value</span><span class="exit-row-value">€4.892.160</span></div>
+          <div class="exit-row"><span class="exit-row-label">Stake inversor</span><span class="exit-row-value">22%</span></div>
+          <div class="exit-row"><span class="exit-row-label">Exit value</span><span class="exit-row-value td-green">€1.076.275</span></div>
+          <div class="exit-irr exit-irr-green">78%</div>
+          <div class="exit-irr-label">TIR total hold</div>
+        </div>
+        <div class="exit-card exit-acq">
+          <div class="exit-tag exit-tag-blue">Platform Exit · Adquisición Mayor</div>
+          <div class="exit-title">Marriott / Four Seasons / Rosewood</div>
+          <div class="exit-row"><span class="exit-row-label">Revenue año 3</span><span class="exit-row-value">€1.564.185</span></div>
+          <div class="exit-row"><span class="exit-row-label">Múltiple aplicado</span><span class="exit-row-value">4x revenue</span></div>
+          <div class="exit-row"><span class="exit-row-label">Enterprise value</span><span class="exit-row-value">€6.256.740</span></div>
+          <div class="exit-row"><span class="exit-row-label">Stake inversor</span><span class="exit-row-value">20%</span></div>
+          <div class="exit-row"><span class="exit-row-label">Exit value</span><span class="exit-row-value td-blue">€1.251.348</span></div>
+          <div class="exit-irr exit-irr-blue">38%</div>
+          <div class="exit-irr-label">TIR total hold</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── SECCIÓN 6: CAPEX ─────────────────── -->
+    <a class="sec-anchor" id="capex"></a>
+    <div class="sec">
+      <div class="sec-tag">06 — Breakdown de CAPEX</div>
+      <h2 class="sec-title">Uso de fondos <span>por fase</span></h2>
+      <p class="sec-desc">Detalle de la asignación del capital en cada fase del despliegue.</p>
+      <div class="divider-gold"></div>
+      <div class="stat-grid-2" style="align-items:start;">
+        <div>
+          <h3 style="font-family:Georgia,serif;font-size:15px;color:#1a1410;margin-bottom:16px;">Fase 1: Pilot &amp; Validation — <span style="color:#b8962e;">€400.000</span></h3>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Cabina SoulBaric 4 plazas, Resort</span><span class="capex-amount">€120.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:30%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Cabina SoulBaric 2 plazas, Wellness</span><span class="capex-amount">€88.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:22%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Instalación, setup y entrenamiento</span><span class="capex-amount">€30.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:7%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Plataforma de gestión y booking</span><span class="capex-amount">€20.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:5%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Legal, seguros, compliance</span><span class="capex-amount">€15.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:4%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Capital de trabajo (3 meses)</span><span class="capex-amount">€127.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:32%"></div></div></div>
+        </div>
+        <div>
+          <h3 style="font-family:Georgia,serif;font-size:15px;color:#1a1410;margin-bottom:16px;">Fase 2: Scaling — <span style="color:#b8962e;">€800.000</span></h3>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">2× Cabina 4 plazas Hotel 5★</span><span class="capex-amount">€240.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:30%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Cabina 2 plazas Clínica Premium</span><span class="capex-amount">€88.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:11%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Cabina 1 plaza Residencia HNWI</span><span class="capex-amount">€68.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:8.5%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Instalación y training (4 localizaciones)</span><span class="capex-amount">€60.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:7.5%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Equipo sales + ops (6 meses)</span><span class="capex-amount">€180.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:22.5%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Marketing, PR y posicionamiento</span><span class="capex-amount">€100.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:12.5%"></div></div></div>
+          <div class="capex-item"><div class="capex-header"><span class="capex-label">Capital de trabajo (6 meses)</span><span class="capex-amount">€244.000</span></div><div class="capex-bar-bg"><div class="capex-bar" style="width:30.5%"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────────────── SECCIÓN 7: KPIs ─────────────────── -->
+    <a class="sec-anchor" id="kpis"></a>
+    <div class="sec">
+      <div class="sec-tag">07 — KPIs de Control</div>
+      <h2 class="sec-title">Métricas de <span>seguimiento operativo</span></h2>
+      <p class="sec-desc">Dashboard de control para inversores: reporting mensual, trimestral y anual según categoría.</p>
+      <div class="divider-gold"></div>
+
+      <div class="kpi-group">
+        <div class="kpi-group-title">Métricas Operativas</div>
+        <div class="kpi-row"><span>Métrica</span><span>Target</span><span>Frecuencia</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Bookings diarios por instalación</span><span class="kpi-target">3–6 sesiones</span><span class="kpi-freq">Diaria</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Ocupación promedio</span><span class="kpi-target">65–82%</span><span class="kpi-freq">Mensual</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Precio promedio por sesión</span><span class="kpi-target">€150–300</span><span class="kpi-freq">Mensual</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Coste operativo por sesión</span><span class="kpi-target">€60–90</span><span class="kpi-freq">Mensual</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Margen neto por instalación</span><span class="kpi-target">30–50%</span><span class="kpi-freq">Trimestral</span></div>
+      </div>
+
+      <div class="kpi-group">
+        <div class="kpi-group-title">Métricas Financieras</div>
+        <div class="kpi-row"><span>Métrica</span><span>Target</span><span>Frecuencia</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Revenue bruto mensual por instalación</span><span class="kpi-target">€13K–26K</span><span class="kpi-freq">Mensual</span></div>
+        <div class="kpi-row"><span class="kpi-metric">EBITDA margen</span><span class="kpi-target">40–50%</span><span class="kpi-freq">Trimestral</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Retorno inversor vs. proyección</span><span class="kpi-target">&gt;95% proyectado</span><span class="kpi-freq">Trimestral</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Flujo de caja positivo</span><span class="kpi-target">Desde mes 1</span><span class="kpi-freq">Mensual</span></div>
+        <div class="kpi-row"><span class="kpi-metric">ROI acumulado</span><span class="kpi-target">48% año 1 · 108% años 1–2</span><span class="kpi-freq">Anual</span></div>
+      </div>
+
+      <div class="kpi-group">
+        <div class="kpi-group-title">Métricas de Crecimiento</div>
+        <div class="kpi-row"><span>Métrica</span><span>Target</span><span>Frecuencia</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Nuevas instalaciones on-line</span><span class="kpi-target">2 año 1 · 4 año 2 · 2 año 3</span><span class="kpi-freq">Trimestral</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Tasa de recontratación de clientes</span><span class="kpi-target">&gt;70%</span><span class="kpi-freq">Trimestral</span></div>
+        <div class="kpi-row"><span class="kpi-metric">NPS (Net Promoter Score)</span><span class="kpi-target">&gt;50</span><span class="kpi-freq">Semestral</span></div>
+        <div class="kpi-row"><span class="kpi-metric">Expansión a nuevos mercados</span><span class="kpi-target">Plan para año 3–4</span><span class="kpi-freq">Anual</span></div>
+      </div>
+
+      <!-- CTA final -->
+      <div style="background:linear-gradient(135deg,#0a0a0a,#0f1e30);border-radius:14px;padding:36px;text-align:center;margin-top:32px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#d4af37;margin-bottom:12px;">¿Listo para dar el siguiente paso?</div>
+        <div style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#f5f3f0;margin-bottom:10px;">Solicitar reunión de <span style="color:#d4af37;">due diligence</span></div>
+        <div style="font-size:13px;color:rgba(245,243,240,.45);margin-bottom:24px;">El proceso está diseñado para completarse en 8 semanas desde primera reunión</div>
+        <a href="mailto:info@soulbaric.es?subject=Due%20Diligence%20SoulBaric%20Marbella" style="display:inline-block;background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;padding:14px 32px;font-size:13px;font-weight:800;border-radius:4px;text-decoration:none;margin-right:10px;">info@soulbaric.es</a>
+        <a href="pitch-deck.html" style="display:inline-block;background:transparent;border:1px solid rgba(212,175,55,.3);color:rgba(212,175,55,.7);padding:14px 22px;font-size:12px;font-weight:600;border-radius:4px;text-decoration:none;">← Ver Pitch Deck</a>
+      </div>
+    </div>
+
+  </main>
+</div><!-- /.layout -->
+
+<script>
+  // ── Scenario tabs ──
+  function switchScenario(name) {
+    document.querySelectorAll('.scenario-body').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelectorAll('.s-tab').forEach(function(el){ el.classList.remove('active'); });
+    document.getElementById('sc-'+name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // ── Sidebar active link on scroll ──
+  var sideLinks = document.querySelectorAll('.sidebar-link[href^="#"]');
+  var anchors = [];
+  sideLinks.forEach(function(link) {
+    var id = link.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) anchors.push({ el: el, link: link });
+  });
+  window.addEventListener('scroll', function() {
+    var y = window.scrollY + 120;
+    var active = null;
+    anchors.forEach(function(a) {
+      if (a.el.offsetTop <= y) active = a;
+    });
+    sideLinks.forEach(function(l){ l.classList.remove('active'); });
+    if (active) active.link.classList.add('active');
+  });
+
+  // ── Smooth scroll ──
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var id = this.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>

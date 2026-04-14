@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoulBaric Marbella — Pitch Deck</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    background: #0a0a0a;
+    color: #f5f3f0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── DECK SHELL ── */
+  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  /* ── SLIDES ── */
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 80px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s ease;
+    overflow: hidden;
+  }
+  .slide.active { opacity: 1; pointer-events: all; }
+  .slide-inner { width: 100%; max-width: 1100px; }
+
+  /* ── NAV BAR ── */
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(10,10,10,.9);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(212,175,55,.1);
+    padding: 14px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: 'Georgia', serif; font-size: 14px; font-weight: 700; color: #d4af37;
+  }
+  .nav-center { display: flex; align-items: center; gap: 10px; }
+  .nav-btn {
+    background: transparent; border: 1px solid rgba(212,175,55,.3); color: rgba(245,243,240,.6);
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .nav-btn:hover { border-color: #d4af37; color: #d4af37; }
+  .nav-btn:disabled { opacity: .25; cursor: default; }
+  .nav-counter { font-size: 12px; color: rgba(245,243,240,.4); min-width: 52px; text-align: center; }
+  .nav-progress {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .progress-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(212,175,55,.2); cursor: pointer; transition: all .2s;
+  }
+  .progress-dot.active { background: #d4af37; transform: scale(1.4); }
+  .progress-dot:hover { background: rgba(212,175,55,.6); }
+  .nav-right { display: flex; gap: 10px; align-items: center; }
+  .btn-pdf {
+    background: transparent; border: 1px solid rgba(212,175,55,.25); color: rgba(245,243,240,.5);
+    padding: 7px 14px; font-size: 11px; font-weight: 600; border-radius: 4px; cursor: pointer;
+    text-decoration: none; letter-spacing: .3px; transition: all .15s;
+  }
+  .btn-pdf:hover { border-color: rgba(212,175,55,.6); color: #d4af37; }
+
+  /* ── BACKGROUNDS ── */
+  .bg-dark { background: #0a0a0a; }
+  .bg-navy { background: linear-gradient(160deg, #0a0a0a 0%, #0f1e30 60%, #0a0a0a 100%); }
+  .bg-cream { background: #f5f3f0; color: #1a1410; }
+  .bg-cream .section-tag { color: #b8962e; }
+  .bg-cream .slide-title span, .bg-cream .slide-title { color: #1a1410; }
+  .bg-cream .slide-desc { color: #6b5c4e; }
+
+  /* ── SLIDE TYPOGRAPHY ── */
+  .slide-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    color: #d4af37; margin-bottom: 14px;
+  }
+  .section-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    color: #d4af37; margin-bottom: 14px;
+  }
+  .slide-title {
+    font-family: 'Georgia', serif;
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 700; line-height: 1.15; margin-bottom: 10px; color: #f5f3f0;
+  }
+  .slide-title span { color: #d4af37; }
+  .slide-desc { font-size: 14px; color: rgba(245,243,240,.5); line-height: 1.6; margin-bottom: 32px; }
+  .divider-gold { width: 44px; height: 2px; background: linear-gradient(90deg, #d4af37, transparent); margin-bottom: 28px; }
+
+  /* ── GRIDS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+
+  /* ── CARD STYLES ── */
+  .card-dark {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,55,.12);
+    border-radius: 10px; padding: 20px 18px;
+  }
+  .card-dark:hover { border-color: rgba(212,175,55,.3); }
+  .card-cream { background: #fff; border: 1px solid #e8e6e3; border-radius: 10px; padding: 20px 18px; border-top: 2px solid #d4af37; }
+  .card-navy { background: rgba(27,58,87,.3); border: 1px solid rgba(27,58,87,.5); border-radius: 10px; padding: 20px 18px; }
+
+  /* ── SLIDE 1: TITLE ── */
+  .s1-hero {
+    text-align: center;
+    background: linear-gradient(160deg, #0a0a0a 0%, #0f1e30 60%, #0a0a0a 100%);
+  }
+  .s1-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 40% at 50% 40%, rgba(212,175,55,.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .s1-badge {
+    display: inline-block; background: #1b3a57; color: #d4af37;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    padding: 6px 18px; border-radius: 30px; border: 1px solid rgba(212,175,55,.3); margin-bottom: 28px;
+  }
+  .s1-title {
+    font-family: 'Georgia', serif; font-size: clamp(48px, 7vw, 88px);
+    font-weight: 700; color: #f5f3f0; line-height: 1.05; margin-bottom: 14px;
+  }
+  .s1-title span { color: #d4af37; }
+  .s1-sub { font-size: clamp(13px, 1.8vw, 18px); color: rgba(245,243,240,.45); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .s1-desc { font-family: 'Georgia', serif; font-size: clamp(14px, 2vw, 20px); color: rgba(212,175,55,.65); margin-bottom: 48px; }
+  .s1-stats { display: flex; gap: 44px; justify-content: center; flex-wrap: wrap; }
+  .s1-stat-val { font-family: 'Georgia', serif; font-size: clamp(26px, 4vw, 44px); font-weight: 700; color: #d4af37; }
+  .s1-stat-lbl { font-size: 10px; color: rgba(245,243,240,.35); text-transform: uppercase; letter-spacing: 1.5px; }
+  .s1-div { width: 1px; height: 44px; background: rgba(212,175,55,.2); align-self: center; }
+
+  /* ── METRICS GRID ── */
+  .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(212,175,55,.1); border: 1px solid rgba(212,175,55,.1); border-radius: 12px; overflow: hidden; }
+  .metric-cell { background: rgba(11,30,48,.85); padding: 24px 20px; text-align: center; }
+  .metric-val { font-family: 'Georgia', serif; font-size: clamp(24px, 3vw, 38px); font-weight: 700; color: #d4af37; }
+  .metric-lbl { font-size: 11px; color: rgba(245,243,240,.4); margin-bottom: 6px; }
+  .metric-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: rgba(212,175,55,.1); color: #d4af37; padding: 2px 8px; border-radius: 20px; }
+
+  /* ── PROTOCOL ── */
+  .phase-card { background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,55,.15); border-radius: 12px; padding: 28px 24px; position: relative; overflow: hidden; }
+  .phase-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #d4af37, transparent); }
+  .phase-num-bg { position: absolute; top: 12px; right: 20px; font-family: 'Georgia', serif; font-size: 72px; font-weight: 700; color: rgba(212,175,55,.08); line-height: 1; }
+  .phase-phase { font-size: 10px; font-weight: 700; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+  .phase-duration { display: inline-block; background: rgba(212,175,55,.12); color: #d4af37; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px; }
+  .phase-title { font-family: 'Georgia', serif; font-size: 18px; font-weight: 700; color: #f5f3f0; margin-bottom: 14px; }
+  .phase-pts { list-style: none; }
+  .phase-pts li { font-size: 12px; color: rgba(245,243,240,.55); padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.05); display: flex; align-items: center; gap: 8px; }
+  .phase-pts li::before { content: '◆'; color: #d4af37; font-size: 7px; flex-shrink: 0; }
+  .phase-pts li:last-child { border-bottom: none; }
+
+  /* ── SCIENCE ── */
+  .sci-card { background: rgba(255,255,255,.03); border: 1px solid rgba(212,175,55,.1); border-radius: 10px; padding: 18px; }
+  .sci-therapy { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(212,175,55,.12); color: #d4af37; display: inline-block; padding: 2px 8px; border-radius: 20px; margin-bottom: 8px; }
+  .sci-benefit { font-size: 12px; color: rgba(245,243,240,.5); margin-bottom: 6px; }
+  .sci-claim { font-family: 'Georgia', serif; font-size: 16px; font-weight: 700; color: #f5f3f0; margin-bottom: 8px; }
+  .sci-journal { font-size: 10px; color: rgba(212,175,55,.5); font-style: italic; }
+
+  /* ── SEGMENTS ── */
+  .seg-card { background: #fff; border: 1px solid #e8e6e3; border-radius: 10px; padding: 18px 14px; text-align: center; }
+  .seg-emoji { font-size: 28px; display: block; margin-bottom: 8px; }
+  .seg-title { font-family: 'Georgia', serif; font-size: 12px; font-weight: 700; color: #1a1410; margin-bottom: 6px; }
+  .seg-market { font-size: 11px; color: #b8962e; font-weight: 700; margin-bottom: 6px; }
+  .seg-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; background: rgba(212,175,55,.1); color: #b8962e; border: 1px solid rgba(212,175,55,.2); padding: 2px 8px; border-radius: 20px; }
+
+  /* ── BUSINESS MODEL ── */
+  .revenue-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(212,175,55,.08); font-size: 13px; color: rgba(245,243,240,.6); }
+  .revenue-item::before { content: '→'; color: #d4af37; flex-shrink: 0; margin-top: 1px; }
+  .revenue-item:last-child { border-bottom: none; }
+  .margin-cell { background: rgba(212,175,55,.05); border: 1px solid rgba(212,175,55,.12); border-radius: 8px; padding: 14px 12px; }
+  .margin-cell-label { font-size: 10px; color: rgba(245,243,240,.4); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px; }
+  .margin-cell-value { font-family: 'Georgia', serif; font-size: 16px; font-weight: 700; color: #d4af37; }
+
+  /* ── PROFILES ── */
+  .profile-card { background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,55,.1); border-radius: 10px; padding: 22px 18px; }
+  .profile-emoji { font-size: 32px; display: block; margin-bottom: 10px; }
+  .profile-title { font-family: 'Georgia', serif; font-size: 14px; font-weight: 700; color: #f5f3f0; margin-bottom: 8px; }
+  .profile-desc { font-size: 12px; color: rgba(245,243,240,.5); line-height: 1.6; }
+
+  /* ── INVESTMENT THESIS ── */
+  .pillar-row { display: flex; align-items: flex-start; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(212,175,55,.08); }
+  .pillar-row:last-child { border-bottom: none; }
+  .pillar-num { font-family: 'Georgia', serif; font-size: 28px; font-weight: 700; color: rgba(212,175,55,.3); line-height: 1; flex-shrink: 0; width: 32px; }
+  .pillar-title { font-family: 'Georgia', serif; font-size: 15px; font-weight: 700; color: #f5f3f0; margin-bottom: 4px; }
+  .pillar-desc { font-size: 12px; color: rgba(245,243,240,.5); line-height: 1.55; }
+
+  /* ── INVESTMENT STRUCTURE ── */
+  .invest-phase { background: rgba(255,255,255,.03); border: 1px solid rgba(212,175,55,.15); border-radius: 12px; padding: 22px 20px; }
+  .invest-phase-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .invest-phase-title { font-family: 'Georgia', serif; font-size: 16px; font-weight: 700; color: #f5f3f0; }
+  .invest-budget { background: rgba(212,175,55,.12); color: #d4af37; font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 20px; }
+  .invest-duration { font-size: 10px; color: rgba(212,175,55,.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .invest-item { font-size: 12px; color: rgba(245,243,240,.5); padding: 5px 0; display: flex; align-items: flex-start; gap: 8px; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .invest-item::before { content: '◆'; color: rgba(212,175,55,.4); font-size: 6px; flex-shrink: 0; margin-top: 5px; }
+  .invest-item:last-child { border-bottom: none; }
+  .outcome-box { margin-top: 28px; background: rgba(212,175,55,.05); border: 1px solid rgba(212,175,55,.15); border-radius: 8px; padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .outcome-cell { }
+  .outcome-label { font-size: 9px; color: rgba(212,175,55,.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .outcome-value { font-size: 12px; color: rgba(245,243,240,.7); line-height: 1.5; }
+
+  /* ── RETURNS ── */
+  .return-card { border-radius: 12px; padding: 24px 20px; }
+  .return-card-base { background: rgba(212,175,55,.05); border: 1px solid rgba(212,175,55,.2); }
+  .return-card-up { background: rgba(16,185,129,.05); border: 1px solid rgba(16,185,129,.25); }
+  .return-card-acq { background: rgba(59,130,246,.05); border: 1px solid rgba(59,130,246,.25); }
+  .return-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .return-label-base { color: #d4af37; }
+  .return-label-up { color: #10B981; }
+  .return-label-acq { color: #3B82F6; }
+  .return-title { font-family: 'Georgia', serif; font-size: 16px; font-weight: 700; color: #f5f3f0; margin-bottom: 10px; }
+  .return-desc { font-size: 12px; color: rgba(245,243,240,.5); line-height: 1.65; }
+  .return-irr { font-family: 'Georgia', serif; font-size: 28px; font-weight: 700; margin-top: 12px; }
+  .return-irr-base { color: #d4af37; }
+  .return-irr-up { color: #10B981; }
+  .return-irr-acq { color: #3B82F6; }
+  .return-irr-label { font-size: 10px; color: rgba(245,243,240,.4); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ── CLOSING ── */
+  .step-row { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(212,175,55,.08); }
+  .step-row:last-child { border-bottom: none; }
+  .step-phase { background: rgba(212,175,55,.12); color: #d4af37; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; flex-shrink: 0; }
+  .step-title { font-family: 'Georgia', serif; font-size: 16px; font-weight: 700; color: #f5f3f0; margin-bottom: 2px; }
+  .step-timing { font-size: 11px; color: rgba(212,175,55,.6); }
+  .closing-contact { margin-top: 28px; text-align: center; background: rgba(212,175,55,.05); border: 1px solid rgba(212,175,55,.15); border-radius: 10px; padding: 18px; }
+  .closing-contact-label { font-size: 10px; color: rgba(245,243,240,.4); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .closing-contact-value { font-family: 'Georgia', serif; font-size: 16px; color: #d4af37; }
+
+  /* ── LOCATION CARDS ── */
+  .loc-card { background: rgba(255,255,255,.04); border: 1px solid rgba(212,175,55,.12); border-radius: 10px; padding: 20px 18px; }
+  .loc-emoji { font-size: 26px; margin-bottom: 10px; display: block; }
+  .loc-title { font-family: 'Georgia', serif; font-size: 14px; font-weight: 700; color: #f5f3f0; margin-bottom: 6px; }
+  .loc-text { font-size: 12px; color: rgba(245,243,240,.5); line-height: 1.55; }
+
+  /* ── SLIDE NUMBER BADGE ── */
+  .slide-num {
+    position: absolute; top: 24px; right: 32px;
+    font-size: 11px; color: rgba(212,175,55,.3); font-family: 'Georgia', serif;
+    font-weight: 700; letter-spacing: 1px;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    html, body { overflow: visible; height: auto; }
+    .deck { height: auto; overflow: visible; }
+    .slide { position: relative; inset: auto; opacity: 1 !important; pointer-events: all !important; page-break-after: always; height: 100vh; }
+    .nav-bar { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 01 · TITLE -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide s1-hero active" data-idx="0">
+    <div class="slide-num">01 / 12</div>
+    <div class="slide-inner" style="text-align:center;position:relative;z-index:1;">
+      <div class="s1-badge">Oportunidad de Inversión</div>
+      <h1 class="s1-title">SoulBaric <span>Marbella</span></h1>
+      <p class="s1-sub">Luxury Regeneration &amp; Recovery Ecosystem</p>
+      <p class="s1-desc">Oportunidad de Inversión en Wellness Premium</p>
+      <div class="s1-stats">
+        <div><div class="s1-stat-val">6,3T$</div><div class="s1-stat-lbl">Wellness Economy</div></div>
+        <div class="s1-div"></div>
+        <div><div class="s1-stat-val">23%</div><div class="s1-stat-lbl">CAGR Turismo Wellness</div></div>
+        <div class="s1-div"></div>
+        <div><div class="s1-stat-val">+41%</div><div class="s1-stat-lbl">Gasto vs. turista medio</div></div>
+        <div class="s1-div"></div>
+        <div><div class="s1-stat-val">5★</div><div class="s1-stat-lbl">Target hotelero</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 02 · MERCADO GLOBAL -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-navy" data-idx="1">
+    <div class="slide-num">02 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">02 — Mercado Global</div>
+      <h2 class="slide-title">El mercado <span>de mayor crecimiento</span><br>en hospitalidad global</h2>
+      <p class="slide-desc">Tendencias de crecimiento validadas con datos consolidados del sector</p>
+      <div class="divider-gold"></div>
+      <div class="metrics-grid">
+        <div class="metric-cell"><div class="metric-lbl">Wellness Economy 2023</div><div class="metric-val">6,3T $</div><span class="metric-tag">USD</span></div>
+        <div class="metric-cell"><div class="metric-lbl">Proyección 2028</div><div class="metric-val">8,9T $</div><span class="metric-tag">USD</span></div>
+        <div class="metric-cell"><div class="metric-lbl">Wellness Tourism CAGR</div><div class="metric-val">23%</div><span class="metric-tag">anual</span></div>
+        <div class="metric-cell"><div class="metric-lbl">Gasto Viajero Wellness</div><div class="metric-val">+41%</div><span class="metric-tag">vs. medio</span></div>
+        <div class="metric-cell"><div class="metric-lbl">HBOT Market 2024</div><div class="metric-val">3,7B $</div><span class="metric-tag">USD</span></div>
+        <div class="metric-cell"><div class="metric-lbl">Proyección HBOT 2030</div><div class="metric-val">5,2B $</div><span class="metric-tag">USD</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 03 · POR QUÉ COSTA DEL SOL -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-dark" data-idx="2">
+    <div class="slide-num">03 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">03 — Por Qué Costa del Sol</div>
+      <h2 class="slide-title">Convergencia de <span>4 factores únicos</span></h2>
+      <p class="slide-desc">El enclave europeo de mayor concentración de cliente HNWI y ecosistema hotelero premium</p>
+      <div class="divider-gold"></div>
+      <div class="grid-2">
+        <div class="loc-card"><span class="loc-emoji">🌍</span><div class="loc-title">Cliente HNWI Verificado</div><p class="loc-text">Perfil premium internacional con alta capacidad de gasto en salud y wellness.</p></div>
+        <div class="loc-card"><span class="loc-emoji">🏨</span><div class="loc-title">Ecosistema Hotelero Premium</div><p class="loc-text">Hoteles 5★, resorts de lujo e inversión continua en experiencias wellness.</p></div>
+        <div class="loc-card"><span class="loc-emoji">💎</span><div class="loc-title">Convergencia Lujo + Longevidad</div><p class="loc-text">Medicina estética, rejuvenecimiento y wellness clínico ya operando en la región.</p></div>
+        <div class="loc-card"><span class="loc-emoji">📊</span><div class="loc-title">Mercado Ideal para Híbrido</div><p class="loc-text">Encaja en hoteles, clínicas, centros de regeneración y real estate premium.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 04 · PROTOCOLO -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-dark" data-idx="3">
+    <div class="slide-num">04 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">04 — El Protocolo</div>
+      <h2 class="slide-title">Tres terapias <span>integradas</span></h2>
+      <p class="slide-desc">75 minutos · 2 fases · 1 resultado extraordinario</p>
+      <div class="divider-gold"></div>
+      <div class="grid-2">
+        <div class="phase-card">
+          <div class="phase-num-bg">I</div>
+          <div class="phase-phase">Fase I</div>
+          <div class="phase-duration">60 min</div>
+          <div class="phase-title">SoulBaric®: Infrarrojo + Hiperoxigenación</div>
+          <ul class="phase-pts">
+            <li>Vasodilatación FIR simultánea</li>
+            <li>Oxigenación plasmática 10×</li>
+            <li>Absorción O₂ +40% vs. hiperbárica aislada</li>
+          </ul>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num-bg">II</div>
+          <div class="phase-phase">Fase II</div>
+          <div class="phase-duration">15 min</div>
+          <div class="phase-title">IceFlow®: Crioterapia de Inmersión</div>
+          <ul class="phase-pts">
+            <li>Sello y retención de O₂</li>
+            <li>Pico de noradrenalina 300% superior</li>
+            <li>Biogénesis mitocondrial activada</li>
+          </ul>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;">
+        <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:8px;padding:12px;text-align:center;"><div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#d4af37;">75 min</div><div style="font-size:9px;color:rgba(245,243,240,.35);text-transform:uppercase;letter-spacing:.8px;">Duración</div></div>
+        <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:8px;padding:12px;text-align:center;"><div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#d4af37;">3</div><div style="font-size:9px;color:rgba(245,243,240,.35);text-transform:uppercase;letter-spacing:.8px;">Terapias</div></div>
+        <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:8px;padding:12px;text-align:center;"><div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#d4af37;">2</div><div style="font-size:9px;color:rgba(245,243,240,.35);text-transform:uppercase;letter-spacing:.8px;">Fases</div></div>
+        <div style="background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:8px;padding:12px;text-align:center;"><div style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:#d4af37;">1</div><div style="font-size:9px;color:rgba(245,243,240,.35);text-transform:uppercase;letter-spacing:.8px;">Protocolo</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 05 · CIENCIA -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-navy" data-idx="4">
+    <div class="slide-num">05 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">05 — Respaldo Científico</div>
+      <h2 class="slide-title">Validación desde <span>literatura peer-reviewed</span></h2>
+      <p class="slide-desc">Evidencia consolidada de publicaciones científicas independientes</p>
+      <div class="divider-gold"></div>
+      <div class="grid-2">
+        <div class="sci-card"><span class="sci-therapy">HBOT</span><div class="sci-benefit">Oxigenación plasmática</div><div class="sci-claim">10× superior vs. condiciones normales</div><div class="sci-journal">Journal of Clinical Medicine</div></div>
+        <div class="sci-card"><span class="sci-therapy">FIR + HBOT</span><div class="sci-benefit">Absorción de oxígeno</div><div class="sci-claim">+40% potenciación combinada</div><div class="sci-journal">Journal of Thermal Biology, 2022</div></div>
+        <div class="sci-card"><span class="sci-therapy">HBOT</span><div class="sci-benefit">Anti-aging celular</div><div class="sci-claim">Telómeros +20% · Células senescentes -37%</div><div class="sci-journal">Aging, 2020</div></div>
+        <div class="sci-card"><span class="sci-therapy">IceFlow</span><div class="sci-benefit">Cascada catecolaminérgica</div><div class="sci-claim">Noradrenalina +300% post-sesión</div><div class="sci-journal">Huberman Lab, Stanford, 2023</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 06 · SEGMENTOS -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-cream" data-idx="5">
+    <div class="slide-num" style="color:rgba(26,20,16,.3);">06 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">06 — Nichos de Mercado</div>
+      <h2 class="slide-title dark" style="color:#1a1410;">5 segmentos B2B <span>de alto valor</span></h2>
+      <p class="slide-desc dark" style="color:#6b5c4e;">Modelo escalable con punto de entrada validado en cada nicho</p>
+      <div class="divider-gold"></div>
+      <div class="grid-5">
+        <div class="seg-card"><span class="seg-emoji">🏨</span><div class="seg-title">Hoteles 5* &amp; Resorts</div><div class="seg-market">ADR ↑ 41%</div><span class="seg-badge">Muy Alto</span></div>
+        <div class="seg-card"><span class="seg-emoji">💪</span><div class="seg-title">Longevity Clubs</div><div class="seg-market">€1.500–5.000/sesión</div><span class="seg-badge">Muy Alto</span></div>
+        <div class="seg-card"><span class="seg-emoji">🏥</span><div class="seg-title">Clínicas Premium</div><div class="seg-market">Medicina regenerativa</div><span class="seg-badge">Alto</span></div>
+        <div class="seg-card"><span class="seg-emoji">🏡</span><div class="seg-title">Real Estate Luxury</div><div class="seg-market">€45K–200K install.</div><span class="seg-badge">Muy Alto</span></div>
+        <div class="seg-card"><span class="seg-emoji">🎯</span><div class="seg-title">Corporate Wellness</div><div class="seg-market">ROI +300%</div><span class="seg-badge">Alto</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 07 · MODELO DE NEGOCIO -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-dark" data-idx="6">
+    <div class="slide-num">07 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">07 — Modelo de Negocio</div>
+      <h2 class="slide-title">Revenue streams <span>&amp; margin profile</span></h2>
+      <div class="divider-gold"></div>
+      <div class="grid-2" style="align-items:start;">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#d4af37;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Fuentes de Ingreso</div>
+          <div class="revenue-item">Session Revenue: €150–300/protocolo (hoteles, centros)</div>
+          <div class="revenue-item">Partnership B2B: Revenue share o fee management</div>
+          <div class="revenue-item">Licensing &amp; Implantación: Fee fijo por instalación</div>
+          <div class="revenue-item">Premium Packages: Retiros wellness, programas de longevity</div>
+          <div style="margin-top:16px;padding:14px;background:rgba(212,175,55,.04);border:1px solid rgba(212,175,55,.12);border-radius:8px;font-size:12px;color:rgba(245,243,240,.5);line-height:1.65;">
+            <span style="color:#d4af37;font-weight:700;">Ventaja competitiva —</span> No competimos solo en tecnología: experiencia premium, protocolo probado e integración operativa sin fricciones.
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#d4af37;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Margin Profile</div>
+          <div class="margin-cell" style="margin-bottom:8px;"><div class="margin-cell-label">Precio sesión (mid-point)</div><div class="margin-cell-value">€200</div></div>
+          <div class="margin-cell" style="margin-bottom:8px;"><div class="margin-cell-label">Costes operativos/sesión</div><div class="margin-cell-value">€40–60</div></div>
+          <div class="margin-cell" style="margin-bottom:8px;"><div class="margin-cell-label">Staff (prorateo)</div><div class="margin-cell-value">€20–30</div></div>
+          <div class="margin-cell" style="margin-bottom:8px;"><div class="margin-cell-label">Margen operador/sesión</div><div class="margin-cell-value" style="color:#10B981;">€60–100 (30–50%)</div></div>
+          <div class="margin-cell"><div class="margin-cell-label">Potencial anual/instalación</div><div class="margin-cell-value" style="font-size:20px;">€36K–60K</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 08 · PERFILES DE CLIENTE -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-navy" data-idx="7">
+    <div class="slide-num">08 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">08 — Perfiles de Cliente Target</div>
+      <h2 class="slide-title">4 arquetipos <span>principales</span></h2>
+      <p class="slide-desc">Cliente premium con alta disposición a pagar y alto potencial de fidelización</p>
+      <div class="divider-gold"></div>
+      <div class="grid-4">
+        <div class="profile-card"><span class="profile-emoji">🏆</span><div class="profile-title">Ejecutivo de Élite</div><p class="profile-desc">CEO, directivos. Estrés crónico, recuperación rápida, rendimiento sostenido.</p></div>
+        <div class="profile-card"><span class="profile-emoji">🏊</span><div class="profile-title">Atleta Longevo</div><p class="profile-desc">Competidor amateur/elite. Reducir lesiones, acelerar recuperación, competir sin límite de edad.</p></div>
+        <div class="profile-card"><span class="profile-emoji">✨</span><div class="profile-title">Mujer Longevity</div><p class="profile-desc">Empresaria, directiva. Anti-aging real, equilibrio hormonal, energía sostenida.</p></div>
+        <div class="profile-card"><span class="profile-emoji">🌍</span><div class="profile-title">Viajero Wellness HNWI</div><p class="profile-desc">Turista de lujo. Elige destinos por wellness, alta exigencia, generador de reseñas premium.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 09 · TESIS DE INVERSIÓN -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-dark" data-idx="8">
+    <div class="slide-num">09 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">09 — Tesis de Inversión</div>
+      <h2 class="slide-title">5 pilares de <span>la oportunidad</span></h2>
+      <div class="divider-gold"></div>
+      <div class="pillar-row"><div class="pillar-num">1</div><div><div class="pillar-title">Tendencia Macro Favorable</div><p class="pillar-desc">Wellness economy, turismo wellness y longevity en crecimiento sostenido.</p></div></div>
+      <div class="pillar-row"><div class="pillar-num">2</div><div><div class="pillar-title">Ubicación Estratégica</div><p class="pillar-desc">Costa del Sol: cliente HNWI, lujo concentrado, turismo de alto gasto.</p></div></div>
+      <div class="pillar-row"><div class="pillar-num">3</div><div><div class="pillar-title">Propuesta Diferencial</div><p class="pillar-desc">Tecnología + protocolo + branding + experiencia premium sin saturación de mercado.</p></div></div>
+      <div class="pillar-row"><div class="pillar-num">4</div><div><div class="pillar-title">Integración B2B</div><p class="pillar-desc">Escalable en hoteles, resorts, clínicas, centros propios.</p></div></div>
+      <div class="pillar-row"><div class="pillar-num">5</div><div><div class="pillar-title">Potencial de Escalabilidad</div><p class="pillar-desc">Modelo replicable como plataforma multi-activos.</p></div></div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 10 · ESTRUCTURA DE INVERSIÓN -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-navy" data-idx="9">
+    <div class="slide-num">10 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">10 — Inversión Solicitada &amp; Uso de Fondos</div>
+      <h2 class="slide-title">Two-phase <span>capital deployment</span></h2>
+      <div class="divider-gold"></div>
+      <div class="grid-2" style="align-items:start;">
+        <div class="invest-phase">
+          <div class="invest-phase-header"><div class="invest-phase-title">Fase 1: Pilot &amp; Validation</div><span class="invest-budget">€250K–400K</span></div>
+          <div class="invest-duration">6–9 meses</div>
+          <div class="invest-item">Desarrollo prototipo cabina FIR + HBOT</div>
+          <div class="invest-item">Primera instalación en hotel tier-1 o clínica premium</div>
+          <div class="invest-item">Validación operativa y refinamiento de protocolo</div>
+          <div class="invest-item">Posicionamiento go-to-market y partnerships preliminares</div>
+        </div>
+        <div class="invest-phase">
+          <div class="invest-phase-header"><div class="invest-phase-title">Fase 2: Scaling</div><span class="invest-budget">€1M–2M</span></div>
+          <div class="invest-duration">12–18 meses</div>
+          <div class="invest-item">Cabinas production-ready (diseño estandarizado)</div>
+          <div class="invest-item">3–5 instalaciones adicionales en hoteles y clínicas</div>
+          <div class="invest-item">Equipo dedicado de sales, ops y partnerships</div>
+          <div class="invest-item">Marketing, certificación y plataforma multi-locación</div>
+        </div>
+      </div>
+      <div class="outcome-box">
+        <div class="outcome-cell"><div class="outcome-label">Al final de Fase 1</div><div class="outcome-value">Proof of concept · Protocolos documentados · 1–2 instalaciones operativas</div></div>
+        <div class="outcome-cell"><div class="outcome-label">Al final de Fase 2</div><div class="outcome-value">8–10 instalaciones · €500K–800K ARR · Infraestructura para expansión geográfica</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 11 · ESCENARIOS DE RETORNO -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide bg-dark" data-idx="10">
+    <div class="slide-num">11 / 12</div>
+    <div class="slide-inner">
+      <div class="section-tag">11 — Escenarios de Retorno</div>
+      <h2 class="slide-title">Exit options <span>&amp; múltiples financieros</span></h2>
+      <div class="divider-gold"></div>
+      <div class="grid-3">
+        <div class="return-card return-card-base">
+          <div class="return-label return-label-base">Base Case · Conservador</div>
+          <div class="return-title">8 instalaciones · Hold 3–5 años</div>
+          <p class="return-desc">€600K anuales en año 3. EBITDA 8–10x → empresa valorada €4.8M–6M. Equity de €1.2M (20–25%) → 4–5x return.</p>
+          <div class="return-irr return-irr-base">42%</div>
+          <div class="return-irr-label">TIR estimada</div>
+        </div>
+        <div class="return-card return-card-up">
+          <div class="return-label return-label-up">Upside Case · Acelerado</div>
+          <div class="return-title">15 instalaciones · Escala rápida</div>
+          <p class="return-desc">€1.2M+ annual contribution, €9.6M–12M enterprise value (8–10x EBITDA), 8–10x return on equity.</p>
+          <div class="return-irr return-irr-up">78%</div>
+          <div class="return-irr-label">TIR estimada</div>
+        </div>
+        <div class="return-card return-card-acq">
+          <div class="return-label return-label-acq">Platform Exit · Adquisición</div>
+          <div class="return-title">Marriott / Four Seasons / Rosewood</div>
+          <p class="return-desc">Hotel groups tier-1 buscando diferenciación wellness. Múltiple 3–5x revenue. A €1M+ revenue → €3M–5M valuation floor.</p>
+          <div class="return-irr return-irr-acq">38%</div>
+          <div class="return-irr-label">TIR estimada</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────── -->
+  <!-- SLIDE 12 · CLOSING -->
+  <!-- ─────────────────────────────────────────────── -->
+  <div class="slide s1-hero" data-idx="11">
+    <div class="slide-num">12 / 12</div>
+    <div class="slide-inner" style="position:relative;z-index:1;">
+      <div class="section-tag" style="text-align:center;">12 — Próximos Pasos</div>
+      <h2 class="slide-title" style="text-align:center;margin-bottom:8px;">Timeline hasta <span>cierre</span></h2>
+      <p class="slide-desc" style="text-align:center;margin:0 auto 28px;">El proceso está diseñado para completarse en 8 semanas desde primera reunión</p>
+      <div class="divider-gold" style="margin:0 auto 28px;"></div>
+      <div style="max-width:640px;margin:0 auto;">
+        <div class="step-row"><div style="flex-shrink:0;"><div class="step-phase">Fase 1</div></div><div><div class="step-title">Presentación &amp; Q&amp;A</div><div class="step-timing">Semana 1</div></div></div>
+        <div class="step-row"><div style="flex-shrink:0;"><div class="step-phase">Fase 2</div></div><div><div class="step-title">Due Diligence Financiera y Operativa</div><div class="step-timing">Semanas 2–4</div></div></div>
+        <div class="step-row"><div style="flex-shrink:0;"><div class="step-phase">Fase 3</div></div><div><div class="step-title">Cierre de Términos &amp; Estructuración</div><div class="step-timing">Semanas 5–8</div></div></div>
+        <div class="closing-contact" style="margin-top:24px;">
+          <div class="closing-contact-label">Contacto</div>
+          <div class="closing-contact-value">info@soulbaric.es</div>
+          <div style="font-size:11px;color:rgba(245,243,240,.35);margin-top:4px;">Finanzas QuickNex QN</div>
+        </div>
+        <div style="text-align:center;margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="teaser.html" style="background:transparent;border:1px solid rgba(212,175,55,.3);color:rgba(212,175,55,.7);padding:10px 20px;font-size:11px;font-weight:600;border-radius:4px;text-decoration:none;">← Teaser</a>
+          <a href="dossier-financiero.html" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;padding:10px 22px;font-size:11px;font-weight:800;border-radius:4px;text-decoration:none;">Dossier Financiero →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.deck -->
+
+<!-- ── NAV BAR ── -->
+<nav class="nav-bar">
+  <div class="nav-brand">SoulBaric®</div>
+  <div class="nav-center">
+    <button class="nav-btn" id="btn-prev" onclick="goTo(current-1)" disabled>‹</button>
+    <div class="nav-progress" id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="goTo(current+1)">›</button>
+    <span class="nav-counter" id="counter">1 / 12</span>
+  </div>
+  <div class="nav-right">
+    <a href="teaser.html" class="btn-pdf">← Teaser</a>
+    <a href="dossier-financiero.html" class="btn-pdf">Dossier →</a>
+    <button class="btn-pdf" onclick="window.print()">🖨 Imprimir</button>
+  </div>
+</nav>
+
+<script>
+  var total = 12;
+  var current = 0;
+  var slides = document.querySelectorAll('.slide');
+  var dotsEl = document.getElementById('dots');
+  var counter = document.getElementById('counter');
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+
+  // Build dots
+  for (var i = 0; i < total; i++) {
+    var d = document.createElement('div');
+    d.className = 'progress-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('data-i', i);
+    d.addEventListener('click', (function(idx){ return function(){ goTo(idx); }; })(i));
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[current].classList.remove('active');
+    dotsEl.children[current].classList.remove('active');
+    current = idx;
+    slides[current].classList.add('active');
+    dotsEl.children[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + total;
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(total - 1);
+  });
+
+  // Touch swipe
+  var touchX = 0;
+  document.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) { dx < 0 ? goTo(current+1) : goTo(current-1); }
+  }, {passive:true});
+</script>
+</body>
+</html>
