@@ -6,6 +6,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SoulBaric · Inversiones</title>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="emailjs-config.js"></script>
   <style>
     :root {
       --gold:#C89968; --gold2:#a07848;
@@ -909,7 +911,7 @@ function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 document.addEventListener('click', e => {
-  ['modal-inversor','modal-proyecto','modal-liquidacion','modal-prospecto','modal-pick-proj','modal-dossier-sel'].forEach(id => {
+  ['modal-inversor','modal-proyecto','modal-liquidacion','modal-prospecto','modal-pick-proj','modal-dossier-sel','modal-envio-docs'].forEach(id => {
     const m = document.getElementById(id);
     if (e.target === m) closeModal(id);
   });
@@ -2052,7 +2054,8 @@ function renderCaptacion() {
         ? '<button class="btn-convert" onclick="convertirProspecto(\''+p.id+'\')">🚀 Convertir</button>'
         : '';
       const btnDossier = (stage.id === 'presentacion' || stage.id === 'negociando' || stage.id === 'comprometido')
-        ? '<button onclick="dossierDesdeProspecto(\''+p.id+'\')" title="Generar Pitch Deck">📄</button>'
+        ? '<button onclick="dossierDesdeProspecto(\''+p.id+'\')" title="Generar Pitch Deck">📄</button>' +
+          '<button onclick="enviarDocsProspecto(\''+p.id+'\')" title="Enviar documentación por email" style="color:#d4af37;">📧</button>'
         : '';
 
       return '<div class="pipe-card">' +
@@ -2131,6 +2134,84 @@ function dossierDesdeProspecto(prospId) {
     toast('Vincula un proyecto a este prospecto para generar el Pitch Deck', true);
     openModalProspecto(prospId);
   }
+}
+
+function enviarDocsProspecto(prospId) {
+  var p = getProspectos().find(function(x){ return x.id===prospId; });
+  if (!p) return;
+  if (!p.email) {
+    toast('Este prospecto no tiene email. Edítalo primero.', true);
+    openModalProspecto(prospId);
+    return;
+  }
+  // Pre-rellenar modal de envío
+  document.getElementById('env-nombre').value  = p.nombre  || '';
+  document.getElementById('env-empresa').value = p.empresa || '';
+  document.getElementById('env-email').value   = p.email   || '';
+  document.getElementById('env-tipo').value    = p.tipo    || '';
+  document.getElementById('env-mensaje').value = '';
+  document.getElementById('env-prosp-id').value = prospId;
+  // Estados
+  document.getElementById('env-form-state').style.display    = 'block';
+  document.getElementById('env-success-state').style.display = 'none';
+  document.getElementById('env-error-state').style.display   = 'none';
+  openModal('modal-envio-docs');
+}
+
+function submitEnvioDocsForm(e) {
+  e.preventDefault();
+  var btn = document.getElementById('env-submit-btn');
+  btn.textContent = 'Enviando…'; btn.disabled = true;
+
+  var prospId = document.getElementById('env-prosp-id').value;
+  var datos = {
+    nombre:  document.getElementById('env-nombre').value.trim(),
+    empresa: document.getElementById('env-empresa').value.trim(),
+    email:   document.getElementById('env-email').value.trim(),
+    tipo:    document.getElementById('env-tipo').value,
+    capital: (function() {
+      var p = getProspectos().find(function(x){ return x.id===prospId; });
+      return p && p.capitalDisponible ? fmtK(p.capitalDisponible) : '';
+    })(),
+    mensaje: document.getElementById('env-mensaje').value.trim(),
+    origen:  'CRM Pipeline'
+  };
+
+  var cfg = (typeof EMAILJS_SOULBARIC !== 'undefined') ? EMAILJS_SOULBARIC : null;
+
+  function ok() {
+    // Registrar en notas del prospecto
+    var prospectos = getProspectos();
+    var idx = prospectos.findIndex(function(x){ return x.id===prospId; });
+    if (idx>=0) {
+      var ts = new Date().toLocaleDateString('es-ES');
+      prospectos[idx].notas = (prospectos[idx].notas ? prospectos[idx].notas + '\n' : '') +
+        '[' + ts + '] Documentación enviada por email a ' + datos.email;
+      saveProspectos(prospectos);
+      renderCaptacion();
+    }
+    document.getElementById('env-form-state').style.display    = 'none';
+    document.getElementById('env-success-state').style.display = 'block';
+    btn.textContent = 'Enviar documentación →'; btn.disabled = false;
+    toast('📧 Documentación enviada a ' + datos.nombre);
+  }
+  function err() {
+    document.getElementById('env-form-state').style.display    = 'none';
+    document.getElementById('env-error-state').style.display   = 'block';
+    document.getElementById('env-mailto-fb').href =
+      'mailto:' + datos.email + '?subject=' + encodeURIComponent('SoulBaric Marbella — Documentación de Inversión') +
+      '&body=' + encodeURIComponent(
+        'Estimado/a ' + datos.nombre + ',\n\nAdjuntamos los enlaces a nuestra documentación:\n\n' +
+        'Teaser: ' + 'https://soulbaric-app.vercel.app/teaser.html\n' +
+        'Pitch Deck: ' + 'https://soulbaric-app.vercel.app/pitch-deck.html\n' +
+        'Dossier: ' + 'https://soulbaric-app.vercel.app/dossier-financiero.html\n\n' +
+        'Un cordial saludo,\nEquipo SoulBaric · Finanzas QuickNex QN'
+      );
+    btn.textContent = 'Enviar documentación →'; btn.disabled = false;
+  }
+
+  if (cfg && cfg.configured) { soulbaricEnviarDocs(datos, ok, err); }
+  else { err(); }
 }
 
 function generarDossierGeneral() {
@@ -2959,6 +3040,71 @@ function generarDossierInversor(proyId, tipoInversor) {
 </script>
 
 <!-- ═══ MODAL: SELECTOR DOSSIER ═══ -->
+<!-- ── MODAL ENVÍO DOCUMENTACIÓN ── -->
+<div class="modal" id="modal-envio-docs">
+  <div class="modal-box" style="max-width:500px;">
+    <div class="modal-header">
+      <span class="modal-title">📧 Enviar Documentación al Prospecto</span>
+      <button class="modal-close" onclick="closeModal('modal-envio-docs')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px;">
+      <input type="hidden" id="env-prosp-id">
+
+      <div id="env-form-state">
+        <p style="font-size:12px;color:var(--text-m);margin-bottom:16px;">Se enviará Teaser + Pitch Deck + Dossier Económico al email del prospecto, y recibirás una notificación en <strong style="color:var(--gold);">qn.finanzas@gmail.com</strong>.</p>
+        <form onsubmit="submitEnvioDocsForm(event)" id="env-form">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div>
+              <label class="form-label">Nombre</label>
+              <input id="env-nombre" class="form-control" required placeholder="Nombre completo">
+            </div>
+            <div>
+              <label class="form-label">Empresa</label>
+              <input id="env-empresa" class="form-control" placeholder="Empresa / Fondo">
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Email destino *</label>
+            <input id="env-email" class="form-control" type="email" required placeholder="email@ejemplo.com">
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Tipo de inversor</label>
+            <select id="env-tipo" class="form-control">
+              <option value="">A determinar</option>
+              <option value="asset">Inversor Asset (Equipamiento)</option>
+              <option value="operativo">Inversor Operativo</option>
+              <option value="full">Inversor Full</option>
+            </select>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="form-label">Nota personal (aparece en el email)</label>
+            <textarea id="env-mensaje" class="form-control" rows="2" placeholder="Ej: Según lo hablado en nuestra reunión del lunes…"></textarea>
+          </div>
+          <button id="env-submit-btn" type="submit" class="btn btn-primary" style="width:100%;">📧 Enviar documentación →</button>
+        </form>
+      </div>
+
+      <div id="env-success-state" style="display:none;text-align:center;padding:20px 0;">
+        <div style="font-size:40px;margin-bottom:10px;">✅</div>
+        <p style="font-family:Georgia,serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;">Documentación enviada</p>
+        <p style="font-size:12px;color:var(--text-m);margin-bottom:16px;">El prospecto recibirá Teaser, Pitch Deck y Dossier. Hemos registrado el envío en sus notas.</p>
+        <button class="btn btn-ghost" onclick="closeModal('modal-envio-docs')">Cerrar</button>
+      </div>
+
+      <div id="env-error-state" style="display:none;text-align:center;padding:16px 0;">
+        <div style="font-size:32px;margin-bottom:8px;">⚠️</div>
+        <p style="font-size:12px;color:var(--text-m);margin-bottom:4px;">EmailJS no configurado todavía.</p>
+        <p style="font-size:11px;color:var(--text-s);margin-bottom:14px;">Usa el enlace mailto pre-rellenado, o configura EmailJS en <code>emailjs-config.js</code>.</p>
+        <a id="env-mailto-fb" href="mailto:qn.finanzas@gmail.com" class="btn btn-primary" style="font-size:11px;">Abrir correo pre-rellenado →</a>
+        <div style="margin-top:10px;">
+          <button class="btn btn-ghost" style="font-size:11px;" onclick="closeModal('modal-envio-docs')">Cerrar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="modal-dossier-sel">
   <div class="modal-box" style="max-width:420px;">
     <div class="modal-header">

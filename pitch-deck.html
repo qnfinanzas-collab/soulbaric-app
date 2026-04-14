@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SoulBaric Marbella — Pitch Deck</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="emailjs-config.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; overflow: hidden; }
@@ -554,12 +556,13 @@
         <div class="step-row"><div style="flex-shrink:0;"><div class="step-phase">Fase 3</div></div><div><div class="step-title">Cierre de Términos &amp; Estructuración</div><div class="step-timing">Semanas 5–8</div></div></div>
         <div class="closing-contact" style="margin-top:24px;">
           <div class="closing-contact-label">Contacto</div>
-          <div class="closing-contact-value">info@soulbaric.es</div>
+          <div class="closing-contact-value">qn.finanzas@gmail.com</div>
           <div style="font-size:11px;color:rgba(245,243,240,.35);margin-top:4px;">Finanzas QuickNex QN</div>
         </div>
-        <div style="text-align:center;margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-          <a href="teaser.html" style="background:transparent;border:1px solid rgba(212,175,55,.3);color:rgba(212,175,55,.7);padding:10px 20px;font-size:11px;font-weight:600;border-radius:4px;text-decoration:none;">← Teaser</a>
-          <a href="dossier-financiero.html" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;padding:10px 22px;font-size:11px;font-weight:800;border-radius:4px;text-decoration:none;">Dossier Financiero →</a>
+        <div style="text-align:center;margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="teaser.html" style="background:transparent;border:1px solid rgba(212,175,55,.3);color:rgba(212,175,55,.7);padding:10px 16px;font-size:11px;font-weight:600;border-radius:4px;text-decoration:none;">← Teaser</a>
+          <button onclick="abrirFormPitch('Pitch Deck')" style="background:transparent;border:1px solid rgba(212,175,55,.3);color:rgba(212,175,55,.7);padding:10px 16px;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;">📧 Enviar a prospecto</button>
+          <a href="dossier-financiero.html" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;padding:10px 18px;font-size:11px;font-weight:800;border-radius:4px;text-decoration:none;">Dossier →</a>
         </div>
       </div>
     </div>
@@ -627,6 +630,84 @@
     var dx = e.changedTouches[0].clientX - touchX;
     if (Math.abs(dx) > 50) { dx < 0 ? goTo(current+1) : goTo(current-1); }
   }, {passive:true});
+
+  // ── Reutilizar la misma función de agente definida en emailjs-config.js ──
+  function abrirFormPitch(origen) {
+    window._pitchOrigen = origen || 'Pitch Deck';
+    document.getElementById('pd-modal-overlay').style.display = 'flex';
+    document.getElementById('pd-form-state').style.display    = 'block';
+    document.getElementById('pd-success-state').style.display = 'none';
+    document.getElementById('pd-error-state').style.display   = 'none';
+    if (document.getElementById('pd-form')) document.getElementById('pd-form').reset();
+  }
+  function cerrarPdModal() {
+    document.getElementById('pd-modal-overlay').style.display = 'none';
+  }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') cerrarPdModal(); });
+
+  function submitPdForm(e) {
+    e.preventDefault();
+    var btn = document.getElementById('pd-submit-btn');
+    btn.textContent = 'Enviando…'; btn.disabled = true;
+    var datos = {
+      nombre:  document.getElementById('pd-nombre').value.trim(),
+      empresa: document.getElementById('pd-empresa').value.trim(),
+      email:   document.getElementById('pd-email').value.trim(),
+      tipo:    document.getElementById('pd-tipo').value,
+      capital: '',
+      mensaje: document.getElementById('pd-mensaje').value.trim(),
+      origen:  window._pitchOrigen || 'Pitch Deck'
+    };
+    var cfg = (typeof EMAILJS_SOULBARIC !== 'undefined') ? EMAILJS_SOULBARIC : null;
+    function ok()  { document.getElementById('pd-form-state').style.display='none'; document.getElementById('pd-success-state').style.display='block'; }
+    function err() {
+      var s = encodeURIComponent('Solicitud Pitch Deck — ' + datos.nombre);
+      document.getElementById('pd-mailto-fb').href = 'mailto:qn.finanzas@gmail.com?subject=' + s;
+      document.getElementById('pd-form-state').style.display='none';
+      document.getElementById('pd-error-state').style.display='block';
+    }
+    if (cfg && cfg.configured) { soulbaricEnviarDocs(datos, ok, err); }
+    else { err(); }
+  }
 </script>
+
+<!-- ── MODAL ENVÍO (Pitch Deck) ── -->
+<div id="pd-modal-overlay" onclick="if(event.target===this)cerrarPdModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(160deg,#0f0f0f,#131e2b);border:1px solid rgba(212,175,55,.2);border-radius:14px;padding:36px;width:100%;max-width:460px;position:relative;">
+    <button onclick="cerrarPdModal()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:rgba(245,243,240,.3);font-size:18px;cursor:pointer;">✕</button>
+    <div id="pd-form-state">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#d4af37;margin-bottom:8px;">Enviar documentación</div>
+      <h3 style="font-family:Georgia,serif;font-size:20px;color:#f5f3f0;margin-bottom:18px;">Datos del <span style="color:#d4af37;">prospecto</span></h3>
+      <form id="pd-form" onsubmit="submitPdForm(event)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+          <input id="pd-nombre" required placeholder="Nombre *" style="background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:9px 11px;color:#f5f3f0;font-size:12px;outline:none;width:100%;">
+          <input id="pd-empresa" placeholder="Empresa" style="background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:9px 11px;color:#f5f3f0;font-size:12px;outline:none;width:100%;">
+        </div>
+        <input id="pd-email" type="email" required placeholder="Email *" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:9px 11px;color:#f5f3f0;font-size:12px;outline:none;margin-bottom:10px;">
+        <select id="pd-tipo" style="width:100%;background:#111;border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:9px 11px;color:#f5f3f0;font-size:12px;outline:none;margin-bottom:10px;">
+          <option value="">Tipo de inversor</option>
+          <option>Inversor Asset (Equipamiento)</option>
+          <option>Inversor Operativo</option>
+          <option>Inversor Full</option>
+          <option>Partnership Hotel / Resort</option>
+          <option>Otro</option>
+        </select>
+        <textarea id="pd-mensaje" rows="2" placeholder="Nota personal (opcional)" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:9px 11px;color:#f5f3f0;font-size:12px;resize:none;outline:none;font-family:inherit;margin-bottom:14px;"></textarea>
+        <button id="pd-submit-btn" type="submit" style="width:100%;background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;border:none;padding:12px;font-size:12px;font-weight:800;border-radius:6px;cursor:pointer;">Enviar documentación →</button>
+      </form>
+    </div>
+    <div id="pd-success-state" style="display:none;text-align:center;padding:16px 0;">
+      <div style="font-size:40px;margin-bottom:12px;">✅</div>
+      <h3 style="font-family:Georgia,serif;font-size:18px;color:#f5f3f0;margin-bottom:8px;">Documentación enviada</h3>
+      <p style="font-size:12px;color:rgba(245,243,240,.4);margin-bottom:16px;">El prospecto recibirá Teaser, Pitch Deck y Dossier en segundos.</p>
+      <button onclick="cerrarPdModal()" style="background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);color:#d4af37;padding:10px 20px;font-size:11px;font-weight:700;border-radius:6px;cursor:pointer;">Cerrar</button>
+    </div>
+    <div id="pd-error-state" style="display:none;text-align:center;padding:16px 0;">
+      <div style="font-size:32px;margin-bottom:10px;">⚠️</div>
+      <p style="font-size:12px;color:rgba(245,243,240,.45);margin-bottom:14px;">EmailJS no configurado. Contacta manualmente:</p>
+      <a id="pd-mailto-fb" href="mailto:qn.finanzas@gmail.com" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;padding:10px 18px;font-size:11px;font-weight:800;border-radius:6px;text-decoration:none;">qn.finanzas@gmail.com</a>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SoulBaric Marbella — Oportunidad de Inversión</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="emailjs-config.js"></script>
 <style>
   /* ── Reset & base ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -779,13 +781,102 @@
     <div class="section-tag" style="text-align:center;margin-bottom:20px;">06 — Invitación al Inversor</div>
     <h2 class="cta-title">Construyamos el <span>liderazgo</span><br>en luxury regeneration</h2>
     <p class="cta-desc">Buscamos partnering financiero para desarrollar el modelo de referencia en luxury regeneration &amp; recovery de la Costa del Sol. El Pitch Deck completo incluye proyecciones financieras, modelo de retorno y estructura de participación.</p>
-    <a href="mailto:contacto@soulbaric.es?subject=Solicitud%20Pitch%20Deck%20SoulBaric%20Marbella" class="btn-primary" style="font-size:14px;padding:17px 40px;">
+    <button class="btn-primary" onclick="abrirFormPitch('Web Teaser')" style="font-size:14px;padding:17px 40px;border:none;cursor:pointer;">
       Solicitar Pitch Deck Completo
-    </a>
+    </button>
     <p class="cta-contact">
-      O escríbenos directamente a <a href="mailto:contacto@soulbaric.es">contacto@soulbaric.es</a><br>
+      O escríbenos directamente a <a href="mailto:qn.finanzas@gmail.com">qn.finanzas@gmail.com</a><br>
       Gestión comercial: Finanzas QuickNex QN
     </p>
+  </div>
+</div>
+
+<!-- ── MODAL SOLICITUD PITCH DECK ── -->
+<div id="modal-pitch-overlay" onclick="if(event.target===this)cerrarFormPitch()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:linear-gradient(160deg,#0f0f0f,#131e2b);border:1px solid rgba(212,175,55,.2);border-radius:16px;padding:40px;width:100%;max-width:520px;position:relative;max-height:90vh;overflow-y:auto;">
+
+    <!-- Close -->
+    <button onclick="cerrarFormPitch()" style="position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(245,243,240,.35);font-size:20px;cursor:pointer;line-height:1;">✕</button>
+
+    <!-- Header -->
+    <div id="pitch-form-state">
+      <div style="font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#d4af37;margin-bottom:10px;">Solicitar Documentación</div>
+      <h3 style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#f5f3f0;margin-bottom:6px;">Recibir Pitch Deck <span style="color:#d4af37;">completo</span></h3>
+      <p style="font-size:12px;color:rgba(245,243,240,.4);margin-bottom:24px;line-height:1.6;">Le enviamos el Pitch Deck, la Ficha Teaser y el Dossier Económico completo en segundos.</p>
+
+      <form id="pitch-request-form" onsubmit="submitPitchForm(event)" autocomplete="off">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(245,243,240,.4);display:block;margin-bottom:5px;">Nombre *</label>
+            <input id="pf-nombre" required placeholder="Su nombre" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:10px 12px;color:#f5f3f0;font-size:13px;outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,.2)'">
+          </div>
+          <div>
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(245,243,240,.4);display:block;margin-bottom:5px;">Empresa / Fondo</label>
+            <input id="pf-empresa" placeholder="Empresa o fondo" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:10px 12px;color:#f5f3f0;font-size:13px;outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,.2)'">
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(245,243,240,.4);display:block;margin-bottom:5px;">Email *</label>
+          <input id="pf-email" type="email" required placeholder="su@email.com" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:10px 12px;color:#f5f3f0;font-size:13px;outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,.2)'">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(245,243,240,.4);display:block;margin-bottom:5px;">Tipo de interés</label>
+            <select id="pf-tipo" style="width:100%;background:#111;border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:10px 12px;color:#f5f3f0;font-size:13px;outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,.2)'">
+              <option value="">A determinar</option>
+              <option value="Inversor Asset (Equipamiento)">Inversor Asset</option>
+              <option value="Inversor Operativo">Inversor Operativo</option>
+              <option value="Inversor Full">Inversor Full</option>
+              <option value="Partnership Hotel / Resort">Partnership Hotel</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(245,243,240,.4);display:block;margin-bottom:5px;">Capital disponible (aprox.)</label>
+            <select id="pf-capital" style="width:100%;background:#111;border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:10px 12px;color:#f5f3f0;font-size:13px;outline:none;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,.2)'">
+              <option value="">Prefiero no decir</option>
+              <option value="&lt; €50K">&lt; €50K</option>
+              <option value="€50K – €100K">€50K – €100K</option>
+              <option value="€100K – €250K">€100K – €250K</option>
+              <option value="€250K – €500K">€250K – €500K</option>
+              <option value="&gt; €500K">&gt; €500K</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:rgba(245,243,240,.4);display:block;margin-bottom:5px;">Mensaje (opcional)</label>
+          <textarea id="pf-mensaje" rows="2" placeholder="¿Alguna pregunta o contexto que quiera compartir?" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(212,175,55,.2);border-radius:6px;padding:10px 12px;color:#f5f3f0;font-size:13px;resize:vertical;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='rgba(212,175,55,.2)'"></textarea>
+        </div>
+        <button type="submit" id="pitch-submit-btn" style="width:100%;background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;border:none;padding:14px;font-size:13px;font-weight:800;border-radius:6px;cursor:pointer;letter-spacing:.3px;">
+          Enviar documentación →
+        </button>
+        <p style="font-size:10px;color:rgba(245,243,240,.25);text-align:center;margin-top:10px;">Recibirá los documentos en su correo en menos de 1 minuto.</p>
+      </form>
+    </div>
+
+    <!-- Success state -->
+    <div id="pitch-success-state" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:48px;margin-bottom:16px;">✅</div>
+      <h3 style="font-family:Georgia,serif;font-size:22px;color:#f5f3f0;margin-bottom:10px;">Documentación enviada</h3>
+      <p style="font-size:13px;color:rgba(245,243,240,.5);margin-bottom:24px;line-height:1.7;">Revise su bandeja de entrada. Si no lo encuentra, compruebe la carpeta de spam.</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="pitch-deck.html" target="_blank" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;padding:12px;font-size:12px;font-weight:800;border-radius:6px;text-decoration:none;">Ver Pitch Deck ahora →</a>
+        <a href="dossier-financiero.html" target="_blank" style="background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.25);color:#d4af37;padding:12px;font-size:12px;font-weight:700;border-radius:6px;text-decoration:none;">Ver Dossier Económico →</a>
+      </div>
+    </div>
+
+    <!-- Error state -->
+    <div id="pitch-error-state" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:40px;margin-bottom:12px;">⚠️</div>
+      <h3 style="font-family:Georgia,serif;font-size:18px;color:#f5f3f0;margin-bottom:8px;">Fallo en el envío automático</h3>
+      <p style="font-size:12px;color:rgba(245,243,240,.45);margin-bottom:18px;">Configura EmailJS para activar el envío automático. Por ahora puedes contactar directamente:</p>
+      <a id="pitch-mailto-fallback" href="mailto:qn.finanzas@gmail.com" style="background:linear-gradient(135deg,#d4af37,#b8962e);color:#0a0a0a;padding:12px 20px;font-size:12px;font-weight:800;border-radius:6px;text-decoration:none;">Escribir a qn.finanzas@gmail.com</a>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">
+        <a href="pitch-deck.html" target="_blank" style="color:rgba(212,175,55,.6);font-size:11px;text-decoration:none;">Ver Pitch Deck →</a>
+        <a href="dossier-financiero.html" target="_blank" style="color:rgba(212,175,55,.6);font-size:11px;text-decoration:none;">Ver Dossier Económico →</a>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -815,6 +906,71 @@
       window.scrollTo({ top: top, behavior: 'smooth' });
     });
   });
+
+  // ── Agente de envío de documentación ─────────────────────────────────
+  function abrirFormPitch(origen) {
+    window._pitchOrigen = origen || 'Web Teaser';
+    var overlay = document.getElementById('modal-pitch-overlay');
+    overlay.style.display = 'flex';
+    document.getElementById('pitch-form-state').style.display   = 'block';
+    document.getElementById('pitch-success-state').style.display = 'none';
+    document.getElementById('pitch-error-state').style.display   = 'none';
+    document.getElementById('pitch-request-form').reset();
+    document.body.style.overflow = 'hidden';
+  }
+  function cerrarFormPitch() {
+    document.getElementById('modal-pitch-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') cerrarFormPitch(); });
+
+  function submitPitchForm(e) {
+    e.preventDefault();
+    var btn = document.getElementById('pitch-submit-btn');
+    btn.textContent = 'Enviando…'; btn.disabled = true;
+
+    var datos = {
+      nombre:  document.getElementById('pf-nombre').value.trim(),
+      empresa: document.getElementById('pf-empresa').value.trim(),
+      email:   document.getElementById('pf-email').value.trim(),
+      tipo:    document.getElementById('pf-tipo').value,
+      capital: document.getElementById('pf-capital').value,
+      mensaje: document.getElementById('pf-mensaje').value.trim(),
+      origen:  window._pitchOrigen || 'Web Teaser'
+    };
+
+    var cfg = (typeof EMAILJS_SOULBARIC !== 'undefined') ? EMAILJS_SOULBARIC : null;
+
+    if (cfg && cfg.configured) {
+      soulbaricEnviarDocs(datos,
+        function() { mostrarEstado('success'); },
+        function() { mostrarFallback(datos); }
+      );
+    } else {
+      // EmailJS no configurado → abrir mailto pre-rellenado + mostrar links
+      var subject = encodeURIComponent('Solicitud Pitch Deck — ' + datos.nombre + (datos.empresa ? ' (' + datos.empresa + ')' : ''));
+      var body    = encodeURIComponent(
+        'Nombre: ' + datos.nombre + '\nEmpresa: ' + datos.empresa +
+        '\nTipo: ' + datos.tipo + '\nCapital: ' + datos.capital +
+        '\nMensaje: ' + datos.mensaje
+      );
+      document.getElementById('pitch-mailto-fallback').href =
+        'mailto:qn.finanzas@gmail.com?subject=' + subject + '&body=' + body;
+      mostrarEstado('error');
+    }
+
+    function mostrarEstado(st) {
+      document.getElementById('pitch-form-state').style.display    = 'none';
+      document.getElementById('pitch-success-state').style.display = st === 'success' ? 'block' : 'none';
+      document.getElementById('pitch-error-state').style.display   = st === 'error'   ? 'block' : 'none';
+    }
+    function mostrarFallback(d) {
+      var subj = encodeURIComponent('Solicitud Pitch Deck — ' + d.nombre);
+      var body = encodeURIComponent('Nombre: ' + d.nombre + '\nEmpresa: ' + d.empresa + '\nEmail: ' + d.email);
+      document.getElementById('pitch-mailto-fallback').href = 'mailto:qn.finanzas@gmail.com?subject=' + subj + '&body=' + body;
+      mostrarEstado('error');
+    }
+  }
 
   // Nav highlight on scroll
   var sections = ['hero','oportunidad','mercado','modelo','segmentos','contacto'];
