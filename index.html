@@ -156,6 +156,32 @@
       grid-template-columns: 1fr;
     }
 
+    /* ── Campos bloqueados por configuración de catálogo ── */
+    input.field-locked, select.field-locked {
+      background: #f0ede8 !important;
+      color: var(--text-m) !important;
+      cursor: not-allowed !important;
+      border-color: var(--border) !important;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+    .cap-btn-locked {
+      opacity: 0.38 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+    .config-locked-header {
+      background: rgba(80,200,120,0.08) !important;
+      border-left-color: #50c878 !important;
+    }
+    #plazas-config-badge {
+      display:none;padding:5px 12px;background:rgba(80,200,120,0.07);
+      border-left:3px solid #50c878;font-size:10px;color:#2e7d32;font-weight:600;
+    }
+    #opcost-info {
+      font-size:9px;color:var(--text-s);font-weight:400;margin-top:2px;line-height:1.4;
+    }
+
     /* ═══════════════════════════════════════════════════════════════ INPUTS ═══ */
     label {
       display: block;
@@ -1106,7 +1132,7 @@
           <input type="number" id="ivaRate" value="21" min="0" max="100" step="0.5" onchange="calcGrossPrice()" oninput="calcGrossPrice()">
         </div>
         <div>
-          <label>Precio Sesión SIN IVA €</label>
+          <label id="session-price-label">Precio Sesión SIN IVA €</label>
           <input type="number" id="sessionPrice" placeholder="80" min="0" step="5" onchange="autoCalcSessions()" oninput="autoCalcSessions()">
         </div>
         <!-- Info precio con IVA: fila completa -->
@@ -1143,6 +1169,11 @@
         <button onclick="opTab('facturacion')" id="op-tab-facturacion"
           style="flex:1;padding:7px 4px;border:none;cursor:pointer;font-size:10px;font-weight:700;background:#fff;color:var(--text-m);border-bottom:2px solid transparent;">
           💶 Facturación</button>
+      </div>
+
+      <!-- Badge: plazas desde configuración de cámara -->
+      <div id="plazas-config-badge">
+        📷 Cámara: <strong id="plazas-config-text">—</strong> &nbsp;·&nbsp; Las plazas vienen definidas por la cámara seleccionada
       </div>
 
       <!-- ── TAB: PARÁMETROS ── -->
@@ -1193,9 +1224,10 @@
             <strong id="plazasMonth" style="font-size:20px;color:#1565c0;">0</strong>
           </div>
         </div>
-        <div>
-          <label>Coste Operativo/Mes €</label>
+        <div style="grid-column:1/-1;">
+          <label>💰 Coste Operativo Mensual €</label>
           <input type="number" id="opCost" placeholder="1200" min="0" step="50" onchange="autoCalcSessions()" oninput="autoCalcSessions()">
+          <div id="opcost-info">Personal, electricidad, mantenimiento y consumibles. Varía por instalación. Afecta directamente al beneficio neto mensual.</div>
         </div>
       </div>
 
@@ -2705,6 +2737,14 @@ function loadProjectToForm(idx) {
   configsEditingIdx = null;
   renderConfigsPanel();
 
+  // Si el proyecto tiene cámara definida, bloquear campos para evitar cambios accidentales
+  if (proj.chamber && proj.chamber.modelName) {
+    lockCameraConfigFields(
+      proj.chamber.modelName,
+      proj.chamber.capacity || 1
+    );
+  }
+
   closeProjectsLibrary();
   mostrarToast('✅ Proyecto cargado: ' + proj.name);
 }
@@ -3651,6 +3691,87 @@ function cargarConfiguracionCatalogo(id) {
       : '✅ ' + nombre + ' cargada correctamente',
     sinPrecio ? '#e65100' : '#8B6F47'
   );
+
+  // Bloquear campos que vienen del catálogo
+  lockCameraConfigFields(nombre, config.plazas || 1);
+}
+
+/* ─── Bloqueo de campos de cámara cuando viene del catálogo ─────────────── */
+function lockCameraConfigFields(configNombre, plazas) {
+  // Bloquear: modelo, precio neto, IVA
+  ['modelName', 'chamberPriceNet', 'ivaRate'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) { el.setAttribute('readonly', 'readonly'); el.classList.add('field-locked'); }
+  });
+  // Bloquear botones de capacidad y el input de plazas
+  ['cap-btn-1', 'cap-btn-multi'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('cap-btn-locked');
+  });
+  const mcInput = document.getElementById('multiCapInput');
+  if (mcInput) { mcInput.setAttribute('readonly', 'readonly'); mcInput.classList.add('field-locked'); }
+  document.querySelectorAll('#multi-cap-wrap button').forEach(function(b) { b.classList.add('cap-btn-locked'); });
+
+  // Actualizar header de la sección cámara
+  const header = document.getElementById('config-editor-header');
+  const title  = document.getElementById('config-editor-title');
+  const cancelBtn = document.getElementById('config-editor-cancel-btn');
+  if (header)  { header.classList.add('config-locked-header'); }
+  if (title)   { title.innerHTML = '🔒 Config: <strong>' + configNombre + '</strong>&nbsp;&nbsp;·&nbsp;&nbsp;' + plazas + ' plaza' + (plazas !== 1 ? 's' : ''); }
+  if (cancelBtn) {
+    cancelBtn.style.display = 'inline-block';
+    cancelBtn.style.background = 'rgba(80,200,120,0.1)';
+    cancelBtn.style.borderColor = '#50c878';
+    cancelBtn.style.color = '#2e7d32';
+    cancelBtn.textContent = '🔓 Cambiar';
+    cancelBtn.onclick = function() { unlockCameraConfigFields(); };
+  }
+
+  // Marcar sessionPrice como editable con nota contextual
+  const spLabel = document.getElementById('session-price-label');
+  if (spLabel) spLabel.innerHTML = 'Precio Sesión SIN IVA € <span style="font-weight:400;font-size:9px;color:#1565c0;">(✏️ ajustable por candidato)</span>';
+
+  // Badge plazas en Operatividad
+  const badge     = document.getElementById('plazas-config-badge');
+  const badgeText = document.getElementById('plazas-config-text');
+  if (badgeText) badgeText.textContent = plazas + ' plaza' + (plazas !== 1 ? 's' : '') + ' · ' + configNombre;
+  if (badge)     badge.style.display = 'block';
+}
+
+function unlockCameraConfigFields() {
+  ['modelName', 'chamberPriceNet', 'ivaRate'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) { el.removeAttribute('readonly'); el.classList.remove('field-locked'); }
+  });
+  ['cap-btn-1', 'cap-btn-multi'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('cap-btn-locked');
+  });
+  const mcInput = document.getElementById('multiCapInput');
+  if (mcInput) { mcInput.removeAttribute('readonly'); mcInput.classList.remove('field-locked'); }
+  document.querySelectorAll('#multi-cap-wrap button').forEach(function(b) { b.classList.remove('cap-btn-locked'); });
+
+  // Restaurar header
+  const header    = document.getElementById('config-editor-header');
+  const title     = document.getElementById('config-editor-title');
+  const cancelBtn = document.getElementById('config-editor-cancel-btn');
+  if (header)    { header.classList.remove('config-locked-header'); }
+  if (title)     { title.textContent = '✏️ Definiendo nueva configuración'; }
+  if (cancelBtn) { cancelBtn.style.display = 'none'; }
+
+  // Restaurar label sessionPrice
+  const spLabel = document.getElementById('session-price-label');
+  if (spLabel) spLabel.textContent = 'Precio Sesión SIN IVA €';
+
+  // Ocultar badge plazas
+  const badge = document.getElementById('plazas-config-badge');
+  if (badge) badge.style.display = 'none';
+
+  // Resetear el selector de catálogo
+  const sel = document.getElementById('config-catalogo-select');
+  if (sel) sel.value = '';
+  const preview = document.getElementById('config-catalogo-preview');
+  if (preview) preview.style.display = 'none';
 }
 
 // ── initConfigSelector ────────────────────────────────────────────────────
