@@ -3054,6 +3054,11 @@ function importarTodos(tipo){
 
 /* ═══ INIT ═══ */
 document.addEventListener('DOMContentLoaded',()=>{
+  // Auto-cargar candidatos Costa del Sol si el CRM está vacío
+  if(getCandidatos().length===0){
+    saveCandidatos(DEMO_CANDIDATOS);
+    toast('📥 '+DEMO_CANDIDATOS.length+' candidatos Costa del Sol cargados');
+  }
   renderStats();
   renderKanban();
   renderPresupuestos();
