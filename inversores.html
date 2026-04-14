@@ -2430,16 +2430,18 @@ function generarDossierInversor(proyId, tipoInversor) {
   const hotelPct = (proy.hotelComision && proy.hotelComision.pct) ? proy.hotelComision.pct : (proy.soulbaricPct ? (100-proy.soulbaricPct) : 0);
   const sbPct    = proy.modelo === 2 ? (proy.soulbaricPct || 0) : null;
 
-  // ── Waterfall rows ──
+  // ── Waterfall rows — own:true = esta fila pertenece al inversor destinatario ──
+  var _isAsset = tipoInversor === 'asset' || tipoInversor === 'full';
+  var _isOp    = tipoInversor === 'operativo' || tipoInversor === 'full';
   const waterfallRows = proy.modelo === 1 ? [
-    { label: '① Inversor Cámara', desc: retornoEsFixed ? fmt(proy.assetInversor?.retornoFijo||0)+'/mes' : (proy.assetInversor?.retornoPct||0)+'% fact.', color:'#3B82F6' },
-    { label: '② Gastos Operativos', desc: fmt(proy.gastosFijosMes||0)+'/mes', color:'#94a3b8' },
-    { label: '③ Hotel (trimestral)', desc: (proy.hotelComision?.pct||0)+'% fact. neta', color:'#10B981' },
-    { label: '④ Inversor Operativo', desc: (proy.inversorOperativo?.pctMargen||0)+'% beneficio', color:'#8B5CF6' },
-    { label: '⑤ SoulBaric', desc: 'Beneficio restante · Gestión', color:'#C89968' },
+    { label: '① Inversor Cámara',    desc: retornoEsFixed ? fmt(proy.assetInversor?.retornoFijo||0)+'/mes fijo' : (proy.assetInversor?.retornoPct||0)+'% facturación neta', genericDesc:'Financiación del equipamiento', color:'#3B82F6', bg:'rgba(59,130,246,.09)',  own: _isAsset },
+    { label: '② Gastos Operativos',  desc: 'Operación del servicio',       genericDesc:'Operación del servicio',          color:'#94a3b8', bg:'rgba(148,163,184,.07)', own: false },
+    { label: '③ Hotel (trimestral)', desc: 'Acuerdo con el establecimiento', genericDesc:'Acuerdo con el establecimiento', color:'#10B981', bg:'rgba(16,185,129,.07)',  own: false },
+    { label: '④ Inversor Operativo', desc: (proy.inversorOperativo?.pctMargen||0)+'% beneficio neto trimestral',  genericDesc:'Participación operativa', color:'#8B5CF6', bg:'rgba(139,92,246,.09)', own: _isOp },
+    { label: '⑤ SoulBaric',          desc: 'Gestión · Marca · Tecnología CellPod™', genericDesc:'Gestión · Marca · Tecnología CellPod™', color:'#C89968', bg:'rgba(200,153,104,.09)', own: false },
   ] : [
-    { label: '① Hotel (propietario)', desc: (100-(proy.soulbaricPct||0))+'% facturación neta', color:'#10B981' },
-    { label: '② SoulBaric', desc: (proy.soulbaricPct||0)+'% · Gestión y operativa', color:'#C89968' },
+    { label: '① Hotel (propietario)', desc: 'Instalaciones y operación propia', genericDesc:'Instalaciones y operación propia', color:'#10B981', bg:'rgba(16,185,129,.07)', own: false },
+    { label: '② SoulBaric',           desc: (proy.soulbaricPct||0)+'% facturación neta · Gestión y operativa', genericDesc:'Gestión y operativa CellPod™', color:'#C89968', bg:'rgba(200,153,104,.09)', own: false },
   ];
 
   // ── Seasonality bar ──
@@ -2852,21 +2854,50 @@ function generarDossierInversor(proyId, tipoInversor) {
   </div>
   <div class="ipage-body">
     <div class="sec-num">04</div>
-    <div class="sec-title">Modelo de <span>Reparto</span></div>
-    <div class="sec-subtitle">Distribución de ingresos entre todos los participantes · Modelo ${modeloLabel}</div>
+    <div class="sec-title">Tu <span>Posición</span> en el Reparto</div>
+    <div class="sec-subtitle">Orden de prioridad de distribución de ingresos · Modelo ${modeloLabel}</div>
     <div class="divider"></div>
 
-    <div style="margin-bottom:24px;">
-      ${waterfallRows.map(function(r) {
-        return '<div class="wfall-row"><span class="wfall-num">'+r.label.slice(0,2)+'</span>' +
-          '<span class="wfall-label" style="color:'+r.color+'">'+r.label.slice(2)+'</span>' +
-          '<span class="wfall-desc">'+r.desc+'</span></div>' +
-          (waterfallRows.indexOf(r) < waterfallRows.length-1 ? '<div style="text-align:center;color:#e8e2d9;font-size:16px;margin-bottom:4px;">↓</div>' : '');
+    <div style="margin-bottom:20px;">
+      ${waterfallRows.map(function(r, ri) {
+        var rowBg    = r.own ? r.bg   : '#f9f6f2';
+        var rowBord  = r.own ? '2px solid '+r.color : '1px solid #e8e2d9';
+        var numStyle = r.own
+          ? 'background:'+r.color+';color:#fff;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;'
+          : 'font-size:15px;width:22px;flex-shrink:0;color:#ccc;';
+        var lblColor = r.own ? r.color : '#b0a090';
+        var shownDesc = r.own ? r.desc : r.genericDesc;
+        var descStyle = r.own ? 'font-size:11px;font-weight:700;color:'+r.color+';' : 'font-size:10px;color:#b0a090;font-style:italic;';
+        var ownTag = r.own ? '<span style="font-size:8px;font-weight:800;background:'+r.color+';color:#fff;padding:2px 6px;border-radius:8px;margin-left:6px;text-transform:uppercase;letter-spacing:.5px;">Tu inversión</span>' : '';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:4px;background:'+rowBg+';border:'+rowBord+'">' +
+          '<span style="'+numStyle+'">'+(r.own?r.label[1]:r.label.slice(0,2))+'</span>' +
+          '<span style="font-size:12px;font-weight:700;flex:1;color:'+lblColor+'">'+r.label.slice(2)+ownTag+'</span>' +
+          '<span style="'+descStyle+'">'+shownDesc+'</span>' +
+        '</div>' +
+        (ri < waterfallRows.length-1 ? '<div style="text-align:center;color:#ddd;font-size:13px;margin:2px 0;">↓</div>' : '');
       }).join('')}
     </div>
 
-    <div style="background:rgba(200,153,104,.06);border:1px solid rgba(200,153,104,.2);border-radius:10px;padding:14px;margin-bottom:24px;font-size:11px;color:#6b5c4e;line-height:1.8;">
-      💡 <strong>Tu posición en el reparto:</strong> como ${escH(ti.label.toLowerCase())}, tu retorno es <strong style="color:#1a1410;">${escH(retornoLabel || 'según los términos pactados')}</strong>, con prioridad sobre los beneficios distribuidos.
+    <div style="background:${ti.bg};border:1px solid ${ti.border};border-radius:10px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:10px;font-weight:800;color:${ti.color};text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">${ti.icon} Tus condiciones de inversión</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11px;">
+        <div style="background:#fff;border-radius:7px;padding:10px 12px;">
+          <div style="font-size:9px;color:#9e8e7e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Capital que aportas</div>
+          <div style="font-size:16px;font-weight:800;color:#1a1410;">${escH(fmtK(inversionTotal))}</div>
+        </div>
+        <div style="background:#fff;border-radius:7px;padding:10px 12px;">
+          <div style="font-size:9px;color:#9e8e7e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Mecanismo de retorno</div>
+          <div style="font-size:13px;font-weight:700;color:${ti.color};">${escH(retornoLabel || 'A convenir')}</div>
+        </div>
+        <div style="background:#fff;border-radius:7px;padding:10px 12px;">
+          <div style="font-size:9px;color:#9e8e7e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">Recuperación capital</div>
+          <div style="font-size:13px;font-weight:700;color:#1a1410;">${escH(paybackTexto)}</div>
+        </div>
+        <div style="background:#fff;border-radius:7px;padding:10px 12px;">
+          <div style="font-size:9px;color:#9e8e7e;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">TIR anual estimada</div>
+          <div style="font-size:13px;font-weight:700;color:#1a1410;">${escH(tirTexto)}</div>
+        </div>
+      </div>
     </div>
 
     <div class="sec-num" style="margin-top:8px;">05</div>
