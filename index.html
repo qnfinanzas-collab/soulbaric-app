@@ -728,7 +728,7 @@
             </div>
 
             <!-- Panel desplegable -->
-            <div id="crm-sel-panel" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:9999;background:#1a1410;border:1px solid rgba(200,153,104,0.4);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.7);flex-direction:column;overflow:hidden;">
+            <div id="crm-sel-panel" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:9999;background:#1a1410;border:1px solid rgba(200,153,104,0.4);border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,0.7);flex-direction:column;">
 
               <!-- Asistente IA -->
               <div style="padding:7px 11px;background:linear-gradient(90deg,rgba(80,200,120,0.1),rgba(80,200,120,0.04));border-bottom:1px solid rgba(80,200,120,0.18);display:flex;align-items:center;gap:6px;">
@@ -4109,94 +4109,129 @@ function crmSelGetFiltered() {
 }
 
 /* Renderizar resultados */
+/* Uso data-attributes para evitar problemas de escaping en onclick */
+function crmSelSelectEl(el) {
+  crmSelSelect(el.dataset.selId, el.dataset.selNombre, el.dataset.selIcon || '🏢');
+}
+
 function crmSelRender() {
   const container = document.getElementById('crm-sel-results');
   if (!container) return;
   _SS.items = [];
-  let html = '';
+  const parts = [];
   let idx = 0;
 
-  /* Recientes (solo sin filtros) */
+  const SEC = function(label) {
+    return '<div style="padding:5px 12px 2px;font-size:8px;color:rgba(200,153,104,0.4);text-transform:uppercase;letter-spacing:1px;font-weight:800;">' + label + '</div>';
+  };
+
+  /* ── Recientes (solo sin query ni chip) ── */
   if (!_SS.query && !_SS.chip) {
     const rec = crmSelGetRecientes();
     if (rec.length > 0) {
-      html += `<div style="padding:5px 12px 2px;font-size:8px;color:rgba(200,153,104,0.4);text-transform:uppercase;letter-spacing:1px;font-weight:800;">⏱ Recientes</div>`;
-      rec.forEach(r => {
-        _SS.items.push({ id: r.id, nombre: r.nombre, icon: r.icon });
-        html += `<div class="crm-card-item" data-sidx="${idx++}" onclick="crmSelSelect('${escAttr(r.id)}','${escAttr(r.nombre)}','${r.icon||'🏢'}')">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:14px;">${r.icon||'🏢'}</span>
-            <span style="font-size:11px;color:#ddd;font-weight:600;">${escH(r.nombre)}</span>
-            <span style="margin-left:auto;font-size:8px;color:rgba(200,153,104,0.35);">reciente</span>
-          </div>
-        </div>`;
+      parts.push(SEC('⏱ Recientes'));
+      rec.forEach(function(r) {
+        _SS.items.push(r.id);
+        parts.push(
+          '<div class="crm-card-item" data-sidx="' + idx++ + '" data-sel-id="' + escH(r.id) + '" data-sel-nombre="' + escH(r.nombre) + '" data-sel-icon="' + (r.icon||'🏢') + '" onclick="crmSelSelectEl(this)">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<span style="font-size:14px;">' + (r.icon||'🏢') + '</span>' +
+              '<span style="font-size:11px;color:#ddd;font-weight:600;">' + escH(r.nombre) + '</span>' +
+              '<span style="margin-left:auto;font-size:8px;color:rgba(200,153,104,0.35);">reciente</span>' +
+            '</div>' +
+          '</div>'
+        );
       });
     }
   }
 
-  /* Mis empresas manuales */
-  const empresas = getEmpresas().filter(e => !_SS.chip && fuzzyMatch(e.razonSocial||e.nombre||'', _SS.query));
+  /* ── Mis empresas manuales ── */
+  const empresas = getEmpresas().filter(function(e) {
+    return !_SS.chip && fuzzyMatch(e.razonSocial || e.nombre || '', _SS.query);
+  });
   if (empresas.length > 0) {
-    html += `<div style="padding:5px 12px 2px;font-size:8px;color:rgba(200,153,104,0.4);text-transform:uppercase;letter-spacing:1px;font-weight:800;">🏢 Mis empresas</div>`;
-    empresas.forEach(e => {
-      _SS.items.push({ id: e.id, nombre: e.razonSocial||e.nombre, icon: '🏢' });
-      html += `<div class="crm-card-item" data-sidx="${idx++}" onclick="crmSelSelect('${escAttr(e.id)}','${escAttr(e.razonSocial||e.nombre)}','🏢')">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:14px;">🏢</span>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:11px;color:#ddd;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(e.razonSocial||e.nombre)}</div>
-            ${e.locales?.length?`<div style="font-size:9px;color:rgba(200,153,104,0.45);">${e.locales.length} local${e.locales.length>1?'es':''}</div>`:''}
-          </div>
-        </div>
-      </div>`;
+    parts.push(SEC('🏢 Mis empresas'));
+    empresas.forEach(function(e) {
+      const nombre = e.razonSocial || e.nombre || '';
+      _SS.items.push(e.id);
+      const localesTxt = e.locales && e.locales.length
+        ? '<div style="font-size:9px;color:rgba(200,153,104,0.45);">' + e.locales.length + ' local' + (e.locales.length > 1 ? 'es' : '') + '</div>'
+        : '';
+      parts.push(
+        '<div class="crm-card-item" data-sidx="' + idx++ + '" data-sel-id="' + escH(e.id) + '" data-sel-nombre="' + escH(nombre) + '" data-sel-icon="🏢" onclick="crmSelSelectEl(this)">' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<span style="font-size:14px;">🏢</span>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-size:11px;color:#ddd;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escH(nombre) + '</div>' +
+              localesTxt +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
     });
   }
 
-  /* Candidatos CRM */
+  /* ── Candidatos CRM ── */
   const cands = crmSelGetFiltered();
-  const etapasHot = new Set(['viabilidad','carta','interes']);
-  const secLabel = _SS.query ? `Resultados (${cands.length})` : _SS.chip ? `${(_SS.chip.charAt(0).toUpperCase()+_SS.chip.slice(1))} — ${cands.length}` : `Candidatos CRM · Costa del Sol (${cands.length})`;
+  const etapasHot = { viabilidad:1, carta:1, interes:1 };
+  const chip1 = _SS.chip ? (_SS.chip.charAt(0).toUpperCase() + _SS.chip.slice(1)) : '';
+  const secLabel = _SS.query
+    ? 'Resultados (' + cands.length + ')'
+    : _SS.chip
+      ? chip1 + ' — ' + cands.length
+      : 'Candidatos CRM · Costa del Sol (' + cands.length + ')';
 
   if (cands.length > 0) {
-    html += `<div style="padding:5px 12px 2px;font-size:8px;color:rgba(200,153,104,0.4);text-transform:uppercase;letter-spacing:1px;font-weight:800;">${secLabel}</div>`;
-    cands.forEach(c => {
-      const cId = 'crm_' + c.id;
-      const icon = CRM_TIPO_ICONS[c.tipo] || '🏢';
+    parts.push(SEC(secLabel));
+    cands.forEach(function(c) {
+      const cId   = 'crm_' + c.id;
+      const icon  = CRM_TIPO_ICONS[c.tipo] || '🏢';
       const modelo = MODELO_SHORT[c.modeloInteres] || '';
       const eColor = ETAPA_COLORS[c.etapa] || '#888';
-      const eLabel = ETAPA_LABELS[c.etapa] || c.etapa;
-      const isHot  = etapasHot.has(c.etapa) && !_SS.query;
-      const hasProy = (c.proyectosAsociados||[]).length > 0;
-      const ciudad = c.ubicacion ? c.ubicacion.split(',')[0].trim() : '';
-      _SS.items.push({ id: cId, nombre: c.empresa, icon });
-      html += `<div class="crm-card-item" data-sidx="${idx++}" onclick="crmSelSelect('${escAttr(cId)}','${escAttr(c.empresa)}','${icon}')">
-        <div style="display:flex;align-items:flex-start;gap:9px;">
-          <span style="font-size:16px;flex-shrink:0;line-height:1.2;">${icon}</span>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:2px;">
-              <span style="font-size:11px;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;">${escH(c.empresa)}</span>
-              ${isHot?`<span style="font-size:8px;background:rgba(255,160,0,.18);color:#f0a500;border:1px solid rgba(255,160,0,.3);border-radius:3px;padding:1px 4px;font-weight:800;flex-shrink:0;">🔥 HOT</span>`:''}
-              ${hasProy?`<span style="font-size:8px;background:rgba(80,200,120,.15);color:#50c878;border:1px solid rgba(80,200,120,.3);border-radius:3px;padding:1px 4px;font-weight:800;flex-shrink:0;">📐 Proyecto</span>`:''}
-            </div>
-            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
-              ${ciudad?`<span style="font-size:9px;color:rgba(200,153,104,0.55);">📍 ${escH(ciudad)}</span>`:''}
-              <span style="font-size:8px;background:${eColor}20;color:${eColor};border-radius:3px;padding:1px 5px;font-weight:800;border:1px solid ${eColor}30;">${eLabel}</span>
-              ${modelo?`<span style="font-size:9px;color:rgba(200,153,104,0.6);">📦 ${modelo}</span>`:''}
-            </div>
-          </div>
-        </div>
-      </div>`;
+      const eLabel = ETAPA_LABELS[c.etapa] || c.etapa || '';
+      const isHot  = !!etapasHot[c.etapa] && !_SS.query;
+      const hasProy = (c.proyectosAsociados || []).length > 0;
+      const ciudad  = c.ubicacion ? c.ubicacion.split(',')[0].trim() : '';
+      _SS.items.push(cId);
+
+      const hotBadge   = isHot  ? '<span style="font-size:8px;background:rgba(255,160,0,.18);color:#f0a500;border:1px solid rgba(255,160,0,.3);border-radius:3px;padding:1px 5px;font-weight:800;">🔥 HOT</span>' : '';
+      const proyBadge  = hasProy ? '<span style="font-size:8px;background:rgba(80,200,120,.15);color:#50c878;border:1px solid rgba(80,200,120,.3);border-radius:3px;padding:1px 5px;font-weight:800;">📐</span>' : '';
+      const ciudadTxt  = ciudad  ? '<span style="font-size:9px;color:rgba(200,153,104,0.55);">📍 ' + escH(ciudad) + '</span>' : '';
+      const modeloTxt  = modelo  ? '<span style="font-size:9px;color:rgba(200,153,104,0.6);">📦 ' + modelo + '</span>' : '';
+      const etapaBadge = '<span style="font-size:8px;background:' + eColor + '22;color:' + eColor + ';border-radius:3px;padding:1px 6px;font-weight:800;border:1px solid ' + eColor + '44;">' + eLabel + '</span>';
+
+      parts.push(
+        '<div class="crm-card-item" data-sidx="' + idx++ + '" data-sel-id="' + escH(cId) + '" data-sel-nombre="' + escH(c.empresa) + '" data-sel-icon="' + icon + '" onclick="crmSelSelectEl(this)">' +
+          '<div style="display:flex;align-items:flex-start;gap:9px;">' +
+            '<span style="font-size:16px;flex-shrink:0;line-height:1.3;">' + icon + '</span>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:3px;">' +
+                '<span style="font-size:11px;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:155px;">' + escH(c.empresa) + '</span>' +
+                hotBadge + proyBadge +
+              '</div>' +
+              '<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">' +
+                ciudadTxt + etapaBadge + modeloTxt +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
     });
   } else if (_SS.query || _SS.chip) {
-    html += `<div style="padding:22px;text-align:center;color:rgba(200,153,104,0.4);">
-      <div style="font-size:22px;margin-bottom:6px;">🔍</div>
-      <div style="font-size:11px;font-weight:600;">Sin resultados para "${escH(_SS.query||_SS.chip)}"</div>
-      <div style="font-size:10px;margin-top:3px;opacity:.7;">Prueba con otra búsqueda</div>
-    </div>`;
+    parts.push(
+      '<div style="padding:22px;text-align:center;color:rgba(200,153,104,0.4);">' +
+        '<div style="font-size:22px;margin-bottom:6px;">🔍</div>' +
+        '<div style="font-size:11px;font-weight:600;">Sin resultados para &ldquo;' + escH(_SS.query || _SS.chip) + '&rdquo;</div>' +
+        '<div style="font-size:10px;margin-top:3px;opacity:.7;">Prueba con otra búsqueda</div>' +
+      '</div>'
+    );
   }
 
-  if (!html) html = `<div style="padding:22px;text-align:center;color:rgba(200,153,104,0.35);font-size:11px;">Sin candidatos disponibles</div>`;
-  container.innerHTML = html;
+  if (parts.length === 0) {
+    parts.push('<div style="padding:22px;text-align:center;color:rgba(200,153,104,0.35);font-size:11px;">Sin candidatos disponibles</div>');
+  }
+
+  container.innerHTML = parts.join('');
   _SS.activeIdx = -1;
 }
 
