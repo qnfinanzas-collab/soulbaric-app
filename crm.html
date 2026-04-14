@@ -63,11 +63,11 @@ nav a.active{background:rgba(200,153,104,0.18);color:var(--gold);border:1px soli
 .search-input::placeholder{color:var(--text-s);}
 
 /* ── KANBAN ── */
-.kanban{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;}
+.kanban{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;}
 .kanban::-webkit-scrollbar{height:5px;}
 .kanban::-webkit-scrollbar-track{background:var(--dark);}
 .kanban::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-.kol{flex:0 0 230px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:var(--shadow);}
+.kol{flex:0 0 230px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:var(--shadow);scroll-snap-align:start;}
 .kol-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .kol-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .kol-title{font-size:11px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:.4px;flex:1;}
@@ -75,22 +75,44 @@ nav a.active{background:rgba(200,153,104,0.18);color:var(--gold);border:1px soli
 .kol-cards{display:flex;flex-direction:column;gap:9px;min-height:60px;max-height:60vh;overflow-y:auto;padding-right:2px;}
 .kol-cards::-webkit-scrollbar{width:3px;}
 .kol-cards::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.kand-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:11px;cursor:pointer;transition:all .2s;}
+
+/* ── TARJETA CANDIDATO ── */
+.kand-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:11px;cursor:pointer;transition:all .2s;position:relative;}
 .kand-card:hover{border-color:var(--gold);transform:translateY(-1px);box-shadow:0 4px 16px rgba(200,153,104,0.15);}
 .kand-tipo{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:10px;display:inline-block;margin-bottom:6px;}
-.kand-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.3;}
-.kand-empresa{font-size:10px;color:var(--text-m);margin-top:1px;}
+/* Establecimiento — nombre principal */
+.kand-estab{font-size:12px;font-weight:800;color:var(--text);line-height:1.3;}
+/* Persona de contacto — secundaria */
+.kand-contact-row{display:flex;align-items:center;gap:4px;margin-top:3px;}
+.kand-contact-name{font-size:10px;color:var(--text-m);font-weight:600;}
+.kand-contact-cargo{font-size:9px;color:var(--text-s);}
 .kand-loc{font-size:10px;color:var(--text-s);margin-top:4px;}
 .kand-model{font-size:10px;color:var(--gold);margin-top:4px;font-weight:600;}
-.kand-precio{font-size:11px;font-weight:800;color:var(--gold);margin-top:6px;}
-/* Botones de tarjeta: solo visibles en hover */
+.kand-precio{font-size:11px;font-weight:800;color:var(--gold);margin-top:5px;}
+/* Info de contacto: oculta por defecto, visible en hover desktop */
+.kand-hover-info{max-height:0;overflow:hidden;transition:max-height .2s ease,margin-top .2s ease;margin-top:0;}
+.kand-card:hover .kand-hover-info{max-height:60px;margin-top:5px;}
+.kand-hover-line{font-size:9px;color:var(--text-s);display:flex;align-items:center;gap:4px;margin-top:2px;}
+/* Botones de tarjeta: solo visibles en hover desktop */
 .kand-actions{display:flex;gap:5px;max-height:0;overflow:hidden;margin-top:0;transition:max-height .2s ease,margin-top .2s ease;}
-.kand-card:hover .kand-actions{max-height:40px;margin-top:8px;}
-.kand-btn{flex:1;padding:5px 0;background:var(--card);border:1px solid var(--border2);border-radius:5px;font-size:9px;font-weight:700;color:var(--text-m);cursor:pointer;font-family:inherit;text-align:center;transition:all .2s;}
+.kand-card:hover .kand-actions{max-height:44px;margin-top:8px;}
+.kand-btn{flex:1;padding:6px 0;background:var(--card);border:1px solid var(--border2);border-radius:5px;font-size:9px;font-weight:700;color:var(--text-m);cursor:pointer;font-family:inherit;text-align:center;transition:all .2s;min-height:30px;}
 .kand-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(200,153,104,0.08);}
 .kand-btn-avanzar{background:var(--gold);border-color:var(--gold);color:#fff!important;}
 .kand-btn-avanzar:hover{background:var(--gold2)!important;border-color:var(--gold2)!important;}
 .kol-empty{text-align:center;padding:20px 8px;color:var(--text-s);font-size:10px;font-style:italic;}
+
+/* ── RESPONSIVE MÓVIL ── */
+@media(max-width:640px){
+  .kanban{gap:10px;padding:0 12px 16px;}
+  .kol{flex:0 0 82vw;}
+  .kol-cards{max-height:none;}
+  /* En móvil: info de contacto y acciones siempre visibles */
+  .kand-hover-info{max-height:none!important;margin-top:5px!important;}
+  .kand-actions{max-height:none!important;margin-top:8px!important;}
+  .kand-card:hover{transform:none;}
+  .kand-btn{min-height:38px;font-size:10px;}
+}
 
 /* ── PRESUPUESTOS LIST ── */
 .pres-list{display:flex;flex-direction:column;gap:10px;}
@@ -1515,25 +1537,56 @@ function renderCard(c){
         <span style="font-size:9px;color:#50c878;margin-left:3px;">${escH(proyAsoc[proyAsoc.length-1].nombre)}</span>
       </div>`
     :'';
+  // Datos de contacto: usa principal si existe, si no usa los campos raíz del candidato
+  const telDisplay  = (principal&&principal.telefono) || c.telefono || '';
+  const emailDisplay= (principal&&principal.email)    || c.email    || '';
+  const cargoDisplay= (principal&&principal.cargo)    || '';
+  const nextEtapa=(()=>{const ni=ETAPAS.findIndex(e=>e.id===c.etapa);const ne=ni<ETAPAS.length-1?ETAPAS[ni+1]:null;return ne?`<button class="kand-btn kand-btn-avanzar" onclick="event.stopPropagation();avanzarEtapa('${c.id}')">→ ${ne.label}</button>`:''})();
   return `<div class="kand-card" onclick="abrirModalCandidato('${c.id}')">
+
     <span class="kand-tipo" style="background:${tipo.color}22;color:${tipo.color};">${tipo.label}</span>
-    <div class="kand-name">${escH(c.nombre)}</div>
-    ${c.empresa?`<div class="kand-empresa">${escH(c.empresa)}</div>`:''}
+
+    <!-- 1. ESTABLECIMIENTO — nombre principal -->
+    <div class="kand-estab">${escH(c.empresa||c.nombre)}</div>
+
+    <!-- 2. CONTACTO — secundario -->
+    <div class="kand-contact-row">
+      <span style="font-size:9px;color:var(--text-s);">👤</span>
+      <span class="kand-contact-name">${escH(c.nombre)}</span>
+      ${cargoDisplay?`<span class="kand-contact-cargo">· ${escH(cargoDisplay)}</span>`:''}
+    </div>
+
+    <!-- 3. UBICACIÓN -->
     ${c.ubicacion?`<div class="kand-loc">📍 ${escH(c.ubicacion)}</div>`:''}
-    ${principal&&principal.cargo?`<div style="font-size:9px;color:var(--text-s);margin-top:2px;">👤 ${escH(principal.cargo)}</div>`:''}
-    ${principal&&principal.telefono?`<div style="font-size:9px;color:var(--text-m);margin-top:1px;">📱 ${escH(principal.telefono)}</div>`:''}
+
+    <!-- 4. MODELO + PRECIO -->
     ${modelo?`<div class="kand-model">📦 ${modelo.nombre}</div>`:''}
     ${c.presupuestoOrientativo?`<div class="kand-precio">${fmt(+c.presupuestoOrientativo)}</div>`:''}
+
+    <!-- 5. PROYECTO ASOCIADO -->
     ${proyBadge}
-    <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;">
-      ${nContacts?`<span style="font-size:9px;color:var(--text-s);">👥 ${nContacts} contacto${nContacts>1?'s':''}</span>`:''}
-      ${ultSeg?`<span style="font-size:9px;color:${RES_COLORS[ultSeg.resultado]||'var(--text-s)'};">${TIPO_ICONS[ultSeg.tipo]||'📌'} ${ultSegFd}</span>`:'<span style="font-size:9px;color:var(--text-s);">Sin seguimiento</span>'}
+
+    <!-- 6. INFO CONTACTO — revelada en hover (desktop) / siempre visible (móvil) -->
+    <div class="kand-hover-info">
+      ${telDisplay?`<div class="kand-hover-line">📱 <a href="tel:${escH(telDisplay)}" onclick="event.stopPropagation()" style="color:var(--text-s);text-decoration:none;">${escH(telDisplay)}</a></div>`:''}
+      ${emailDisplay?`<div class="kand-hover-line">✉️ <a href="mailto:${escH(emailDisplay)}" onclick="event.stopPropagation()" style="color:var(--text-s);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;display:inline-block;">${escH(emailDisplay)}</a></div>`:''}
+      ${nContacts>0?`<div class="kand-hover-line">👥 ${nContacts} contacto${nContacts>1?'s':''} registrado${nContacts>1?'s':''}</div>`:''}
     </div>
+
+    <!-- 7. ÚLTIMA ACTIVIDAD -->
+    <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:5px;">
+      ${ultSeg
+        ?`<span style="font-size:9px;color:${RES_COLORS[ultSeg.resultado]||'var(--text-s)'};">${TIPO_ICONS[ultSeg.tipo]||'📌'} ${ultSegFd}</span>`
+        :`<span style="font-size:9px;color:var(--text-s);font-style:italic;">Sin seguimiento</span>`}
+    </div>
+
+    <!-- 8. ACCIONES — hover desktop / siempre móvil -->
     <div class="kand-actions">
       <button class="kand-btn" onclick="event.stopPropagation();abrirModalCandidato('${c.id}')">✏️ Editar</button>
       <button class="kand-btn" onclick="event.stopPropagation();crearPresupuestoDesdeCandidato('${c.id}')">📋 Presupuesto</button>
-      ${(()=>{const ni=ETAPAS.findIndex(e=>e.id===c.etapa);const ne=ni<ETAPAS.length-1?ETAPAS[ni+1]:null;return ne?`<button class="kand-btn kand-btn-avanzar" onclick="event.stopPropagation();avanzarEtapa('${c.id}')">→ ${ne.label}</button>`:'';})()}
+      ${nextEtapa}
     </div>
+
   </div>`;
 }
 
