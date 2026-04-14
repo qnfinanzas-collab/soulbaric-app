@@ -1296,10 +1296,18 @@
         <div style="grid-column:1/-1;">
           <label>Temporada alta (meses)</label>
           <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;" id="aud-temporada-alta">
-            ${['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'].map((m,i)=>
-              `<label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;">
-                <input type="checkbox" data-mes="${i}" ${[5,6,7,8].includes(i)?'checked':''} onchange="autoCalcSessions()" style="accent-color:var(--primary);">${m}</label>`
-            ).join('')}
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="0" onchange="autoCalcSessions()" style="accent-color:var(--primary);">Ene</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="1" onchange="autoCalcSessions()" style="accent-color:var(--primary);">Feb</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="2" onchange="autoCalcSessions()" style="accent-color:var(--primary);">Mar</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="3" onchange="autoCalcSessions()" style="accent-color:var(--primary);">Abr</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="4" onchange="autoCalcSessions()" style="accent-color:var(--primary);">May</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="5" checked onchange="autoCalcSessions()" style="accent-color:var(--primary);">Jun</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="6" checked onchange="autoCalcSessions()" style="accent-color:var(--primary);">Jul</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="7" checked onchange="autoCalcSessions()" style="accent-color:var(--primary);">Ago</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="8" checked onchange="autoCalcSessions()" style="accent-color:var(--primary);">Sep</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="9" onchange="autoCalcSessions()" style="accent-color:var(--primary);">Oct</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="10" onchange="autoCalcSessions()" style="accent-color:var(--primary);">Nov</label>
+            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:12px;background:#fff;text-transform:none;"><input type="checkbox" data-mes="11" onchange="autoCalcSessions()" style="accent-color:var(--primary);">Dic</label>
           </div>
         </div>
       </div>
@@ -4112,6 +4120,24 @@ function seleccionarEmpresa(id) {
         if (elP && !elP.value) elP.value = p.precioNegociado;
         calcGrossPrice();
       }
+      // ── Audiencia & Tráfico ──
+      if (p.visitasDia  != null) { const el=document.getElementById('aud-visitas-dia');  if(el) el.value=p.visitasDia; }
+      if (p.diasTrafico != null) { const el=document.getElementById('aud-dias-trafico'); if(el) el.value=p.diasTrafico; }
+      if (p.pctInteres  != null) { const el=document.getElementById('aud-pct-interes');  if(el) el.value=p.pctInteres; }
+      if (p.pctConv     != null) { const el=document.getElementById('aud-pct-conv');      if(el) el.value=p.pctConv; }
+      if (p.perfilCliente)       { const el=document.getElementById('aud-perfil-cliente'); if(el) el.value=p.perfilCliente; }
+
+      // ── Ocupación mensual (12 valores) ──
+      if (p.ocupacionMensual && p.ocupacionMensual.length === 12) {
+        monthlyOccupancy = p.ocupacionMensual.map(function(v){ return parseInt(v)||65; });
+        renderOpOcupacion();
+        // Actualizar checkboxes "Temporada alta": marcar meses con ≥75% como alta temporada
+        p.ocupacionMensual.forEach(function(occ, i) {
+          const cb = document.querySelector('#aud-temporada-alta input[data-mes="' + i + '"]');
+          if (cb) cb.checked = (parseInt(occ)||0) >= 75;
+        });
+      }
+
       autoCalcSessions();
 
       // ── Modalidad de adquisición ──
