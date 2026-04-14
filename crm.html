@@ -1410,6 +1410,9 @@ const DEMO_CANDIDATOS = [
   {id:'cs21',nombre:'Dr. Enrique Salinas',empresa:'Long Life Clinic',tipo:'clinica',ubicacion:'Marbella, Costa del Sol',email:'esalinas@longlifeclinic.com',telefono:'+34 952 771 050',modeloInteres:'HE5000_DIAMOND',presupuestoOrientativo:93200,etapa:'interes',fuente:'Referido',notas:'Director médico. Clínica pionera desde 1991. Programas personalizados con 100+ biomarcadores. Líderes en longevidad en Marbella. Muy receptivos a integrar tecnología hiperbárica.',fechaCreacion:'2026-03-12'},
   {id:'cs22',nombre:'Dra. Mónica Estrada',empresa:'Essentia Clinic Marbella',tipo:'clinica',ubicacion:'Marbella, Costa del Sol',email:'mestrada@essentiaclinicmarbella.com',telefono:'+34 952 863 440',modeloInteres:'HE5000_MINI',presupuestoOrientativo:79800,etapa:'prospecto',fuente:'Redes sociales',notas:'Fundadora. Clínica integrada de medicina antiaging. Clientela internacional de lujo. Busca diferenciarse de la competencia con nuevas tecnologías.',fechaCreacion:'2026-04-08'},
 
+  /* ── MARBELLA CLUB ── */
+  {id:'cs26',nombre:'James Whitmore',empresa:'Marbella Club Hotel Golf Resort & Spa',tipo:'resort',ubicacion:'Marbella Golden Mile',email:'wellness@marbellaclub.com',telefono:'+34 952 822 211',modeloInteres:'HE5000_CLUB25',presupuestoOrientativo:113971,etapa:'viabilidad',fuente:'Web',notas:'Director de Wellness. Resort icónico fundado 1954. Clientela UHNW internacional. Spa de alta gama. Propuesta completa preparada. Potencial 2 unidades. Primer resort Costa del Sol con cámara hiperbárica.',fechaCreacion:'2026-02-05'},
+
   /* ── ADMINISTRADORES DE FINCAS ── */
   {id:'cs23',nombre:'Juan Carlos Dávila',empresa:'DAE Asesores',tipo:'distribuidor',ubicacion:'Marbella, Costa del Sol',email:'jcdavila@daeasesores.com',telefono:'+34 952 868 840',modeloInteres:'HE5000_REG15',presupuestoOrientativo:72400,etapa:'prospecto',fuente:'Web',notas:'Director. 33+ años gestionando comunidades alto standing en Marbella. Gestiona 40+ comunidades de lujo. Gran canal de acceso a propietarios y villas premium.',fechaCreacion:'2026-04-07'},
   {id:'cs24',nombre:'Patricia Montero',empresa:'Montero Administraciones — Marbella/Ojén',tipo:'distribuidor',ubicacion:'Marbella, Costa del Sol',email:'pmontero@monteroadministraciones.com',telefono:'+34 952 820 130',modeloInteres:'HE5000_REG15',presupuestoOrientativo:68900,etapa:'prospecto',fuente:'Web',notas:'Socia directora. Administran comunidades exclusivas en Marbella y Ojén. Acceso a propietarios de villas de lujo. Potencial canal de referidos muy interesante.',fechaCreacion:'2026-04-07'},
@@ -3054,10 +3057,18 @@ function importarTodos(tipo){
 
 /* ═══ INIT ═══ */
 document.addEventListener('DOMContentLoaded',()=>{
-  // Auto-cargar candidatos Costa del Sol si el CRM está vacío
-  if(getCandidatos().length===0){
+  // Merge: añade candidatos nuevos del array DEMO sin sobreescribir los existentes
+  const existing = getCandidatos();
+  if(existing.length === 0){
     saveCandidatos(DEMO_CANDIDATOS);
     toast('📥 '+DEMO_CANDIDATOS.length+' candidatos Costa del Sol cargados');
+  } else {
+    const ids = existing.map(c=>c.id);
+    const nuevos = DEMO_CANDIDATOS.filter(d=>!ids.includes(d.id));
+    if(nuevos.length > 0){
+      saveCandidatos([...existing,...nuevos]);
+      toast('📥 '+nuevos.length+' candidato'+(nuevos.length>1?'s':'')+' nuevo'+(nuevos.length>1?'s':'')+' añadido'+(nuevos.length>1?'s':'')+': '+nuevos.map(n=>n.empresa.split(' ').slice(0,2).join(' ')).join(', '));
+    }
   }
   renderStats();
   renderKanban();
