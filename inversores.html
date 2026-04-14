@@ -316,7 +316,7 @@
     <section id="sec-captacion" class="section">
       <div class="toolbar">
         <h2>🎯 Pipeline de Captación</h2>
-        <button class="btn-ghost" onclick="generarDossierGeneral()" style="font-size:11px;">📄 Dossier para prospecto</button>
+        <button class="btn-ghost" onclick="generarDossierGeneral()" style="font-size:11px;">📄 Pitch Deck</button>
         <button class="btn-primary" onclick="openModalProspecto()">+ Nuevo Prospecto</button>
       </div>
       <!-- Contexto rápido -->
@@ -576,7 +576,7 @@
 <div class="modal" id="modal-pick-proj">
   <div class="modal-box" style="max-width:360px;">
     <div class="modal-header">
-      <span class="modal-title">📄 Dossier para Prospecto</span>
+      <span class="modal-title">📄 Pitch Deck para Prospecto</span>
       <button class="modal-close" onclick="closeModal('modal-pick-proj')">✕</button>
     </div>
     <div class="modal-body" style="padding:20px;">
@@ -1159,7 +1159,7 @@ function renderProyectos() {
       </div>
       ${mesaHtml}
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn-primary" style="font-size:11px;" onclick="abrirSelectorDossier('${escH(p.id)}')">📄 Dossier Inversor</button>
+        <button class="btn-primary" style="font-size:11px;" onclick="abrirSelectorDossier('${escH(p.id)}')">📄 Pitch Deck</button>
         <button class="btn-ghost" onclick="openModalProyecto('${escH(p.id)}')">✏️ Editar</button>
         <button class="btn-ghost" onclick="showSection('liquidaciones');selectLiqProyecto('${escH(p.id)}')">🧾 Liquidar</button>
         <button class="btn-danger" onclick="deleteProyecto('${escH(p.id)}')">Eliminar</button>
@@ -2049,7 +2049,7 @@ function renderCaptacion() {
         ? '<button class="btn-convert" onclick="convertirProspecto(\''+p.id+'\')">🚀 Convertir</button>'
         : '';
       const btnDossier = (stage.id === 'presentacion' || stage.id === 'negociando' || stage.id === 'comprometido')
-        ? '<button onclick="dossierDesdeProspecto(\''+p.id+'\')" title="Generar dossier personalizado">📄</button>'
+        ? '<button onclick="dossierDesdeProspecto(\''+p.id+'\')" title="Generar Pitch Deck">📄</button>'
         : '';
 
       return '<div class="pipe-card">' +
@@ -2125,7 +2125,7 @@ function dossierDesdeProspecto(prospId) {
   if (p.proyectoId) {
     abrirSelectorDossier(p.proyectoId);
   } else {
-    toast('Vincula un proyecto a este prospecto para generar el dossier personalizado', true);
+    toast('Vincula un proyecto a este prospecto para generar el Pitch Deck', true);
     openModalProspecto(prospId);
   }
 }
@@ -2455,7 +2455,7 @@ function generarDossierInversor(proyId, tipoInversor) {
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Dossier Inversión · ${locationName}</title>
+<title>Pitch Deck · ${locationName}</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   @page{size:A4;margin:0;}
@@ -2569,7 +2569,7 @@ function generarDossierInversor(proyId, tipoInversor) {
 <body>
 
 <div class="print-bar">
-  <span>📄 Dossier de Inversión · ${escH(proy.nombre)}</span>
+  <span>📄 Pitch Deck · ${escH(proy.nombre)}</span>
   <button class="print-btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
 </div>
 
@@ -2949,7 +2949,7 @@ function generarDossierInversor(proyId, tipoInversor) {
 </html>`;
 
   const w = window.open('', '_blank', 'width=900,height=1100');
-  if (!w) { toast('⚠️ Permite ventanas emergentes para generar el dossier', true); return; }
+  if (!w) { toast('⚠️ Permite ventanas emergentes para generar el Pitch Deck', true); return; }
   w.document.write(html);
   w.document.close();
 }
@@ -2959,7 +2959,7 @@ function generarDossierInversor(proyId, tipoInversor) {
 <div class="modal" id="modal-dossier-sel">
   <div class="modal-box" style="max-width:420px;">
     <div class="modal-header">
-      <span class="modal-title">📄 Generar Dossier de Inversión</span>
+      <span class="modal-title">📄 Generar Pitch Deck</span>
       <button class="modal-close" onclick="closeModal('modal-dossier-sel')">✕</button>
     </div>
     <div class="modal-body" style="padding:20px;">
