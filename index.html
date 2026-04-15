@@ -2817,6 +2817,18 @@ function saveProject() {
       }
       // Avanzar etapa automáticamente si está en prospecto → contactado
       if (cands[idx].etapa === 'prospecto') cands[idx].etapa = 'contactado';
+      // Escribir presupuesto orientativo calculado
+      const sc = buildScenario();
+      const invCalc = Math.round(sc.investAmount || 0);
+      if (invCalc > 0) {
+        cands[idx].presupuestoOrientativo = invCalc;
+        cands[idx].presupuestoFecha = new Date().toISOString().slice(0,10);
+        cands[idx].presupuestoFactuMes = Math.round(
+          sc.monthlyData && sc.monthlyData.length
+            ? sc.monthlyData.reduce(function(t,m){ return t+m.billingNet; },0) / 12
+            : 0
+        );
+      }
       localStorage.setItem('soulbaric_candidatos', JSON.stringify(cands));
       mostrarToast('🔗 Proyecto vinculado a ' + cands[idx].empresa + ' en el CRM', '#2e7d32');
     }
@@ -2868,15 +2880,23 @@ function convertToInvestmentProject() {
 
   localStorage.setItem('soulbaric_temp_inv_proyecto', JSON.stringify(tempProyecto));
 
-  // Actualizar etapa CRM → viabilidad (paso previo a cliente/activo)
+  // Actualizar etapa CRM → viabilidad + escribir presupuesto calculado
   if (candidatoId) {
     try {
       var cands = JSON.parse(localStorage.getItem('soulbaric_candidatos') || '[]');
       var idx = cands.findIndex(function(c){ return c.id === candidatoId; });
-      if (idx >= 0 && cands[idx].etapa !== 'cliente') {
-        cands[idx].etapa = 'viabilidad';
+      if (idx >= 0) {
+        // Avanzar etapa
+        if (cands[idx].etapa !== 'cliente') cands[idx].etapa = 'viabilidad';
+        // Escribir presupuesto calculado de vuelta al candidato
+        var investCalc = Math.round(s.investAmount || 0);
+        if (investCalc > 0) {
+          cands[idx].presupuestoOrientativo = investCalc;
+          cands[idx].presupuestoFecha = new Date().toISOString().slice(0,10);
+          cands[idx].presupuestoFactuMes = avgFactuMes;
+        }
         localStorage.setItem('soulbaric_candidatos', JSON.stringify(cands));
-        mostrarToast('🔗 CRM: ' + companyName + ' avanzado a Viabilidad', '#4a7c59');
+        mostrarToast('🔗 CRM: ' + companyName + ' avanzado a Viabilidad · Presupuesto actualizado (' + fmt(investCalc) + ')', '#4a7c59');
       }
     } catch(e) {}
   }
