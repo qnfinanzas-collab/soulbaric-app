@@ -510,6 +510,30 @@
   <div class="nav-section">Inicio</div>
   <a href="#intro" class="nav-link nav-link-parent">📘 Introducción</a>
 
+  <div class="nav-section">CRM & Calculadora</div>
+  <a href="#crm" class="nav-link nav-link-parent">🏨 CRM Pipeline</a>
+  <a href="#crm-kanban" class="nav-link nav-link-child">El Kanban</a>
+  <a href="#crm-ficha" class="nav-link nav-link-child">Ficha del candidato</a>
+  <a href="#crm-proyecto" class="nav-link nav-link-child">Módulo de proyecto</a>
+  <a href="#crm-seguimiento" class="nav-link nav-link-child">Registro de comms</a>
+  <a href="#crm-envio-docs" class="nav-link nav-link-child">Enviar documentos</a>
+
+  <a href="#calculadora" class="nav-link nav-link-parent">🧮 Calculadora</a>
+  <a href="#calc-crm" class="nav-link nav-link-child">Selector CRM</a>
+  <a href="#calc-proyeccion" class="nav-link nav-link-child">Generar proyección</a>
+  <a href="#calc-guardar" class="nav-link nav-link-child">Guardar / Convertir</a>
+
+  <div class="nav-section">Presentaciones</div>
+  <a href="#presentaciones" class="nav-link nav-link-parent">🎞 Presentaciones</a>
+  <a href="#pres-teaser" class="nav-link nav-link-child">Teaser</a>
+  <a href="#pres-pitch" class="nav-link nav-link-child">Pitch Deck</a>
+  <a href="#pres-dossier" class="nav-link nav-link-child">Dossier Financiero</a>
+
+  <a href="#envio" class="nav-link nav-link-parent">📧 Envío automático</a>
+  <a href="#envio-setup" class="nav-link nav-link-child">Configurar EmailJS</a>
+  <a href="#envio-crm" class="nav-link nav-link-child">Enviar desde CRM</a>
+  <a href="#envio-presentacion" class="nav-link nav-link-child">Enviar desde presentación</a>
+
   <div class="nav-section">Módulos</div>
   <a href="#candidatos" class="nav-link nav-link-parent">👥 Candidatos</a>
   <a href="#cand-anadir" class="nav-link nav-link-child">Añadir candidato</a>
@@ -553,11 +577,12 @@
       </div>
       <div class="section-hero-title">Manual SoulBaric</div>
       <div class="section-hero-sub">
-        Guía completa de uso de la plataforma de gestión de inversiones en centros de bienestar. Cubre todos los módulos: candidatos, propuestas, asignación, seguimiento e inversión operativa.
+        Guía completa de uso de la plataforma de gestión de inversiones en centros de bienestar. Cubre todos los módulos: CRM Pipeline, Calculadora de inversión, Presentaciones de inversor y envío automático de documentos.
       </div>
       <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
-        <span class="badge badge-gold">Versión 2.0</span>
+        <span class="badge badge-gold">Versión 2.1</span>
         <span class="badge" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);">Abril 2026</span>
+        <span class="badge" style="background:rgba(200,153,104,.2);color:var(--primary);">CRM + Calculadora + Presentaciones</span>
       </div>
     </div>
   </div>
@@ -591,17 +616,19 @@
     <div class="subsection">
       <div class="subsection-title">Flujo de trabajo recomendado</div>
       <div class="flow">
-        <div class="flow-step active">1. Crear candidato</div>
+        <div class="flow-step active">1. Añadir candidato en CRM</div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">2. Asignar proyecto</div>
+        <div class="flow-step">2. Enviar Teaser / Pitch Deck</div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">3. Enviar propuesta</div>
+        <div class="flow-step">3. Calcular viabilidad</div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">4. Confirmar inversión</div>
+        <div class="flow-step">4. Enviar Dossier Financiero</div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">5. Firmar contrato</div>
+        <div class="flow-step">5. Carta de Intención</div>
         <div class="flow-arrow">→</div>
-        <div class="flow-step">6. Liquidar mensualmente</div>
+        <div class="flow-step">6. Convertir a proyecto de inversión</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">7. Contrato + Liquidaciones</div>
       </div>
     </div>
   </section>
@@ -1276,6 +1303,704 @@ Ana Martínez,ana@outlook.com,75000,moderate</pre>
     </div>
   </section>
 
+  <!-- ══════════════════════════ CRM PIPELINE ═══════════════════════════ -->
+  <section class="section" id="crm">
+    <div class="section-title"><span>🏨</span> CRM Pipeline de Candidatos</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      El CRM es el núcleo de la gestión comercial. Muestra todos los candidatos (hoteles, resorts, clínicas, etc.) en un tablero Kanban con 6 etapas. Cada candidato avanza de forma visual por el pipeline a medida que progresa la negociación.
+    </p>
+
+    <!-- El Kanban -->
+    <div class="subsection" id="crm-kanban">
+      <div class="subsection-title">El tablero Kanban</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Etapa</th>
+              <th>Significado</th>
+              <th>Qué hacer a continuación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge" style="background:rgba(108,117,125,.12);color:#495057;">🎯 Prospecto</span></td>
+              <td>Contacto registrado, sin interacción previa.</td>
+              <td>Primer contacto. Enviar Teaser.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-blue">📞 Contactado</span></td>
+              <td>Se ha establecido contacto inicial.</td>
+              <td>Enviar Pitch Deck. Agendar reunión.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">✨ Interés confirmado</span></td>
+              <td>El candidato ha mostrado interés activo.</td>
+              <td>Enviar Dossier Financiero. Calcular viabilidad.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-orange">📄 Carta de Intención</span></td>
+              <td>LOI firmada. Negociación avanzada.</td>
+              <td>Preparar contrato definitivo.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-gold">🔍 Estudio Viabilidad</span></td>
+              <td>Análisis financiero en curso (se activa automáticamente desde la Calculadora).</td>
+              <td>Presentar proyección. Resolver dudas.</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">✅ Cliente cerrado</span></td>
+              <td>Trato cerrado. Contrato firmado.</td>
+              <td>Convertir a proyecto de inversión activo.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Añadir un candidato</div>
+            <div class="step-desc">Pulsa <strong>"+ Nuevo candidato"</strong> en la barra superior. Se abre el modal con cuatro pestañas: Datos, Proyecto, Contactos y Comms.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Mover de etapa</div>
+            <div class="step-desc">Abre la ficha del candidato (✏️) y cambia el selector <strong>"Etapa del pipeline"</strong>. También puedes mover tarjetas directamente arrastrando entre columnas del Kanban.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Buscar y filtrar</div>
+            <div class="step-desc">Usa el campo de búsqueda para filtrar por nombre, empresa o ubicación. Los botones superiores filtran por tipo (hotel, resort, clínica, etc.). El selector de etapa filtra una columna concreta.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="tip-box" style="margin-top:14px;">
+        <span class="tip-icon">💡</span>
+        <span>El CRM avanza la etapa automáticamente cuando usas la Calculadora: al guardar un proyecto pasa a <strong>Contactado</strong>, al convertir a proyecto de inversión pasa a <strong>Estudio Viabilidad</strong>.</span>
+      </div>
+    </div>
+
+    <!-- Ficha del candidato -->
+    <div class="subsection" id="crm-ficha">
+      <div class="subsection-title">Ficha del candidato — Pestaña Datos</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        Accede a la ficha pulsando el icono ✏️ sobre cualquier tarjeta del Kanban.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Campos obligatorios</div>
+          <div class="card-body">
+            <strong>Nombre:</strong> Nombre del contacto principal.<br>
+            <strong>Empresa:</strong> Nombre del establecimiento (aparece en la tarjeta Kanban).<br>
+            <strong>Email:</strong> Se usa para el envío automático de documentos.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Interés comercial</div>
+          <div class="card-body">
+            <strong>Modelo de interés:</strong> Selecciona la cámara hiperbárica (HE5000, HP750, etc.). Determina el modelo base en la calculadora.<br>
+            <strong>Presupuesto orientativo:</strong> Se rellena automáticamente cuando usas la Calculadora con este candidato seleccionado.
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <span class="tip-icon">ℹ️</span>
+        <span>Si la Calculadora ha generado un presupuesto para este candidato, verás un banner dorado debajo del campo presupuesto con la fecha del cálculo y la facturación mensual estimada. Este valor se actualiza automáticamente cada vez que recalculas.</span>
+      </div>
+    </div>
+
+    <!-- Módulo de proyecto -->
+    <div class="subsection" id="crm-proyecto">
+      <div class="subsection-title">Ficha del candidato — Pestaña Proyecto</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        La pestaña <strong>⚙️ Proyecto</strong> almacena todos los parámetros operativos del establecimiento. Estos datos alimentan la Calculadora cuando el candidato está seleccionado.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Parámetros económicos</div>
+          <div class="card-body">
+            <strong>Precio sesión:</strong> Precio público (con IVA) de cada sesión.<br>
+            <strong>Precio negociado:</strong> Si hay precio especial acordado.<br>
+            <strong>Coste operativo/mes:</strong> Costes fijos mensuales del establecimiento.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Parámetros de uso</div>
+          <div class="card-body">
+            <strong>Horas/día, Días/semana:</strong> Disponibilidad prevista de la cámara.<br>
+            <strong>Duración sesión (min):</strong> Duración estándar de cada sesión.<br>
+            <strong>Horario:</strong> Apertura y cierre del establecimiento.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Audiencia estimada</div>
+          <div class="card-body">
+            <strong>Visitas/día, Días tráfico/mes:</strong> Flujo de clientes del establecimiento.<br>
+            <strong>% Interés, % Conversión:</strong> Estimación de captación hacia la cámara.<br>
+            <strong>Perfil del cliente:</strong> Tipo de usuario predominante.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Ocupación mensual</div>
+          <div class="card-body">
+            La rejilla de ocupación permite configurar la estacionalidad mes a mes (porcentaje de ocupación estimado para cada mes del año). Hay presets por tipo de establecimiento (hotel, clínica, resort, etc.).
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span>No es necesario rellenar todos los campos ahora. Puedes guardar el candidato y completar la pestaña Proyecto más adelante, justo antes de usar la Calculadora.</span>
+      </div>
+    </div>
+
+    <!-- Registro de comms -->
+    <div class="subsection" id="crm-seguimiento">
+      <div class="subsection-title">Ficha del candidato — Pestaña Comms</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        La pestaña <strong>📞 Comms</strong> es el registro de comunicaciones del candidato. Aquí se loguean automáticamente los envíos de documentos y puedes añadir notas de seguimiento manualmente.
+      </p>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Ver el historial de comunicaciones</div>
+            <div class="step-desc">Todas las acciones con el candidato quedan registradas: envíos de documentos, cambios de etapa realizados desde la calculadora, notas manuales.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Añadir nota de seguimiento</div>
+            <div class="step-desc">Pulsa <strong>"+ Añadir nota"</strong> en la pestaña Comms. Escribe el comentario (llamada realizada, reunión, acuerdo verbal, etc.) y guarda. La nota queda fechada automáticamente.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Registro automático de envíos</div>
+            <div class="step-desc">Cuando se envían los documentos de presentación (Teaser + Pitch Deck + Dossier) mediante el botón <strong>📧 Enviar docs</strong>, el sistema registra automáticamente la acción en el historial del candidato con fecha y hora.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Enviar documentos desde CRM -->
+    <div class="subsection" id="crm-envio-docs">
+      <div class="subsection-title">Enviar documentos a un candidato</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        Hay dos formas de enviar el pack de presentación (Teaser + Pitch Deck + Dossier Financiero) a un candidato desde el CRM.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📧 Desde la tarjeta Kanban</div>
+          <div class="card-body">Cada tarjeta del pipeline tiene el botón <strong>"📧 Enviar docs"</strong>. Al pulsarlo se abre el formulario de envío pre-rellenado con el nombre, empresa y email del candidato. Solo debes confirmar o completar el asunto y el mensaje personalizado.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📧 Desde la barra de herramientas</div>
+          <div class="card-body">El botón <strong>"📧 Enviar a candidato"</strong> de la barra superior abre un selector de candidatos ordenado por etapa del pipeline. Selecciona cualquier candidato para pre-rellenar el formulario de envío. Ideal para envíos rápidos sin necesidad de localizar la tarjeta en el Kanban.</div>
+        </div>
+      </div>
+
+      <ul class="steps-list" style="margin-top:4px;">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Pulsar "📧 Enviar docs" en la tarjeta</div>
+            <div class="step-desc">O usar el botón de la barra superior → seleccionar candidato del listado.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Revisar los datos del formulario</div>
+            <div class="step-desc">El nombre, empresa y email se rellenan solos. Puedes personalizar el asunto y el cuerpo del mensaje antes de enviar.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Enviar</div>
+            <div class="step-desc">Pulsa <strong>"Enviar documentos"</strong>. Si EmailJS está configurado, el candidato recibe el email de forma automática y el equipo recibe una notificación en <code>qn.finanzas@gmail.com</code>. Si no está configurado, se abre un <code>mailto:</code> con todo pre-rellenado.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span>El envío siempre queda registrado en el historial (Pestaña Comms) del candidato, independientemente del método usado (automático o mailto).</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ CALCULADORA ═════════════════════════════ -->
+  <section class="section" id="calculadora">
+    <div class="section-title"><span>🧮</span> Calculadora de Inversión</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      La Calculadora genera proyecciones financieras detalladas a 5 años para cada instalación. Está conectada bidirecccionalmente con el CRM: carga los parámetros del candidato seleccionado y devuelve el presupuesto calculado al finalizar.
+    </p>
+
+    <!-- Selector CRM -->
+    <div class="subsection" id="calc-crm">
+      <div class="subsection-title">Paso 1 — Seleccionar candidato del CRM</div>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Localizar el selector "Empresa & Local"</div>
+            <div class="step-desc">En el panel izquierdo de la Calculadora, en la sección <strong>"Empresa & Local"</strong>, verás el campo inteligente de búsqueda de candidatos CRM (con el icono 🔗). Este campo busca en tiempo real entre todos los candidatos del CRM.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Escribir para buscar</div>
+            <div class="step-desc">Escribe el nombre del establecimiento o del contacto. Los resultados aparecen con badge de etapa y tipo de negocio. Haz clic en el candidato deseado.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Carga automática de parámetros</div>
+            <div class="step-desc">Al seleccionar el candidato, la calculadora pre-rellena automáticamente: razón social, tipo de local, ubicación, modelo de cámara, precio de sesión, horas/día, días/semana, horario, duración de sesión, costes operativos y ocupación mensual. Solo comprueba que los valores son correctos antes de calcular.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="info-box">
+        <span class="tip-icon">ℹ️</span>
+        <span>Si el candidato no tiene la pestaña Proyecto rellena en el CRM, la calculadora cargará los valores por defecto del modelo de cámara seleccionado. Puedes rellenar el CRM y volver a seleccionar el candidato para obtener datos más precisos.</span>
+      </div>
+    </div>
+
+    <!-- Generar proyección -->
+    <div class="subsection" id="calc-proyeccion">
+      <div class="subsection-title">Paso 2 — Configurar y generar la proyección</div>
+
+      <ul class="steps-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Revisar los parámetros económicos</div>
+            <div class="step-desc">Verifica el <strong>precio de sesión</strong> (con IVA), el <strong>% de IVA</strong>, la <strong>duración de sesión</strong> y las <strong>sesiones por hora</strong>. Ajusta si hay condiciones especiales negociadas con el establecimiento.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Configurar la operativa</div>
+            <div class="step-desc">Define las <strong>horas de funcionamiento al día</strong>, el <strong>horario de apertura y cierre</strong>, los <strong>días operativos al mes</strong> y la <strong>ocupación prevista</strong> (%). La calculadora infiere automáticamente las sesiones máximas posibles.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Pulsar "Calcular"</div>
+            <div class="step-desc">El botón <strong>"▶ Calcular"</strong> genera la proyección completa. Verás: escenarios Conservador / Base / Optimista, tabla mensual a 5 años, ROI, TIR, payback y retorno mensual estimado para el inversor.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Interpretar los tres escenarios</div>
+            <div class="step-desc">
+              <strong>Conservador:</strong> ocupación mínima, ingresos bajos.<br>
+              <strong>Base:</strong> ocupación media esperada — el más realista.<br>
+              <strong>Optimista:</strong> ocupación alta, máximo potencial de ingresos.
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Guardar / Convertir -->
+    <div class="subsection" id="calc-guardar">
+      <div class="subsection-title">Paso 3 — Guardar o Convertir a proyecto de inversión</div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">💾 Guardar Proyecto</div>
+          <div class="card-body">
+            Guarda la proyección en la biblioteca de proyectos local. Introduce un nombre descriptivo (ej: "Hotel XYZ — 1 cámara 2026") y pulsa guardar.<br><br>
+            <strong>Efecto en el CRM (si hay candidato seleccionado):</strong><br>
+            • El candidato avanza automáticamente a etapa <em>Contactado</em> (si está en Prospecto)<br>
+            • Se actualiza el <strong>presupuesto orientativo</strong> con el importe calculado<br>
+            • Se registran la <strong>fecha del cálculo</strong> y la <strong>facturación media mensual</strong> estimada
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">💼 Crear Proyecto de Inversión</div>
+          <div class="card-body">
+            Convierte la proyección en un proyecto activo de inversión y transfiere los datos a la página <strong>Inversores</strong> (inversores.html). Úsalo cuando el candidato está listo para presentar las condiciones de inversión formales.<br><br>
+            <strong>Efecto en el CRM (si hay candidato seleccionado):</strong><br>
+            • El candidato avanza automáticamente a etapa <em>Estudio Viabilidad</em><br>
+            • Se actualiza el presupuesto, fecha y facturación estimada<br>
+            • Se muestra una notificación con el importe calculado
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <span class="tip-icon">⚠️</span>
+        <span>La actualización del CRM solo ocurre si hay un candidato seleccionado en el selector "Empresa & Local". Si calculas sin seleccionar candidato, los datos de la proyección no se vinculan a ningún expediente del CRM.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ PRESENTACIONES ══════════════════════════ -->
+  <section class="section" id="presentaciones">
+    <div class="section-title"><span>🎞</span> Presentaciones de Inversión</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      SoulBaric dispone de tres documentos de presentación para inversores, accesibles desde la barra de herramientas del CRM y desde la página de Inversores. Están diseñados para compartirse progresivamente según el nivel de interés del candidato.
+    </p>
+
+    <div class="subsection">
+      <div class="subsection-title">Secuencia recomendada de presentación</div>
+      <div class="flow">
+        <div class="flow-step active">🌐 Teaser</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Interés inicial</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">🎞 Pitch Deck</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Interés confirmado</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">📊 Dossier Financiero</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Decisión de inversión</div>
+      </div>
+    </div>
+
+    <!-- Teaser -->
+    <div class="subsection" id="pres-teaser">
+      <div class="subsection-title">Teaser — Primera toma de contacto</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        El Teaser es una landing page de presentación general. Transmite la propuesta de valor de SoulBaric sin entrar en cifras de inversión. Ideal para un primer contacto o para compartir en frío.
+      </p>
+
+      <div class="card">
+        <div class="card-title">Contenido del Teaser</div>
+        <div class="card-body">
+          4 métricas de impacto · Propuesta de valor (4 pilares) · Métricas de mercado · Por qué Costa del Sol · Modelo en 2 fases · 5 segmentos de cliente · CTA para solicitar el Pitch Deck completo.
+        </div>
+      </div>
+
+      <ul class="steps-list" style="margin-top:14px;">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Acceder</div>
+            <div class="step-desc">Desde el CRM: botón <strong>"🌐 Teaser"</strong> en la barra superior. URL directa: <code>/teaser.html</code></div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Compartir con el candidato</div>
+            <div class="step-desc">Copia la URL <code>soulbaric-app.vercel.app/teaser.html</code> y envíala por email, LinkedIn o WhatsApp. El candidato puede visitarla desde cualquier dispositivo sin necesidad de login.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">El candidato solicita más información</div>
+            <div class="step-desc">El botón <strong>"Solicitar Pitch Deck completo"</strong> del Teaser abre un formulario que envía una notificación a <code>qn.finanzas@gmail.com</code>. Recibiréis el nombre, empresa y email del interesado para el seguimiento.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Pitch Deck -->
+    <div class="subsection" id="pres-pitch">
+      <div class="subsection-title">Pitch Deck — Presentación completa en 12 slides</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        El Pitch Deck es una presentación de pantalla completa con 12 diapositivas que cubre todos los aspectos del modelo de negocio, la oportunidad de mercado y la estructura de inversión.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Estructura de los 12 slides</div>
+          <div class="card-body" style="font-size:12px;">
+            1. Portada · 2. Métricas clave · 3. Ubicación Costa del Sol · 4. Protocolo SoulBaric · 5. Ciencia detrás · 6. Segmentos de mercado · 7. Modelo de negocio · 8. Perfiles de cliente · 9. Tesis de inversión · 10. Estructura de inversión · 11. Escenarios de retorno · 12. Cierre + contacto
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Navegación</div>
+          <div class="card-body">
+            <strong>Teclado:</strong> ← → (slides) · Space (avanzar) · Home/End (primero/último)<br>
+            <strong>Táctil:</strong> Deslizar izquierda/derecha<br>
+            <strong>Botones:</strong> ‹ › en los laterales<br>
+            <strong>Puntitos:</strong> Clic para saltar a cualquier slide
+          </div>
+        </div>
+      </div>
+
+      <ul class="steps-list" style="margin-top:14px;">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Acceder</div>
+            <div class="step-desc">Desde el CRM: botón <strong>"🎞 Pitch Deck"</strong>. Desde Inversores: enlace en la barra superior. URL directa: <code>/pitch-deck.html</code></div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Usar en reunión presencial</div>
+            <div class="step-desc">Abre el Pitch Deck en pantalla completa (F11 en el navegador). Navega con las flechas del teclado. El fondo oscuro y las diapositivas de pantalla completa están diseñados para proyección.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Enviar al candidato</div>
+            <div class="step-desc">En el Slide 12 hay un botón <strong>"📧 Enviar a prospecto"</strong> para enviar el enlace del Pitch Deck directamente al candidato con un mensaje personalizado.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Dossier Financiero -->
+    <div class="subsection" id="pres-dossier">
+      <div class="subsection-title">Dossier Financiero — Análisis detallado</div>
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        El Dossier Financiero es el documento más completo. Está pensado para candidatos con interés confirmado que quieren revisar los números en detalle antes de tomar una decisión.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Sección</th><th>Contenido</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Unit Economics</strong></td>
+              <td>Tres escenarios con tabs: Conservador (45% ocup.) / Base (65%) / Optimista (82%). Ingresos, costes, BNP y retorno del inversor en cada escenario.</td>
+            </tr>
+            <tr>
+              <td><strong>Proyecciones 5 años</strong></td>
+              <td>Tarjetas por año + tabla completa con facturación, BNP, retorno acumulado y payback mes a mes.</td>
+            </tr>
+            <tr>
+              <td><strong>Modelo de retorno</strong></td>
+              <td>Estructura del BNP Share: cómo se calcula, quién se queda qué porcentaje.</td>
+            </tr>
+            <tr>
+              <td><strong>Análisis de sensibilidad</strong></td>
+              <td>Tabla de TIR y ROI cruzando distintos niveles de ocupación y precio de sesión.</td>
+            </tr>
+            <tr>
+              <td><strong>Escenarios de salida</strong></td>
+              <td>Tres opciones de exit: Base (TIR 42%) / Upside (TIR 78%) / Adquisición (TIR 38%).</td>
+            </tr>
+            <tr>
+              <td><strong>CAPEX Breakdown</strong></td>
+              <td>Desglose visual del uso del capital invertido por partida y por fase (Setup vs. Operativa).</td>
+            </tr>
+            <tr>
+              <td><strong>KPIs de seguimiento</strong></td>
+              <td>Indicadores clave que se monitorizarán mensualmente durante la operación.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ul class="steps-list" style="margin-top:14px;">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Acceder</div>
+            <div class="step-desc">Desde el CRM: botón <strong>"📊 Dossier"</strong>. Desde Inversores: enlace en barra superior. URL directa: <code>/dossier-financiero.html</code></div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Navegar las secciones</div>
+            <div class="step-desc">El sidebar izquierdo fijo tiene enlaces a cada sección. Haz clic para saltar directamente. El contenido principal hace scroll de forma independiente.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Cambiar escenario en Unit Economics</div>
+            <div class="step-desc">En la primera sección hay tres tabs: Conservador / Base / Optimista. Haz clic en cada tab para ver las cifras del escenario correspondiente.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Enviar al inversor</div>
+            <div class="step-desc">El botón <strong>"📧 Enviar a inversor"</strong> (esquina superior derecha) abre el formulario de envío con el enlace al dossier.</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════ ENVÍO AUTOMÁTICO ════════════════════════ -->
+  <section class="section" id="envio">
+    <div class="section-title"><span>📧</span> Envío automático de documentos</div>
+
+    <p style="font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;">
+      El sistema de envío usa <strong>EmailJS</strong> para enviar emails directamente desde el navegador, sin necesidad de servidor. Cuando está configurado, envía automáticamente los documentos de presentación al candidato y una notificación al equipo. Sin configurar, usa un <code>mailto:</code> con todo pre-rellenado.
+    </p>
+
+    <!-- Configurar EmailJS -->
+    <div class="subsection" id="envio-setup">
+      <div class="subsection-title">Configurar EmailJS (una sola vez)</div>
+
+      <div class="info-box">
+        <span class="tip-icon">ℹ️</span>
+        <span>EmailJS es gratuito hasta 200 emails/mes. No se necesita backend ni servidor. El sistema funciona desde el primer día con el fallback <code>mailto:</code>, pero para el envío totalmente automático sigue estos pasos.</span>
+      </div>
+
+      <ul class="steps-list" style="margin-top:14px;">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Crear cuenta en EmailJS</div>
+            <div class="step-desc">Ve a <code>emailjs.com</code> → Sign up. Usa el email <code>qn.finanzas@gmail.com</code>. El plan gratuito cubre 200 emails/mes.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Conectar Gmail</div>
+            <div class="step-desc">En EmailJS: <strong>Email Services → Add New Service → Gmail</strong>. Autoriza el acceso a <code>qn.finanzas@gmail.com</code>. El servicio se llamará automáticamente <code>service_soulbaric</code> (o el nombre que asignes — debe coincidir con <code>emailjs-config.js</code>).</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Crear la plantilla para el prospecto</div>
+            <div class="step-desc">En EmailJS: <strong>Email Templates → Create New Template</strong>. Nombre: <code>template_docs_prospecto</code>. El contenido de la plantilla (con todas las variables) está en los comentarios del archivo <code>emailjs-config.js</code> — cópialo tal cual.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Crear la plantilla de alerta al equipo</div>
+            <div class="step-desc">Segunda plantilla: nombre <code>template_equipo_alerta</code>. Contenido también en los comentarios de <code>emailjs-config.js</code>. Esta plantilla envía la notificación interna a <code>qn.finanzas@gmail.com</code> cada vez que se envían documentos a un candidato.</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">5</div>
+          <div>
+            <div class="step-title">Obtener la Public Key</div>
+            <div class="step-desc">En EmailJS: <strong>Account → API Keys → Public Key</strong>. Copia la clave (empieza por algo como <code>user_xxxx</code>).</div>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">6</div>
+          <div>
+            <div class="step-title">Pegar la clave en emailjs-config.js</div>
+            <div class="step-desc">Abre el archivo <code>emailjs-config.js</code> en la raíz del proyecto. Sustituye <code>'PEGAR_TU_PUBLIC_KEY_AQUI'</code> por tu clave real. Cambia también <code>configured: false</code> a <code>configured: true</code>. Guarda el archivo y despliega.</div>
+          </div>
+        </li>
+      </ul>
+
+      <div class="tip-box" style="margin-top:14px;">
+        <span class="tip-icon">💡</span>
+        <span>El ID del servicio en <code>emailjs-config.js</code> debe coincidir exactamente con el que aparece en EmailJS → Email Services. Si lo llamaste distinto de <code>service_soulbaric</code>, actualiza la variable <code>serviceId</code> en el archivo de configuración.</span>
+      </div>
+    </div>
+
+    <!-- Enviar desde CRM -->
+    <div class="subsection" id="envio-crm">
+      <div class="subsection-title">Enviar desde el CRM</div>
+
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        Una vez EmailJS está configurado, el flujo completo de envío automático es:
+      </p>
+
+      <div class="flow" style="margin-bottom:20px;">
+        <div class="flow-step active">Pulsar "📧 Enviar docs"</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Revisar formulario</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Pulsar "Enviar"</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Email al candidato</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Alerta al equipo</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Registro en Comms</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Email al candidato contiene</div>
+          <div class="card-body">
+            • Mensaje personalizado con nombre y empresa<br>
+            • Enlace al Teaser: <code>/teaser.html</code><br>
+            • Enlace al Pitch Deck: <code>/pitch-deck.html</code><br>
+            • Enlace al Dossier Financiero: <code>/dossier-financiero.html</code><br>
+            • Datos de contacto del equipo SoulBaric
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Email de alerta al equipo contiene</div>
+          <div class="card-body">
+            • Nombre y empresa del candidato al que se envió<br>
+            • Email del candidato<br>
+            • Etapa del pipeline actual<br>
+            • Timestamp del envío
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <span class="tip-icon">⚠️</span>
+        <span>Si el candidato no tiene email registrado en el CRM, el botón <strong>"📧 Enviar docs"</strong> lo indica con un aviso. Añade el email en la ficha del candidato antes de intentar el envío.</span>
+      </div>
+    </div>
+
+    <!-- Enviar desde presentación -->
+    <div class="subsection" id="envio-presentacion">
+      <div class="subsection-title">Enviar desde las páginas de presentación</div>
+
+      <p style="font-size:13px;color:var(--text-m);margin-bottom:14px;line-height:1.6;">
+        Cada presentación tiene su propio botón de envío, útil cuando el candidato visita la página directamente y quiere que le envíes el pack completo.
+      </p>
+
+      <div class="grid-3">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">🌐</div>
+          <div class="card-title">Teaser</div>
+          <div class="card-body">Botón <strong>"Solicitar Pitch Deck"</strong> al final de la página. El candidato rellena su nombre, empresa y email — tú recibes la notificación.</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">🎞</div>
+          <div class="card-title">Pitch Deck</div>
+          <div class="card-body">Botón <strong>"📧 Enviar a prospecto"</strong> en el Slide 12. Permite enviar el pack de documentos a la dirección de email que se indique en el formulario.</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">📊</div>
+          <div class="card-title">Dossier Financiero</div>
+          <div class="card-body">Botón <strong>"📧 Enviar a inversor"</strong> en la esquina superior derecha. Mismo formulario de envío con los tres enlaces.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ──────────────────────────── GLOSARIO ────────────────────────────── -->
   <section class="section" id="glosario">
     <div class="section-title"><span>📖</span> Glosario financiero</div>
@@ -1376,6 +2101,41 @@ Ana Martínez,ana@outlook.com,75000,moderate</pre>
     <div class="faq-item" onclick="this.classList.toggle('open')">
       <div class="faq-q">¿Cómo funciona la salida con multiplicador? <span class="faq-arrow">▾</span></div>
       <div class="faq-a">La salida con multiplicador significa que al final del contrato (por ejemplo al año 5) se devuelve el capital con una prima. Si inviertes 50.000 € con una salida ×1,25, al finalizar el contrato recibes 50.000 × 1,25 = 62.500 €. Esto es adicional a los retornos mensuales recibidos durante la vigencia del contrato. El multiplicador típico en SoulBaric es ×1,25 (25% de prima sobre el capital).</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿El presupuesto del candidato se actualiza solo cuando uso la Calculadora? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Sí, de forma automática. Cuando seleccionas un candidato en la Calculadora mediante el selector "Empresa & Local" y pulsas "💾 Guardar Proyecto" o "💼 Crear Proyecto de Inversión", el sistema escribe de vuelta al CRM tres datos: el <strong>presupuesto orientativo</strong> (importe de inversión calculado), la <strong>fecha del cálculo</strong> y la <strong>facturación media mensual estimada</strong>. En la ficha del candidato verás un banner dorado con esta información debajo del campo presupuesto.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Cómo avanzan automáticamente las etapas del CRM? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">El CRM avanza etapas en dos momentos: (1) Al pulsar <strong>"💾 Guardar Proyecto"</strong> en la Calculadora con un candidato seleccionado, si el candidato está en <em>Prospecto</em> pasa automáticamente a <em>Contactado</em>. (2) Al pulsar <strong>"💼 Crear Proyecto de Inversión"</strong>, el candidato pasa a <em>Estudio Viabilidad</em> (independientemente de su etapa anterior, salvo que ya sea cliente). En ambos casos aparece una notificación verde confirmando el cambio.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Puedo compartir el Teaser / Pitch Deck con candidatos sin login? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Sí. Las páginas <strong>teaser.html</strong>, <strong>pitch-deck.html</strong> y <strong>dossier-financiero.html</strong> son públicas y no requieren login. Puedes enviar la URL directamente a cualquier candidato: <code>soulbaric-app.vercel.app/teaser.html</code>, etc. El resto de la aplicación (CRM, Calculadora, Inversores) sí requiere autenticación.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Qué pasa si envío documentos a un candidato sin tener EmailJS configurado? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">El sistema usa automáticamente el fallback <code>mailto:</code>. Al pulsar "Enviar documentos", en lugar de enviarse automáticamente se abre tu cliente de email predeterminado (Gmail, Outlook, etc.) con el destinatario, asunto y cuerpo ya rellenados, incluyendo los enlaces al Teaser, Pitch Deck y Dossier. Solo tienes que revisar y pulsar Enviar en tu cliente de email. El registro en el historial del candidato también se actualiza.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿En qué se diferencian los tres documentos de presentación? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Se usan en fases distintas de la negociación. El <strong>Teaser</strong> es el primer contacto: presenta el concepto y la oportunidad sin entrar en números específicos de inversión. El <strong>Pitch Deck</strong> (12 slides) cubre el modelo de negocio completo, el mercado, el protocolo y la estructura de inversión — para candidatos con interés inicial confirmado. El <strong>Dossier Financiero</strong> es el documento más detallado, con tablas de proyección a 5 años, análisis de sensibilidad y escenarios de salida — se comparte cuando el candidato está listo para tomar una decisión.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿El Pitch Deck se puede usar en reuniones presenciales? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Sí, está diseñado para ello. Abre <code>pitch-deck.html</code> en un navegador y pon el navegador en pantalla completa (F11 en Windows/Linux, Cmd+Ctrl+F en Mac). Las diapositivas ocupan el 100% de la pantalla con fondo oscuro y texto grande, perfectas para proyección. Navega con las flechas del teclado ← → o con la barra espaciadora para avanzar. También puedes usar los botones ‹ › de la pantalla si prefieres el ratón.</div>
+    </div>
+
+    <div class="faq-item" onclick="this.classList.toggle('open')">
+      <div class="faq-q">¿Cómo sé que el candidato ha recibido los documentos? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Hay dos indicadores: (1) Si usas EmailJS, recibirás inmediatamente un email de alerta en <code>qn.finanzas@gmail.com</code> confirmando que el envío se realizó correctamente, con los datos del candidato. (2) En la ficha del candidato (pestaña Comms) aparece una entrada en el historial con la fecha y hora del envío. Si el envío falló, el sistema muestra un mensaje de error y ofrece abrir el fallback mailto.</div>
     </div>
   </section>
 
