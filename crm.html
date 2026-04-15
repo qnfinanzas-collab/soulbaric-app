@@ -1164,6 +1164,10 @@ Muchas gracias 🙏
             </select>
           </div>
           <div class="field"><label>Presupuesto orientativo (€)</label><input type="number" id="cand-presupuesto" placeholder="0"></div>
+          <div id="cand-presupuesto-calc-info" style="display:none;background:rgba(200,153,104,.08);border:1px solid rgba(200,153,104,.25);border-radius:6px;padding:6px 10px;font-size:10.5px;color:var(--gold);margin-top:-4px;margin-bottom:4px;line-height:1.6;">
+            🧮 Calculado por la calculadora · <span id="cand-presupuesto-fecha" style="opacity:.75;"></span><br>
+            Facturación media estimada: <strong id="cand-presupuesto-factu"></strong>/mes
+          </div>
           <div class="field"><label>Etapa del pipeline</label>
             <select id="cand-etapa">
               <option value="prospecto">🎯 Prospecto</option>
@@ -2069,6 +2073,19 @@ function abrirModalCandidato(id){
     document.getElementById('cand-telefono').value=c.telefono||'';
     document.getElementById('cand-modelo').value=c.modeloInteres||'';
     document.getElementById('cand-presupuesto').value=c.presupuestoOrientativo||'';
+    // Mostrar info de cálculo si existe
+    const calcInfo = document.getElementById('cand-presupuesto-calc-info');
+    if(calcInfo){
+      if(c.presupuestoFecha){
+        calcInfo.style.display='block';
+        document.getElementById('cand-presupuesto-fecha').textContent=c.presupuestoFecha;
+        document.getElementById('cand-presupuesto-factu').textContent=c.presupuestoFactuMes
+          ? (+(c.presupuestoFactuMes)).toLocaleString('es-ES',{maximumFractionDigits:0})+' €'
+          : '—';
+      } else {
+        calcInfo.style.display='none';
+      }
+    }
     document.getElementById('cand-etapa').value=c.etapa||'prospecto';
     document.getElementById('cand-fuente').value=c.fuente||'Web';
     document.getElementById('cand-notas').value=c.notas||'';
@@ -2116,6 +2133,7 @@ function abrirModalCandidato(id){
     document.getElementById('cand-dias-semana').value='5';
     setCandModalidad('inversion');
     const infoEl = document.getElementById('cand-config-precio-info'); if(infoEl) infoEl.style.display='none';
+    const calcInfoEl = document.getElementById('cand-presupuesto-calc-info'); if(calcInfoEl) calcInfoEl.style.display='none';
     ['cand-aud-visitas-dia','cand-aud-dias-trafico','cand-aud-pct-interes','cand-aud-pct-conv'].forEach(function(id){ const el=document.getElementById(id); if(el) el.value=''; });
     const epClear = document.getElementById('cand-aud-perfil-cliente'); if (epClear) epClear.value = '';
     renderCandOcupGrid(null);
@@ -2198,6 +2216,9 @@ function guardarCandidato(){
     proyecto:proyData,
     proyectosAsociados:existId?(cands.find(c=>c.id===existId)||{}).proyectosAsociados||[]:[],
     fechaCreacion:existId?(cands.find(c=>c.id===existId)||{}).fechaCreacion||new Date().toISOString().split('T')[0]:new Date().toISOString().split('T')[0],
+    // Preservar campos escritos por la calculadora (no editables en el form)
+    presupuestoFecha:existId?(cands.find(c=>c.id===existId)||{}).presupuestoFecha||null:null,
+    presupuestoFactuMes:existId?(cands.find(c=>c.id===existId)||{}).presupuestoFactuMes||null:null,
   };
   if(existId){const i=cands.findIndex(c=>c.id===existId);if(i>=0)cands[i]=data;else cands.push(data);}
   else cands.push(data);
