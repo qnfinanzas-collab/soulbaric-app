@@ -1658,7 +1658,54 @@ const DEMO_CANDIDATOS = [
   {id:'cs22',nombre:'Dra. Mónica Estrada',empresa:'Essentia Clinic Marbella',tipo:'clinica',ubicacion:'Marbella, Costa del Sol',email:'mestrada@essentiaclinicmarbella.com',telefono:'+34 952 863 440',modeloInteres:'HE5000_MINI',presupuestoOrientativo:79800,etapa:'prospecto',fuente:'Redes sociales',notas:'Fundadora. Clínica integrada de medicina antiaging. Clientela internacional de lujo. Busca diferenciarse de la competencia con nuevas tecnologías.',fechaCreacion:'2026-04-08'},
 
   /* ── MARBELLA CLUB ── */
-  {id:'cs26',nombre:'James Whitmore',empresa:'Marbella Club Hotel Golf Resort & Spa',tipo:'resort',ubicacion:'Marbella Golden Mile',email:'wellness@marbellaclub.com',telefono:'+34 952 822 211',modeloInteres:'HE5000_CLUB25',presupuestoOrientativo:113971,etapa:'viabilidad',fuente:'Web',notas:'Director de Wellness. Resort icónico fundado 1954. Clientela UHNW internacional. Spa de alta gama. Propuesta completa preparada. Potencial 2 unidades. Primer resort Costa del Sol con cámara hiperbárica.',fechaCreacion:'2026-02-05'},
+  {
+    id:'cs26',
+    nombre:'Jennica',
+    empresa:'Marbella Club Hotel Golf Resort & Spa',
+    tipo:'resort',
+    ubicacion:'Marbella Golden Mile',
+    email:'wellness@marbellaclub.com',
+    telefono:'+44 7973 833474',
+    modeloInteres:'HE5000_CLUB25',
+    presupuestoOrientativo:113971,
+    etapa:'interes',
+    fuente:'Referido',
+    fechaCreacion:'2026-02-05',
+    notas:'PROPIETARIA del hotel. Reunión 16/04/2026 en su domicilio (5 min). Presentado concepto SoulBaric — crear espacio de experiencias en el hotel. MUY receptiva. Organizará reunión con 4 personas de su equipo. Objetivo: cerrar en 1-3 meses.\n\nDOS MODELOS EN MESA:\nA) Hotel compra cámara (~115.000€) + SoulBaric presta asistencia/protocolos (fee mensual ~2.000€/mes). Hotel se queda el 100% de la facturación. Payback estimado 6 meses.\nB) SoulBaric aporta cámara + Hotel recibe participación de la facturación (~25-30%). Hotel cero inversión, ingreso pasivo ~5.500-6.500€/mes. SoulBaric recupera inversión en ~8 meses.\n\nPRÓXIMO PASO: Enviar presentación (Teaser + Pitch Deck + Dossier). Esperar fecha reunión equipo (4 personas). Preparar comparativa Modelo A vs B con cifras Marbella Club.',
+    contactos:[
+      {id:'ct26a',nombre:'Jennica',cargo:'Propietaria',email:'wellness@marbellaclub.com',telefono:'+44 7973 833474',principal:true}
+    ],
+    seguimiento:[
+      {
+        id:'seg26a',
+        fecha:'2026-04-16',
+        tipo:'reunion',
+        resumen:'Reunión presencial en domicilio de Jennica (propietaria). Duración: 5 minutos. Presentado concepto SoulBaric — integrar experiencias hiperbáricas de lujo en el hotel. Muy receptiva. Confirmó que organizará reunión con 4 personas de su equipo para avanzar. Pendiente: enviarle la presentación.',
+        resultado:'positivo',
+        proximoPaso:'Enviar Teaser + Pitch Deck + Dossier Financiero. Esperar confirmación de fecha para reunión del equipo (4 personas).',
+        proximaFecha:'2026-04-23'
+      }
+    ],
+    proyecto:{
+      configCatalogoId:'HE5000_CLUB25',
+      precioSesion:280,
+      precioNegociado:null,
+      horasDia:6,
+      diasSemana:6,
+      duracionSesion:60,
+      diasMes:24,
+      horarioInicio:'08:00',
+      horarioFin:'21:00',
+      costoOperativoMes:4500,
+      modalidad:'inversion',
+      visitasDia:300,
+      diasTrafico:24,
+      pctInteres:15,
+      pctConv:40,
+      perfilCliente:'UHNW — huéspedes internacionales de ultra-alto nivel adquisitivo',
+      ocupacionMensual:[55,55,65,70,75,82,88,88,80,70,60,55]
+    }
+  },
 
   /* ── ADMINISTRADORES DE FINCAS ── */
   {id:'cs23',nombre:'Juan Carlos Dávila',empresa:'DAE Asesores',tipo:'distribuidor',ubicacion:'Marbella, Costa del Sol',email:'jcdavila@daeasesores.com',telefono:'+34 952 868 840',modeloInteres:'HE5000_REG15',presupuestoOrientativo:72400,etapa:'prospecto',fuente:'Web',notas:'Director. 33+ años gestionando comunidades alto standing en Marbella. Gestiona 40+ comunidades de lujo. Gran canal de acceso a propietarios y villas premium.',fechaCreacion:'2026-04-07'},
@@ -3643,6 +3690,27 @@ document.addEventListener('DOMContentLoaded',()=>{
       toast('📥 '+nuevos.length+' candidato'+(nuevos.length>1?'s':'')+' nuevo'+(nuevos.length>1?'s':'')+' añadido'+(nuevos.length>1?'s':'')+': '+nuevos.map(n=>n.empresa.split(' ').slice(0,2).join(' ')).join(', '));
     }
   }
+
+  // ── Migración cs26: actualiza Marbella Club con datos reales de Jennica (16/04/2026) ──
+  if(!localStorage.getItem('sb_mig_cs26_jennica')){
+    const cands = getCandidatos();
+    const idx = cands.findIndex(c=>c.id==='cs26');
+    if(idx>=0){
+      const fresh = DEMO_CANDIDATOS.find(d=>d.id==='cs26');
+      if(fresh){
+        // Mantener proyectosAsociados previos si los hay
+        fresh.proyectosAsociados = cands[idx].proyectosAsociados || [];
+        // Fusionar seguimiento: añadir entrada de hoy si no existe ya
+        const hasSeg = (cands[idx].seguimiento||[]).some(s=>s.id==='seg26a');
+        if(!hasSeg) fresh.seguimiento = [...(fresh.seguimiento||[]),...(cands[idx].seguimiento||[])];
+        else fresh.seguimiento = cands[idx].seguimiento;
+        cands[idx] = fresh;
+        saveCandidatos(cands);
+        localStorage.setItem('sb_mig_cs26_jennica','1');
+      }
+    }
+  }
+
   renderStats();
   renderKanban();
   renderPresupuestos();
